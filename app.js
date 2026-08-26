@@ -28,7 +28,7 @@ const exerciseDropdown = document.getElementById('exerciseDropdown');
 
 // Init
 document.addEventListener('DOMContentLoaded', () => {
-    initExerciseDropdown();
+    initExerciseListGrid();
     renderCalendar();
     fetchData();
     initPullToRefresh();
@@ -106,14 +106,19 @@ function initPullToRefresh() {
     });
 }
 
-function initExerciseDropdown() {
-    exerciseDropdown.innerHTML = '';
+function initExerciseListGrid() {
+    const grid = document.getElementById('exerciseListGrid');
+    grid.innerHTML = '';
     Object.keys(EXERCISES).forEach(ex => {
-        const div = document.createElement('div');
-        div.className = 'dropdown-item';
-        div.innerHTML = `${EXERCISES[ex]} <span>${ex}</span>`;
-        div.onclick = () => selectExercise(ex);
-        exerciseDropdown.appendChild(div);
+        const btn = document.createElement('div');
+        btn.style.cssText = 'border: 1.5px solid var(--text-primary); border-radius: 16px; padding: 20px; display: flex; align-items: center; gap: 20px; cursor: pointer; background: var(--card-bg); font-weight: 700; font-size: 1.2rem; transition: transform 0.1s;';
+        btn.innerHTML = `<div style="width:32px; height:32px; display:flex; align-items:center; justify-content:center;">${EXERCISES[ex]}</div> <span>${ex}</span>`;
+        btn.onclick = () => selectExercise(ex);
+        btn.onmousedown = () => btn.style.transform = 'scale(0.97)';
+        btn.onmouseup = () => btn.style.transform = 'scale(1)';
+        btn.ontouchstart = () => btn.style.transform = 'scale(0.97)';
+        btn.ontouchend = () => btn.style.transform = 'scale(1)';
+        grid.appendChild(btn);
     });
 }
 
@@ -274,9 +279,9 @@ function renderDailyLog() {
 // Modal Logic
 function openAddWorkoutModal() {
     selectedExerciseForLog = null;
-    document.getElementById('selectedExerciseText').textContent = 'Select exercise';
+    document.getElementById('stepSelectExercise').style.display = 'flex';
+    document.getElementById('stepInputReps').style.display = 'none';
     document.getElementById('workoutRepsInput').value = '';
-    document.getElementById('repsSection').style.display = 'none';
     
     addWorkoutModal.style.display = 'flex';
     setTimeout(() => addWorkoutModal.classList.add('show'), 10);
@@ -287,16 +292,22 @@ function closeAddWorkoutModal() {
     setTimeout(() => addWorkoutModal.style.display = 'none', 300);
 }
 
-function toggleDropdown() {
-    exerciseDropdown.classList.toggle('show');
-}
-
 function selectExercise(type) {
     selectedExerciseForLog = type;
-    document.getElementById('selectedExerciseText').innerHTML = `<div style="display:flex; align-items:center; gap:8px;">${EXERCISES[type]} <span>${type}</span></div>`;
-    exerciseDropdown.classList.remove('show');
-    document.getElementById('repsSection').style.display = 'block';
-    document.getElementById('workoutRepsInput').focus();
+    document.getElementById('selectedExerciseTitle').textContent = type;
+    document.getElementById('selectedExerciseIconLarge').innerHTML = `<div style="width: 80px; height: 80px; background: var(--text-primary); color: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; transform: scale(1.5);">${EXERCISES[type]}</div>`;
+    
+    document.getElementById('stepSelectExercise').style.display = 'none';
+    document.getElementById('stepInputReps').style.display = 'flex';
+    
+    setTimeout(() => {
+        document.getElementById('workoutRepsInput').focus();
+    }, 100);
+}
+
+function backToExerciseSelection() {
+    document.getElementById('stepInputReps').style.display = 'none';
+    document.getElementById('stepSelectExercise').style.display = 'flex';
 }
 
 async function submitWorkout() {

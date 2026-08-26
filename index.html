@@ -81,27 +81,37 @@
 
     <!-- Add Workout Modal -->
     <div class="modal" id="addWorkoutModal">
-        <div class="modal-content add-workout-content">
-            <div class="modal-header">
-                <button class="icon-btn close-btn" onclick="closeAddWorkoutModal()"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg></button>
-                <h3 style="margin: 0; font-size: 1.1rem; font-weight: 700;">Add Workout</h3>
-                <button class="icon-btn check-btn" onclick="submitWorkout()"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2"><polyline points="20 6 9 17 4 12"></polyline></svg></button>
-            </div>
-            
-            <!-- Type Selector Dropdown trigger -->
-            <div class="type-selector" onclick="toggleDropdown()">
-                <span id="selectedExerciseText">Select exercise</span>
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"></polyline></svg>
-            </div>
-            
-            <!-- Dropdown List -->
-            <div class="dropdown-list" id="exerciseDropdown">
-                <!-- Injected via JS -->
+        <div class="modal-content add-workout-content" style="padding: 0;">
+            <!-- Step 1: Select Exercise -->
+            <div id="stepSelectExercise" class="modal-step" style="height: 100%; display: flex; flex-direction: column; background: #fafafa;">
+                <div style="padding: 30px 20px; flex: 1; overflow-y: auto;">
+                    <h3 style="text-align: center; margin: 0 0 30px 0; font-size: 1.2rem; font-weight: 700;">Select exercise</h3>
+                    <div class="exercise-list-grid" id="exerciseListGrid" style="display: flex; flex-direction: column; gap: 15px;">
+                        <!-- Buttons injected via JS -->
+                    </div>
+                </div>
+                <div class="modal-bottom-close" onclick="closeAddWorkoutModal()" style="padding: 20px; display: flex; justify-content: center; background: #fafafa; border-bottom-left-radius: 24px; border-bottom-right-radius: 24px;">
+                    <div style="width: 64px; height: 54px; border: 1.5px solid var(--text-primary); border-radius: 18px; display: flex; align-items: center; justify-content: center; cursor: pointer; background: white;">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="6 9 12 15 18 9"></polyline></svg>
+                    </div>
+                </div>
             </div>
 
-            <div class="reps-input-section" style="margin-top: 20px; display: none;" id="repsSection">
-                <label style="font-size: 0.9rem; color: #888; font-weight: 600; display: block; margin-bottom: 8px;">Reps (Set)</label>
-                <input type="number" id="workoutRepsInput" placeholder="Enter reps" class="reps-input">
+            <!-- Step 2: Input Reps -->
+            <div id="stepInputReps" class="modal-step" style="display: none; padding: 20px; height: 100%; flex-direction: column;">
+                <div class="modal-header">
+                    <button class="icon-btn close-btn" onclick="backToExerciseSelection()"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg></button>
+                    <h3 id="selectedExerciseTitle" style="margin: 0; font-size: 1.2rem; font-weight: 700;">Exercise</h3>
+                    <button class="icon-btn check-btn" onclick="submitWorkout()"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2"><polyline points="20 6 9 17 4 12"></polyline></svg></button>
+                </div>
+                
+                <div id="selectedExerciseIconLarge" style="display: flex; justify-content: center; margin: 30px 0; color: var(--text-primary);">
+                </div>
+
+                <div class="reps-input-section" style="margin-top: 10px;" id="repsSection">
+                    <label style="font-size: 1rem; color: var(--text-primary); font-weight: 700; display: block; margin-bottom: 12px; text-align: center;">How many reps?</label>
+                    <input type="number" id="workoutRepsInput" placeholder="0" class="reps-input" style="width: 100%; box-sizing: border-box; text-align: center; font-size: 2rem; font-weight: 800; padding: 15px; border-radius: 16px;">
+                </div>
             </div>
         </div>
     </div>
