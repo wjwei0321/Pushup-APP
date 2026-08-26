@@ -124,6 +124,7 @@ function initPullToRefresh() {
     let touchStartY = 0;
     let isRefreshing = false;
     const ptr = document.getElementById('ptrIndicator');
+    const homeView = document.getElementById('homeView');
 
     document.addEventListener('touchstart', e => {
         if (document.querySelector('.modal.show')) return;
@@ -143,7 +144,8 @@ function initPullToRefresh() {
                 e.preventDefault(); // Stop native iOS rubber banding!
             }
             ptr.style.opacity = Math.min(delta / 100, 1);
-            ptr.style.transform = `translateY(${Math.min(delta / 2, 120)}px) rotate(${delta}deg)`;
+            homeView.style.transform = `translateY(${Math.min(delta / 2, 80)}px)`;
+            ptr.style.transform = `rotate(${delta}deg)`;
         }
     }, {passive: false});
 
@@ -155,17 +157,17 @@ function initPullToRefresh() {
         if (delta > 100 && window.scrollY <= 0) {
             isRefreshing = true;
             ptr.classList.add('spinning');
-            ptr.style.transform = `translateY(120px)`;
+            homeView.style.transform = `translateY(60px)`;
             
             fetchData().then(() => {
                 isRefreshing = false;
                 ptr.classList.remove('spinning');
-                ptr.style.transform = `translateY(0)`;
+                homeView.style.transform = `translateY(0)`;
                 ptr.style.opacity = 0;
                 showToast("Updated!");
             });
         } else {
-            ptr.style.transform = `translateY(0)`;
+            homeView.style.transform = `translateY(0)`;
             ptr.style.opacity = 0;
         }
         touchStartY = 0;

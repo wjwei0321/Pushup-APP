@@ -35,7 +35,7 @@ body {
 
 /* Pull To Refresh */
 .ptr-indicator {
-    position: fixed;
+    position: absolute;
     top: -50px;
     left: 50%;
     margin-left: -15px;
