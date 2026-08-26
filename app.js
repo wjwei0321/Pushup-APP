@@ -63,7 +63,7 @@ function initPullToRefresh() {
     const ptr = document.getElementById('ptrIndicator');
 
     document.addEventListener('touchstart', e => {
-        if (window.scrollY === 0) {
+        if (window.scrollY <= 0) {
             touchStartY = e.touches[0].clientY;
         }
     }, {passive: true});
@@ -72,19 +72,23 @@ function initPullToRefresh() {
         if (touchStartY === 0 || isRefreshing) return;
         const touchY = e.touches[0].clientY;
         const delta = touchY - touchStartY;
-        if (delta > 0 && window.scrollY === 0) {
+        
+        // If we are at the top and pulling down
+        if (delta > 0 && window.scrollY <= 0) {
+            if (e.cancelable) {
+                e.preventDefault(); // Stop native iOS rubber banding!
+            }
             ptr.style.opacity = Math.min(delta / 100, 1);
-            // Pull down up to 120px to clear dynamic island
             ptr.style.transform = `translateY(${Math.min(delta / 2, 120)}px) rotate(${delta}deg)`;
         }
-    }, {passive: true});
+    }, {passive: false});
 
     document.addEventListener('touchend', e => {
         if (touchStartY === 0 || isRefreshing) return;
         const touchY = e.changedTouches[0].clientY;
         const delta = touchY - touchStartY;
         
-        if (delta > 100 && window.scrollY === 0) {
+        if (delta > 100 && window.scrollY <= 0) {
             isRefreshing = true;
             ptr.classList.add('spinning');
             ptr.style.transform = `translateY(120px)`;
