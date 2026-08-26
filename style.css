@@ -41,11 +41,11 @@ body {
     margin-left: -15px;
     width: 30px;
     height: 30px;
-    color: var(--text-secondary);
+    color: var(--text-primary);
     display: flex;
     justify-content: center;
     align-items: center;
-    z-index: 50;
+    z-index: 9999;
     transition: opacity 0.2s;
     opacity: 0;
 }

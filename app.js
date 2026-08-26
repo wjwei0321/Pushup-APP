@@ -74,7 +74,8 @@ function initPullToRefresh() {
         const delta = touchY - touchStartY;
         if (delta > 0 && window.scrollY === 0) {
             ptr.style.opacity = Math.min(delta / 100, 1);
-            ptr.style.transform = `translateY(${Math.min(delta / 2, 70)}px) rotate(${delta}deg)`;
+            // Pull down up to 120px to clear dynamic island
+            ptr.style.transform = `translateY(${Math.min(delta / 2, 120)}px) rotate(${delta}deg)`;
         }
     }, {passive: true});
 
@@ -83,10 +84,10 @@ function initPullToRefresh() {
         const touchY = e.changedTouches[0].clientY;
         const delta = touchY - touchStartY;
         
-        if (delta > 80 && window.scrollY === 0) {
+        if (delta > 100 && window.scrollY === 0) {
             isRefreshing = true;
             ptr.classList.add('spinning');
-            ptr.style.transform = `translateY(70px)`;
+            ptr.style.transform = `translateY(120px)`;
             
             fetchData().then(() => {
                 isRefreshing = false;
