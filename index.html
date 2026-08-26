@@ -82,16 +82,19 @@
 
     <!-- Add Workout Modal -->
     <div class="modal" id="addWorkoutModal">
-        <div class="modal-content add-workout-content" style="padding: 0;">
+        <div class="modal-content add-workout-content" style="padding: 0; height: 100%; border-radius: 0;">
             <!-- Step 1: Select Exercise -->
             <div id="stepSelectExercise" class="modal-step" style="height: 100%; display: flex; flex-direction: column; background: #fafafa;">
-                <div style="padding: 30px 20px; flex: 1; overflow-y: auto;">
-                    <h3 style="text-align: center; margin: 0 0 30px 0; font-size: 1.2rem; font-weight: 700;">Select exercise</h3>
+                <div style="padding: calc(20px + env(safe-area-inset-top, 20px)) 20px 0 20px; display: flex; flex-direction: column; align-items: center; touch-action: none; position: relative;">
+                    <div style="width: 36px; height: 5px; background: #ddd; border-radius: 3px; margin-bottom: 15px;"></div>
+                    <h3 style="margin: 0; font-size: 1.2rem; font-weight: 700; padding-bottom: 20px;">Select exercise</h3>
+                </div>
+                <div style="padding: 0 20px 20px 20px; flex: 1; overflow-y: auto;">
                     <div class="exercise-list-grid" id="exerciseListGrid" style="display: flex; flex-direction: column; gap: 15px;">
                         <!-- Buttons injected via JS -->
                     </div>
                 </div>
-                <div class="modal-bottom-close" onclick="closeAddWorkoutModal()" style="padding: 20px; display: flex; justify-content: center; background: #fafafa; border-bottom-left-radius: 24px; border-bottom-right-radius: 24px;">
+                <div class="modal-bottom-close" onclick="closeAddWorkoutModal()" style="padding: 20px; display: flex; justify-content: center; background: #fafafa;">
                     <div style="width: 64px; height: 54px; border: 1.5px solid var(--text-primary); border-radius: 18px; display: flex; align-items: center; justify-content: center; cursor: pointer; background: white;">
                         <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="6 9 12 15 18 9"></polyline></svg>
                     </div>
@@ -99,7 +102,10 @@
             </div>
 
             <!-- Step 2: Input Reps -->
-            <div id="stepInputReps" class="modal-step" style="display: none; padding: 20px; height: 100%; flex-direction: column;">
+            <div id="stepInputReps" class="modal-step" style="display: none; padding: calc(20px + env(safe-area-inset-top, 20px)) 20px 20px 20px; height: 100%; flex-direction: column; background: var(--bg-color);">
+                <div style="display: flex; flex-direction: column; align-items: center; width: 100%; touch-action: none;">
+                    <div style="width: 36px; height: 5px; background: #ddd; border-radius: 3px; margin-bottom: 20px;"></div>
+                </div>
                 <div class="modal-header">
                     <button class="icon-btn close-btn" onclick="backToExerciseSelection()"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg></button>
                     <h3 id="selectedExerciseTitle" style="margin: 0; font-size: 1.2rem; font-weight: 700;">Exercise</h3>
