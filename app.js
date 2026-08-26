@@ -34,7 +34,27 @@ document.addEventListener('DOMContentLoaded', () => {
     renderCalendar();
     fetchData();
     initPullToRefresh();
+    initScrollNav();
 });
+
+// Scroll to hide/show navigation
+function initScrollNav() {
+    let lastScrollY = window.scrollY;
+    const nav = document.querySelector('.floating-nav');
+    
+    window.addEventListener('scroll', () => {
+        const currentScrollY = window.scrollY;
+        
+        // Hide when scrolling down, show when scrolling up
+        if (currentScrollY > lastScrollY && currentScrollY > 50) {
+            nav.classList.add('hidden');
+        } else {
+            nav.classList.remove('hidden');
+        }
+        
+        lastScrollY = currentScrollY;
+    }, { passive: true });
+}
 
 // Pull to refresh logic
 function initPullToRefresh() {
