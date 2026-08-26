@@ -231,10 +231,8 @@ body {
 }
 
 .day-number.today {
-    text-decoration: underline;
-    text-underline-offset: 4px;
-    text-decoration-thickness: 2.5px;
-    font-weight: 800;
+    color: var(--accent-color);
+    font-weight: 900;
 }
 
 .day-cell:hover {
