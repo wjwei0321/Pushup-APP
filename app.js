@@ -2,7 +2,7 @@
 let trainingData = [];
 let currentDate = new Date(); // Month currently viewed
 let selectedDate = new Date(); // Date currently selected
-let apiUrl = 'https://script.google.com/macros/s/AKfycbwfobM0NgTTxeaenrd7FWY7z4OmX22QvNbkEjMUxBxlxBdAXPSmoY-ZqnSFM1eTnms/exec';
+let apiUrl = 'https://script.google.com/macros/s/AKfycbzULLYM8Qow0Ra3ZO3qv6l6aw7kticNlaI0sr3PAkqHDQdKY50e3v8GN5av14V8Q46n/exec';
 let selectedExerciseForLog = null;
 
 // Icons Dictionary
