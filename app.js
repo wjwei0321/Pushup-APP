@@ -5,18 +5,18 @@ let selectedDate = new Date(); // Date currently selected
 let apiUrl = 'https://script.google.com/macros/s/AKfycbzULLYM8Qow0Ra3ZO3qv6l6aw7kticNlaI0sr3PAkqHDQdKY50e3v8GN5av14V8Q46n/exec';
 let selectedExerciseForLog = null;
 
-// Icons Dictionary
+// Icons Dictionary — Clay-style humanoid figures
 const EXERCISES = {
-    'Push-up': '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 14l4-4 4 4 4-4 4 4" /></svg>',
-    'Pull-up': '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 5h20M12 5v14M8 10h8" /></svg>',
-    'Squat': '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2a2 2 0 1 0 0 4 2 2 0 0 0 0-4zm-3 6v12h2v-6h2v6h2V8H9z" /></svg>',
-    'Lunge': '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 4a2 2 0 1 0 0 4 2 2 0 0 0 0-4zM6 20v-6l4-4 2 4 4 6h3" /></svg>',
-    'Plank': '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="4" y1="18" x2="20" y2="18"></line><path d="M6 14l4-4 6 0 4 4"></path></svg>',
-    'Glute Band': '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><ellipse cx="12" cy="12" rx="10" ry="4"></ellipse></svg>',
-    'Polyquen Step-up': '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20h6v-6h6v-6h4"></path></svg>',
-    'Hack Squat': '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="4" width="16" height="16" rx="2"></rect><line x1="8" y1="12" x2="16" y2="12"></line></svg>',
-    'Romanian Deadlift': '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 18h20M12 18v-8M8 10h8"></path></svg>',
-    'Slant Board Squat': '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="2 20 22 20 22 14 2 20"></polygon></svg>'
+    'Push-up': '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="19" cy="9" r="2"/><line x1="4" y1="17" x2="7" y2="17"/><path d="M7 17l4-2 4 0 2-3"/><line x1="15" y1="12" x2="17" y2="14"/></svg>',
+    'Pull-up': '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><line x1="4" y1="3" x2="20" y2="3"/><circle cx="12" cy="7" r="2"/><path d="M9 3l1 4m5-4l-1 4"/><line x1="12" y1="9" x2="12" y2="15"/><line x1="12" y1="15" x2="9" y2="21"/><line x1="12" y1="15" x2="15" y2="21"/></svg>',
+    'Squat': '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="4" r="2"/><path d="M12 6v4"/><path d="M12 10l-4 4v3"/><path d="M12 10l4 4v3"/><path d="M8 14h8"/><line x1="8" y1="17" x2="7" y2="21"/><line x1="16" y1="17" x2="17" y2="21"/></svg>',
+    'Lunge': '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="3" r="2"/><path d="M12 5v5"/><path d="M12 10l-5 5-1 5"/><path d="M12 10l4 3 2 1"/><line x1="7" y1="15" x2="5" y2="15"/><line x1="16" y1="13" x2="16" y2="20"/></svg>',
+    'Plank': '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="19" cy="10" r="2"/><line x1="17" y1="11" x2="5" y2="14"/><line x1="5" y1="14" x2="5" y2="18"/><line x1="17" y1="11" x2="17" y2="15"/></svg>',
+    'Glute Band': '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="10" cy="4" r="2"/><path d="M10 6v4"/><path d="M10 10l-3 5v5"/><path d="M10 10l3 2 4-1"/><line x1="7" y1="15" x2="7" y2="20"/><path d="M13 12l0 4" stroke-dasharray="2 2"/></svg>',
+    'Polyquen Step-up': '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="3" r="2"/><path d="M12 5v4"/><path d="M12 9l-3 4v3"/><path d="M12 9l3 1v3h-3"/><rect x="4" y="17" width="16" height="4" rx="1"/><rect x="8" y="13" width="8" height="4" rx="1"/></svg>',
+    'Hack Squat': '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="4" r="2"/><path d="M12 6v3"/><path d="M12 9l-4 5v3"/><path d="M12 9l4 5v3"/><line x1="8" y1="17" x2="7" y2="21"/><line x1="16" y1="17" x2="17" y2="21"/><line x1="9" y1="6" x2="15" y2="6"/></svg>',
+    'Romanian Deadlift': '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="14" cy="5" r="2"/><path d="M14 7l-5 7"/><path d="M14 7l2 4"/><line x1="9" y1="14" x2="7" y2="19"/><line x1="16" y1="11" x2="17" y2="19"/><line x1="6" y1="19" x2="18" y2="19"/></svg>',
+    'Slant Board Squat': '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="4" r="2"/><path d="M12 6v4"/><path d="M12 10l-3 4"/><path d="M12 10l3 4"/><line x1="9" y1="14" x2="8" y2="18"/><line x1="15" y1="14" x2="16" y2="18"/><path d="M4 21l16-5v5z"/></svg>'
 };
 
 // DOM Elements
