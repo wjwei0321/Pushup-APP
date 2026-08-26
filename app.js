@@ -80,7 +80,9 @@ document.addEventListener('DOMContentLoaded', () => {
                 if (startY === 0) return;
                 content.style.transition = 'transform 0.3s ease-out';
                 if (currentY > 100) {
-                    // Dismiss
+                    // Dismiss by driving the sheet down
+                    content.style.transform = 'translateY(100%)';
+                    
                     if (modal.id === 'addWorkoutModal') closeAddWorkoutModal();
                     if (modal.id === 'filterModal') closeFilterModal();
                     if (modal.id === 'settingsModal') {
