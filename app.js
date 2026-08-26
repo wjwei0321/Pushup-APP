@@ -4,6 +4,7 @@ let currentDate = new Date(); // Month currently viewed
 let selectedDate = new Date(); // Date currently selected
 let apiUrl = 'https://script.google.com/macros/s/AKfycbzULLYM8Qow0Ra3ZO3qv6l6aw7kticNlaI0sr3PAkqHDQdKY50e3v8GN5av14V8Q46n/exec';
 let selectedExerciseForLog = null;
+let activeFilters = []; // empty means "Show All"
 
 // Icons Dictionary — Caly-style bold silhouette figures
 const EXERCISES = {
@@ -25,10 +26,13 @@ const dailyLogList = document.getElementById('dailyLogList');
 const addWorkoutModal = document.getElementById('addWorkoutModal');
 const settingsModal = document.getElementById('settingsModal');
 const exerciseDropdown = document.getElementById('exerciseDropdown');
+const filterModal = document.getElementById('filterModal');
+const headerFilterBtn = document.getElementById('headerFilterBtn');
 
 // Init
 document.addEventListener('DOMContentLoaded', () => {
     initExerciseListGrid();
+    initFilterModal();
     renderCalendar();
     fetchData();
     initPullToRefresh();
@@ -122,6 +126,82 @@ function initExerciseListGrid() {
     });
 }
 
+// Filter Logic
+function initFilterModal() {
+    const list = document.getElementById('filterList');
+    list.innerHTML = '';
+    
+    // Add "Show All"
+    const allDiv = document.createElement('div');
+    allDiv.className = 'filter-item selected';
+    allDiv.id = 'filterItem_ALL';
+    allDiv.innerHTML = `<span>Show All</span> <div class="filter-checkbox"></div>`;
+    allDiv.onclick = () => toggleFilter('ALL');
+    list.appendChild(allDiv);
+
+    // Add Exercises
+    Object.keys(EXERCISES).forEach(ex => {
+        const exDiv = document.createElement('div');
+        exDiv.className = 'filter-item';
+        exDiv.id = `filterItem_${ex.replace(/\s+/g, '_')}`;
+        exDiv.innerHTML = `
+            <div style="display:flex; align-items:center; gap:12px;">
+                <div style="width:24px; height:24px;">${EXERCISES[ex]}</div>
+                <span>${ex}</span>
+            </div>
+            <div class="filter-checkbox"></div>
+        `;
+        exDiv.onclick = () => toggleFilter(ex);
+        list.appendChild(exDiv);
+    });
+}
+
+function openFilterModal() {
+    filterModal.style.display = 'flex';
+    setTimeout(() => filterModal.classList.add('show'), 10);
+}
+
+function closeFilterModal() {
+    filterModal.classList.remove('show');
+    setTimeout(() => filterModal.style.display = 'none', 300);
+}
+
+function toggleFilter(type) {
+    if (type === 'ALL') {
+        activeFilters = [];
+    } else {
+        if (activeFilters.includes(type)) {
+            activeFilters = activeFilters.filter(f => f !== type);
+        } else {
+            activeFilters.push(type);
+        }
+    }
+    
+    // Update UI checkmarks
+    document.getElementById('filterItem_ALL').classList.toggle('selected', activeFilters.length === 0);
+    Object.keys(EXERCISES).forEach(ex => {
+        const item = document.getElementById(`filterItem_${ex.replace(/\s+/g, '_')}`);
+        if (item) {
+            item.classList.toggle('selected', activeFilters.includes(ex));
+        }
+    });
+
+    // Update Header Button
+    if (activeFilters.length === 0) {
+        headerFilterBtn.classList.remove('active');
+        headerFilterBtn.innerHTML = 'A';
+    } else if (activeFilters.length === 1) {
+        headerFilterBtn.classList.add('active');
+        headerFilterBtn.innerHTML = `<div style="width:20px;height:20px;display:flex;">${EXERCISES[activeFilters[0]]}</div>`;
+    } else {
+        headerFilterBtn.classList.add('active');
+        headerFilterBtn.innerHTML = activeFilters.length;
+    }
+
+    renderCalendar();
+    renderDailyLog();
+}
+
 // Data Fetching
 async function fetchData() {
     try {
@@ -212,21 +292,42 @@ function renderCalendar() {
         
         // Check for data
         const dateStr = `${year}/${String(month+1).padStart(2, '0')}/${String(i).padStart(2, '0')}`;
-        const dayData = trainingData.filter(d => d.dateStr === dateStr);
-        let totalSetsToday = dayData.reduce((sum, d) => sum + d.sets.length, 0);
+        let dayData = trainingData.filter(d => d.dateStr === dateStr);
         
-        if (totalSetsToday > 0) {
-            const ind = document.createElement('div');
-            ind.className = 'day-indicator';
-            ind.innerHTML = EXERCISES[dayData[0].type] || EXERCISES['Push-up']; // Use first exercise icon
+        if (activeFilters.length > 0) {
+            dayData = dayData.filter(d => activeFilters.includes(d.type));
+        }
+        
+        if (dayData.length > 0) {
+            const container = document.createElement('div');
+            container.className = 'day-icons-container';
             
-            if (totalSetsToday > 1) {
-                const badge = document.createElement('div');
-                badge.className = 'day-indicator-badge';
-                badge.textContent = totalSetsToday;
-                ind.appendChild(badge);
-            }
-            cell.appendChild(ind);
+            // Group by exercise type
+            const exerciseSets = {};
+            dayData.forEach(d => {
+                if (!exerciseSets[d.type]) exerciseSets[d.type] = 0;
+                exerciseSets[d.type] += d.sets.length;
+            });
+
+            const distinctCount = Object.keys(exerciseSets).length;
+            Object.keys(exerciseSets).forEach(exType => {
+                const sets = exerciseSets[exType];
+                
+                // Scale proportion according to quantity
+                let size = 16 + (sets * 3); 
+                if (size > 28) size = 28; // Max size to prevent overflow
+                
+                if (distinctCount > 2) size = Math.min(size, 16);
+                else if (distinctCount > 1) size = Math.min(size, 20);
+                
+                const ind = document.createElement('div');
+                ind.className = 'day-indicator';
+                ind.style.width = `${size}px`;
+                ind.style.height = `${size}px`;
+                ind.innerHTML = EXERCISES[exType];
+                container.appendChild(ind);
+            });
+            cell.appendChild(container);
         }
         
         cell.onclick = () => {
@@ -254,7 +355,11 @@ function renderDailyLog() {
     selectedDateDisplay.textContent = `${month} ${selectedDate.getDate()}`;
     
     const dateStr = `${selectedDate.getFullYear()}/${String(selectedDate.getMonth()+1).padStart(2, '0')}/${String(selectedDate.getDate()).padStart(2, '0')}`;
-    const dayData = trainingData.filter(d => d.dateStr === dateStr);
+    let dayData = trainingData.filter(d => d.dateStr === dateStr);
+    
+    if (activeFilters.length > 0) {
+        dayData = dayData.filter(d => activeFilters.includes(d.type));
+    }
     
     dailyLogList.innerHTML = '';
     

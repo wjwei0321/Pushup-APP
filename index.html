@@ -24,10 +24,11 @@
         <!-- View 1: Calendar Home -->
         <div id="homeView">
             <header class="app-header">
-                <div class="header-top">
+                <div class="header-top" style="justify-content: space-between;">
                     <div style="display: flex; align-items: center; gap: 8px;">
                         <span class="app-title">STRIVE TO EVOLVE</span>
                     </div>
+                    <div class="filter-btn" onclick="openFilterModal()" id="headerFilterBtn">A</div>
                 </div>
             </header>
 
@@ -112,6 +113,19 @@
                     <label style="font-size: 1rem; color: var(--text-primary); font-weight: 700; display: block; margin-bottom: 12px; text-align: center;">How many reps?</label>
                     <input type="number" id="workoutRepsInput" placeholder="0" class="reps-input" style="width: 100%; box-sizing: border-box; text-align: center; font-size: 2rem; font-weight: 800; padding: 15px; border-radius: 16px;">
                 </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Filter Modal -->
+    <div class="modal" id="filterModal">
+        <div class="modal-content" style="padding: 0; background: #fafafa;">
+            <div style="padding: 20px; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border-color);">
+                <h3 style="margin: 0; font-size: 1.2rem; font-weight: 700;">Select Exercises</h3>
+                <button class="icon-btn close-btn" onclick="closeFilterModal()"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg></button>
+            </div>
+            <div id="filterList" style="padding: 10px 20px 30px 20px; max-height: 60vh; overflow-y: auto;">
+                <!-- Injected via JS -->
             </div>
         </div>
     </div>

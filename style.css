@@ -83,9 +83,67 @@ body {
     gap: 4px;
 }
 
-.settings-btn {
+.filter-btn {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    border: 2px solid var(--text-primary);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 800;
+    font-size: 1rem;
     cursor: pointer;
     color: var(--text-primary);
+    background: transparent;
+    transition: all 0.2s;
+}
+
+.filter-btn.active {
+    background: var(--accent-color);
+    border-color: var(--accent-color);
+    color: white;
+}
+
+.filter-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 16px 0;
+    border-bottom: 1px solid var(--border-color);
+    font-size: 1.1rem;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+.filter-item:last-child {
+    border-bottom: none;
+}
+
+.filter-checkbox {
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    border: 2px solid var(--border-color);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s;
+}
+
+.filter-item.selected .filter-checkbox {
+    background: var(--accent-color);
+    border-color: var(--accent-color);
+}
+
+.filter-item.selected .filter-checkbox::after {
+    content: '';
+    width: 6px;
+    height: 10px;
+    border: solid white;
+    border-width: 0 2px 2px 0;
+    transform: rotate(45deg);
+    margin-bottom: 2px;
 }
 
 /* Calendar Card */
@@ -196,37 +254,27 @@ body {
 }
 
 /* Data Indicator on Calendar */
+.day-icons-container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 2px;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+}
+
 .day-indicator {
     background: var(--accent-color);
     color: white;
-    width: 24px;
-    height: 24px;
     border-radius: 50%;
     display: flex;
     align-items: center;
     justify-content: center;
-    position: relative;
     flex-shrink: 0;
 }
 .day-indicator svg {
-    width: 12px;
-    height: 12px;
-}
-.day-indicator-badge {
-    position: absolute;
-    top: -4px;
-    right: -6px;
-    background: black;
-    color: white;
-    font-size: 0.55rem;
-    font-weight: 800;
-    width: 16px;
-    height: 16px;
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    border: 1px solid white;
+    width: 50%;
+    height: 50%;
 }
 
 /* Daily Log Section */
