@@ -310,6 +310,7 @@ async function submitWorkout() {
         action: 'log',
         date: dateStr,
         type: selectedExerciseForLog,
+        exerciseType: selectedExerciseForLog,
         count: parseInt(reps)
     };
     
