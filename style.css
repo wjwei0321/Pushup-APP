@@ -265,44 +265,50 @@ body {
     font-weight: 800;
 }
 
-/* Bottom Nav */
-.bottom-nav {
+/* Floating Bottom Nav */
+.floating-nav {
     position: fixed;
-    bottom: 0;
-    left: 0;
-    width: 100%;
-    background: var(--card-bg);
+    bottom: 30px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: rgba(255, 255, 255, 0.85);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
     display: flex;
-    justify-content: space-around;
+    justify-content: space-between;
     align-items: center;
-    padding: 15px 20px;
-    padding-bottom: env(safe-area-inset-bottom, 15px);
-    border-top: 1px solid var(--border-color);
+    padding: 8px 16px;
+    border-radius: 40px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+    border: 1px solid rgba(255, 255, 255, 0.4);
+    width: 240px;
     z-index: 100;
 }
 
-.nav-item {
+.floating-nav .nav-item {
     color: var(--text-secondary);
     cursor: pointer;
     display: flex;
-    flex-direction: column;
     align-items: center;
+    justify-content: center;
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    transition: all 0.2s;
 }
 
-.nav-item.active {
+.floating-nav .nav-item.active {
     color: var(--text-primary);
 }
 
-.start-workout-btn {
-    background: var(--accent-color);
+.floating-nav .nav-item.add-btn {
+    background: var(--text-primary);
     color: white;
-    border: none;
-    padding: 14px 24px;
-    border-radius: 30px;
-    font-weight: 700;
-    font-size: 1rem;
-    font-family: var(--font-main);
-    cursor: pointer;
+    width: 50px;
+    height: 50px;
+}
+.floating-nav .nav-item.add-btn:active {
+    transform: scale(0.9);
 }
 
 /* Modals */
