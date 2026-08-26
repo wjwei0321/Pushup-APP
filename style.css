@@ -23,7 +23,31 @@ body {
     color: var(--text-primary);
     font-family: var(--font-main);
     line-height: 1.5;
-    padding-bottom: 80px; /* space for bottom nav */
+    padding-bottom: 80px;
+    overscroll-behavior-y: none; /* Prevents native iOS pull-to-refresh */
+}
+
+/* Pull To Refresh */
+.ptr-indicator {
+    position: fixed;
+    top: -50px;
+    left: 50%;
+    margin-left: -15px;
+    width: 30px;
+    height: 30px;
+    color: var(--text-secondary);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 50;
+    transition: opacity 0.2s;
+    opacity: 0;
+}
+.ptr-indicator.spinning svg {
+    animation: ptr-spin 1s linear infinite;
+}
+@keyframes ptr-spin { 
+    100% { transform: rotate(360deg); } 
 }
 
 .container {

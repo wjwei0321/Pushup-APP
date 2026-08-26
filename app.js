@@ -33,7 +33,55 @@ document.addEventListener('DOMContentLoaded', () => {
     initExerciseDropdown();
     renderCalendar();
     fetchData();
+    initPullToRefresh();
 });
+
+// Pull to refresh logic
+function initPullToRefresh() {
+    let touchStartY = 0;
+    let isRefreshing = false;
+    const ptr = document.getElementById('ptrIndicator');
+
+    document.addEventListener('touchstart', e => {
+        if (window.scrollY === 0) {
+            touchStartY = e.touches[0].clientY;
+        }
+    }, {passive: true});
+
+    document.addEventListener('touchmove', e => {
+        if (touchStartY === 0 || isRefreshing) return;
+        const touchY = e.touches[0].clientY;
+        const delta = touchY - touchStartY;
+        if (delta > 0 && window.scrollY === 0) {
+            ptr.style.opacity = Math.min(delta / 100, 1);
+            ptr.style.transform = `translateY(${Math.min(delta / 2, 70)}px) rotate(${delta}deg)`;
+        }
+    }, {passive: true});
+
+    document.addEventListener('touchend', e => {
+        if (touchStartY === 0 || isRefreshing) return;
+        const touchY = e.changedTouches[0].clientY;
+        const delta = touchY - touchStartY;
+        
+        if (delta > 80 && window.scrollY === 0) {
+            isRefreshing = true;
+            ptr.classList.add('spinning');
+            ptr.style.transform = `translateY(70px)`;
+            
+            fetchData().then(() => {
+                isRefreshing = false;
+                ptr.classList.remove('spinning');
+                ptr.style.transform = `translateY(0)`;
+                ptr.style.opacity = 0;
+                showToast("Updated!");
+            });
+        } else {
+            ptr.style.transform = `translateY(0)`;
+            ptr.style.opacity = 0;
+        }
+        touchStartY = 0;
+    });
+}
 
 function initExerciseDropdown() {
     exerciseDropdown.innerHTML = '';
@@ -290,8 +338,9 @@ function switchView(view) {
     // Only one view in this scope, prepared for future Stats page.
 }
 
-function showToast() {
+function showToast(msg = "Logged successfully!") {
     const t = document.getElementById('toast');
+    t.textContent = msg;
     t.classList.add('show');
     setTimeout(() => t.classList.remove('show'), 3000);
 }
