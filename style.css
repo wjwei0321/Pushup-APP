@@ -149,17 +149,14 @@ body {
 
 .weekday {
     display: inline-block;
-    width: calc(100% / 7);
     text-align: center;
     font-size: 0.75rem;
     color: var(--text-secondary);
     font-weight: 600;
-    margin-bottom: 10px;
 }
 
 .day-cell {
-    aspect-ratio: 1 / 1;
-    min-height: 44px;
+    min-height: 48px;
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -193,29 +190,30 @@ body {
 .day-indicator {
     background: var(--danger-color);
     color: white;
-    width: 28px;
-    height: 28px;
+    width: 24px;
+    height: 24px;
     border-radius: 50%;
     display: flex;
     align-items: center;
     justify-content: center;
     margin-top: 2px;
     position: relative;
+    flex-shrink: 0;
 }
 .day-indicator svg {
-    width: 14px;
-    height: 14px;
+    width: 12px;
+    height: 12px;
 }
 .day-indicator-badge {
     position: absolute;
-    top: -2px;
-    right: -2px;
+    top: -4px;
+    right: -6px;
     background: black;
     color: white;
-    font-size: 0.6rem;
+    font-size: 0.55rem;
     font-weight: 800;
-    width: 14px;
-    height: 14px;
+    width: 16px;
+    height: 16px;
     border-radius: 50%;
     display: flex;
     align-items: center;
