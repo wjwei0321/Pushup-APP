@@ -3,126 +3,60 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Pushup Pro - Quick Logger</title>
+    <title>Workout Tracker</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;700;800&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="style.css?v=2.0">
-    <!-- PWA Meta Tags -->
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css?v=3.0">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <meta name="theme-color" content="#0a0a0c">
-    <!-- Chart.js for Dashboard -->
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <meta name="theme-color" content="#F7F7F7">
 </head>
 <body>
     <div class="container">
-        <!-- View 1: Logger -->
-        <div id="loggerView">
-            <header>
-                <div class="header-content">
-                    <h1>STRIVE TO EVOLVE</h1>
+        <!-- View 1: Calendar Home -->
+        <div id="homeView">
+            <header class="app-header">
+                <div class="header-top">
+                    <div style="display: flex; align-items: center; gap: 8px;">
+                        <span style="font-size: 1.5rem;">💪</span>
+                        <span class="app-title">MY CALY <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"></polyline></svg></span>
+                    </div>
                     <div class="settings-btn" id="settingsBtn">
-                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>
                     </div>
                 </div>
-                
-                <div class="segmented-control">
-                    <input type="radio" name="exerciseTypeLog" id="typePushupsLog" value="Pushups" checked onchange="switchExercise('Pushups')">
-                    <label for="typePushupsLog">PUSHUPS</label>
-                    <input type="radio" name="exerciseTypeLog" id="typePullupsLog" value="Pullups" onchange="switchExercise('Pullups')">
-                    <label for="typePullupsLog">PULLUPS</label>
-                </div>
             </header>
 
-            <div class="stats-card">
-                <span class="stat-label">DAILY TOTAL</span>
-                <div>
-                    <span class="stat-value" id="dailyTotal">0</span>
-                    <span class="stat-unit">REPS</span>
+            <div class="calendar-card">
+                <div class="calendar-header">
+                    <h2 id="currentMonthYear">August</h2>
+                    <div class="calendar-controls">
+                        <button class="icon-btn"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg></button>
+                        <button class="icon-btn" onclick="prevMonth()"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="15 18 9 12 15 6"></polyline></svg></button>
+                        <button class="icon-btn" onclick="nextMonth()"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"></polyline></svg></button>
+                    </div>
+                </div>
+
+                <div class="calendar-grid">
+                    <div class="weekday">S</div>
+                    <div class="weekday">M</div>
+                    <div class="weekday">T</div>
+                    <div class="weekday">W</div>
+                    <div class="weekday">T</div>
+                    <div class="weekday">F</div>
+                    <div class="weekday">S</div>
+                    <div id="calendarDays" class="days-grid"></div>
                 </div>
             </div>
 
-            <div class="input-section">
-                <div class="count-display" id="currentInput">0</div>
-                
-                <div class="btn-grid">
-                    <button class="btn accent" id="btnAdd1" onclick="adjustCount(5)">+5</button>
-                    <button class="btn accent" id="btnAdd2" onclick="adjustCount(10)">+10</button>
-                    <button class="btn accent" id="btnAdd3" onclick="adjustCount(20)">+20</button>
-                    
-                    <button class="btn" onclick="adjustCount(-1)">-1</button>
-                    <button class="btn" onclick="resetCount()">C</button>
-                    <button class="btn" onclick="adjustCount(1)">+1</button>
-                    
-                    <button class="btn primary" id="submitBtn">LOG SET</button>
+            <div class="daily-log-section">
+                <div class="daily-log-header">
+                    <h3 id="selectedDateDisplay">Aug 25</h3>
+                    <button class="icon-btn" onclick="openAddWorkoutModal()"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg></button>
                 </div>
-            </div>
-        </div>
-
-        <!-- View 2: Dashboard -->
-        <div id="statsView" style="display: none;">
-            <header>
-                <div class="header-content">
-                    <h1>STRIVE TO EVOLVE</h1>
-                    <!-- Invisible placeholder to match loggerView layout -->
-                    <div style="width: 40px; height: 40px;"></div>
-                </div>
-                
-                <div class="segmented-control">
-                    <input type="radio" name="exerciseTypeStats" id="typePushupsStats" value="Pushups" checked onchange="switchExercise('Pushups')">
-                    <label for="typePushupsStats">PUSHUPS</label>
-                    <input type="radio" name="exerciseTypeStats" id="typePullupsStats" value="Pullups" onchange="switchExercise('Pullups')">
-                    <label for="typePullupsStats">PULLUPS</label>
-                </div>
-            </header>
-
-            <div class="dashboard-grid">
-                <div class="mini-card">
-                    <span class="stat-label">TOTAL REPS</span>
-                    <div class="stat-value-sm" id="totalReps">0</div>
-                </div>
-                <div class="mini-card">
-                    <span class="stat-label">MAX SET</span>
-                    <div class="stat-value-sm" id="maxSet">0</div>
-                </div>
-                <div class="mini-card">
-                    <span class="stat-label">SESSIONS</span>
-                    <div class="stat-value-sm" id="sessionsDone">0</div>
-                </div>
-                <div class="mini-card">
-                    <span class="stat-label">RANK</span>
-                    <div class="stat-value-sm" id="currentRank">-</div>
-                </div>
-                <div class="mini-card">
-                    <span class="stat-label">WEEKLY REPS</span>
-                    <div class="stat-value-sm" id="weeklyTotal">0</div>
-                </div>
-                <div class="mini-card">
-                    <span class="stat-label">WEEKLY SESSIONS</span>
-                    <div class="stat-value-sm" id="weeklySessions">0</div>
-                </div>
-            </div>
-
-            <div class="chart-container">
-                <h4 style="font-size: 0.8rem; color: var(--text-secondary); margin-bottom: 8px;">SCORE PROGRESSION</h4>
-                <canvas id="scoreChart"></canvas>
-            </div>
-
-            <div class="chart-container">
-                <h4 style="font-size: 0.8rem; color: var(--text-secondary); margin-bottom: 8px;">SET DISTRIBUTION</h4>
-                <canvas id="distributionChart"></canvas>
-            </div>
-
-            <div class="history-list">
-                <div class="history-header">
-                    <div class="col-date">DATE</div>
-                    <div class="col-reps">REPS</div>
-                    <div class="col-score">SCORE</div>
-                    <div class="col-actions">ACTION</div>
-                </div>
-                <div id="historyItems">
-                    <!-- History items will be injected here -->
+                <div id="dailyLogList" class="daily-log-list">
+                    <!-- Logs injected here -->
                 </div>
             </div>
         </div>
@@ -130,15 +64,41 @@
 
     <!-- Bottom Navigation -->
     <nav class="bottom-nav">
-        <div class="nav-item active" onclick="switchView('logger')" id="nav-logger">
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg>
-            <span>Log</span>
+        <div class="nav-item active" onclick="switchView('home')">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg>
         </div>
-        <div class="nav-item" onclick="switchView('stats')" id="nav-stats">
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 3v18h18"></path><path d="M18.7 8l-5.1 5.2-2.8-2.7L7 14.3"></path></svg>
-            <span>Stats</span>
+        <button class="start-workout-btn" onclick="openAddWorkoutModal()">Start Workout</button>
+        <div class="nav-item">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
         </div>
     </nav>
+
+    <!-- Add Workout Modal -->
+    <div class="modal" id="addWorkoutModal">
+        <div class="modal-content add-workout-content">
+            <div class="modal-header">
+                <button class="icon-btn close-btn" onclick="closeAddWorkoutModal()"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg></button>
+                <h3 style="margin: 0; font-size: 1.1rem; font-weight: 700;">Add Workout</h3>
+                <button class="icon-btn check-btn" onclick="submitWorkout()"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2"><polyline points="20 6 9 17 4 12"></polyline></svg></button>
+            </div>
+            
+            <!-- Type Selector Dropdown trigger -->
+            <div class="type-selector" onclick="toggleDropdown()">
+                <span id="selectedExerciseText">Select exercise</span>
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"></polyline></svg>
+            </div>
+            
+            <!-- Dropdown List -->
+            <div class="dropdown-list" id="exerciseDropdown">
+                <!-- Injected via JS -->
+            </div>
+
+            <div class="reps-input-section" style="margin-top: 20px; display: none;" id="repsSection">
+                <label style="font-size: 0.9rem; color: #888; font-weight: 600; display: block; margin-bottom: 8px;">Reps (Set)</label>
+                <input type="number" id="workoutRepsInput" placeholder="Enter reps" class="reps-input">
+            </div>
+        </div>
+    </div>
 
     <!-- Settings Modal -->
     <div class="modal" id="settingsModal">
@@ -146,36 +106,14 @@
             <h2>Settings</h2>
             <div class="input-group">
                 <label>Apps Script Web App URL</label>
-                <input type="text" id="apiUrl" placeholder="https://script.google.com/macros/s/...">
+                <input type="text" id="apiUrl" placeholder="https://script.google.com/macros/s/..." style="width: 100%; padding: 12px; border-radius: 12px; border: 1px solid #eee; margin-top: 8px;">
             </div>
-            <button class="btn primary" onclick="saveSettings()">Save & Close</button>
-        </div>
-    </div>
-
-    <!-- Edit Record Modal -->
-    <div id="editModal" class="modal">
-        <div class="modal-content">
-            <h3 style="margin-bottom: 20px; text-align: center;">EDIT RECORD</h3>
-            <div id="editDateDisplay" style="text-align: center; color: var(--accent-color); font-weight: bold; margin-bottom: 15px;"></div>
-            
-            <div style="margin-bottom: 20px;">
-                <label style="color: var(--text-secondary); font-size: 0.9rem; margin-bottom: 8px; display: block;">Enter Sets (comma separated):</label>
-                <input type="text" id="editSetsInput" placeholder="e.g. 20, 20, 15" style="width: 100%; padding: 12px; border-radius: 12px; border: 1px solid var(--glass-border); background: var(--bg-color); color: var(--text-primary); font-family: var(--font-main);">
-                <div style="font-size: 0.75rem; color: var(--text-secondary); margin-top: 5px;">Max 6 sets allowed. e.g. 20, 15, 10</div>
-            </div>
-
-            <div style="display: flex; gap: 10px; margin-top: 25px;">
-                <button id="deleteRecordBtn" class="btn" style="flex: 1; border-color: #f44336; color: #f44336; padding: 12px; font-size: 1rem; display: flex; justify-content: center; align-items: center; gap: 8px;">
-                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>
-                </button>
-                <button id="saveEditBtn" class="btn primary" style="flex: 3; margin-top: 0; padding: 12px; font-size: 1rem;">SAVE CHANGES</button>
-            </div>
-            <button class="btn" onclick="document.getElementById('editModal').style.display='none'" style="width: 100%; margin-top: 10px; padding: 12px; font-size: 1rem;">CANCEL</button>
+            <button class="start-workout-btn" onclick="saveSettings()" style="width: 100%; margin-top: 15px;">Save & Close</button>
         </div>
     </div>
 
     <div class="toast" id="toast">Logged successfully!</div>
 
-    <script src="app.js?v=2.0"></script>
+    <script src="app.js?v=3.0"></script>
 </body>
 </html>

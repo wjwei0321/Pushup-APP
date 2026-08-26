@@ -1,518 +1,297 @@
-// Constants & State
-let currentExercise = 'Pushups';
-let currentCount = 0;
-let dailyTotal = parseInt(localStorage.getItem('dailyTotal') || '0');
-let apiUrl = localStorage.getItem('pushup_apiUrl') || '';
+// State
 let trainingData = [];
-let scoreChart = null;
-let distChart = null;
+let currentDate = new Date(); // Month currently viewed
+let selectedDate = new Date(); // Date currently selected
+let apiUrl = localStorage.getItem('pushup_apiUrl') || '';
+let selectedExerciseForLog = null;
 
-// DOM Elements
-const currentInputEl = document.getElementById('currentInput');
-const dailyTotalEl = document.getElementById('dailyTotal');
-const submitBtn = document.getElementById('submitBtn');
-const settingsBtn = document.getElementById('settingsBtn');
-const settingsModal = document.getElementById('settingsModal');
-const apiUrlInput = document.getElementById('apiUrl');
-const toast = document.getElementById('toast');
-
-// --- 1. Event Listeners (Attached Immediately) ---
-if (submitBtn) submitBtn.addEventListener('click', logPushups);
-if (settingsBtn) settingsBtn.addEventListener('click', openSettings);
-window.onclick = function(event) {
-    if (event.target == settingsModal) settingsModal.style.display = 'none';
+// Icons Dictionary
+const EXERCISES = {
+    'Push-up': '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 14l4-4 4 4 4-4 4 4" /></svg>',
+    'Pull-up': '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 5h20M12 5v14M8 10h8" /></svg>',
+    'Squat': '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2a2 2 0 1 0 0 4 2 2 0 0 0 0-4zm-3 6v12h2v-6h2v6h2V8H9z" /></svg>',
+    'Lunge': '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 4a2 2 0 1 0 0 4 2 2 0 0 0 0-4zM6 20v-6l4-4 2 4 4 6h3" /></svg>',
+    'Plank': '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="4" y1="18" x2="20" y2="18"></line><path d="M6 14l4-4 6 0 4 4"></path></svg>',
+    'Glute Band': '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><ellipse cx="12" cy="12" rx="10" ry="4"></ellipse></svg>',
+    'Polyquen Step-up': '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20h6v-6h6v-6h4"></path></svg>',
+    'Hack Squat': '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="4" width="16" height="16" rx="2"></rect><line x1="8" y1="12" x2="16" y2="12"></line></svg>',
+    'Romanian Deadlift': '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 18h20M12 18v-8M8 10h8"></path></svg>',
+    'Slant Board Squat': '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="2 20 22 20 22 14 2 20"></polygon></svg>'
 };
 
-// --- 2. Initialization ---
-function init() {
-    if (dailyTotalEl) dailyTotalEl.textContent = dailyTotal;
-    if (apiUrlInput) apiUrlInput.value = apiUrl;
+// DOM Elements
+const calendarDaysEl = document.getElementById('calendarDays');
+const currentMonthYearEl = document.getElementById('currentMonthYear');
+const selectedDateDisplay = document.getElementById('selectedDateDisplay');
+const dailyLogList = document.getElementById('dailyLogList');
+const addWorkoutModal = document.getElementById('addWorkoutModal');
+const settingsModal = document.getElementById('settingsModal');
+const exerciseDropdown = document.getElementById('exerciseDropdown');
+
+// Init
+document.addEventListener('DOMContentLoaded', () => {
+    initExerciseDropdown();
+    renderCalendar();
     
-    checkNewDay();
-    if (apiUrl) fetchData();
-}
-
-function checkNewDay() {
-    const lastDate = localStorage.getItem('lastLogDate');
-    const today = new Date().toDateString();
-    if (lastDate !== today) {
-        localStorage.setItem('dailyTotal', '0');
-        localStorage.setItem('lastLogDate', today);
-        dailyTotal = 0;
-        if (dailyTotalEl) dailyTotalEl.textContent = '0';
-    }
-}
-
-// --- 3. Logger Logic ---
-function adjustCount(amount) {
-    currentCount = Math.max(0, currentCount + amount);
-    if (currentInputEl) currentInputEl.textContent = currentCount;
-}
-
-function resetCount() {
-    currentCount = 0;
-    if (currentInputEl) currentInputEl.textContent = '0';
-}
-
-function switchExercise(type) {
-    currentExercise = type;
-    
-    // Sync UI toggles
-    const typePushupsLog = document.getElementById('typePushupsLog');
-    const typePullupsLog = document.getElementById('typePullupsLog');
-    const typePushupsStats = document.getElementById('typePushupsStats');
-    const typePullupsStats = document.getElementById('typePullupsStats');
-    
-    if (type === 'Pushups') {
-        if (typePushupsLog) typePushupsLog.checked = true;
-        if (typePushupsStats) typePushupsStats.checked = true;
-    } else {
-        if (typePullupsLog) typePullupsLog.checked = true;
-        if (typePullupsStats) typePullupsStats.checked = true;
-    }
-    
-    // Update Log Page Buttons
-    const btn1 = document.getElementById('btnAdd1');
-    const btn2 = document.getElementById('btnAdd2');
-    const btn3 = document.getElementById('btnAdd3');
-    if (btn1 && btn2 && btn3) {
-        if (type === 'Pushups') {
-            btn1.textContent = '+5'; btn1.onclick = () => adjustCount(5);
-            btn2.textContent = '+10'; btn2.onclick = () => adjustCount(10);
-            btn3.textContent = '+20'; btn3.onclick = () => adjustCount(20);
-        } else {
-            btn1.textContent = '+2'; btn1.onclick = () => adjustCount(2);
-            btn2.textContent = '+5'; btn2.onclick = () => adjustCount(5);
-            btn3.textContent = '+10'; btn3.onclick = () => adjustCount(10);
-        }
-    }
-    
-    // Refresh Data UI based on new selection
-    if (trainingData.length > 0) {
-        renderDashboard();
-        syncDailyTotalFromSheet();
-    }
-}
-
-function showToast(message, isError = false) {
-    if (!toast) return;
-    toast.textContent = message;
-    toast.style.borderColor = isError ? 'var(--error)' : 'var(--accent-color)';
-    toast.classList.add('show');
-    setTimeout(() => toast.classList.remove('show'), 3000);
-}
-
-async function logPushups() {
-    if (currentCount <= 0) return;
     if (!apiUrl) {
-        showToast("Please set API URL in settings", true);
-        openSettings();
-        return;
+        settingsModal.style.display = 'flex';
+        setTimeout(() => settingsModal.classList.add('show'), 10);
+    } else {
+        fetchData();
     }
 
-    submitBtn.disabled = true;
-    submitBtn.classList.add('syncing');
-    const originalText = submitBtn.textContent;
-    submitBtn.textContent = 'SYNCING...';
-
-    try {
-        const todayObj = new Date();
-        const mm = String(todayObj.getMonth() + 1).padStart(2, '0');
-        const dd = String(todayObj.getDate()).padStart(2, '0');
-        const localDateStr = `${todayObj.getFullYear()}/${mm}/${dd}`;
-        
-        const response = await fetch(apiUrl, {
-            method: 'POST',
-            body: JSON.stringify({ action: 'log', count: currentCount, date: localDateStr, exerciseType: currentExercise })
-        });
-        const result = await response.json();
-        
-        if (result.status === 'success') {
-            dailyTotal += currentCount;
-            localStorage.setItem('dailyTotal', dailyTotal);
-            if (dailyTotalEl) dailyTotalEl.textContent = dailyTotal;
-            showToast(`Logged ${currentCount}!`);
-            resetCount();
-            // Delay fetch slightly to give Google Sheet ArrayFormulas time to recalculate
-            setTimeout(fetchData, 800);
-        } else {
-            showToast(result.message || "Error", true);
-        }
-    } catch (error) {
-        console.error(error);
-        showToast("Connection failed", true);
-    } finally {
-        submitBtn.disabled = false;
-        submitBtn.classList.remove('syncing');
-        submitBtn.textContent = originalText;
-    }
-}
-
-// --- 4. Dashboard & Sync Logic ---
-async function fetchData() {
-    if (!apiUrl) return;
-    try {
-        // Append a timestamp parameter and use no-store to completely bypass aggressive mobile caching
-        const fetchUrl = apiUrl.includes('?') ? `${apiUrl}&t=${new Date().getTime()}` : `${apiUrl}?t=${new Date().getTime()}`;
-        const response = await fetch(fetchUrl, { cache: 'no-store' });
-        const text = await response.text(); 
-        
-        try {
-            const result = JSON.parse(text);
-            if (result.status === 'success') {
-                // Attach the original array index to the end of each row so we don't lose track of it after filtering
-                trainingData = result.data.map((row, idx) => {
-                    row.push(idx);
-                    return row;
-                }).filter(row => row[0] !== null && String(row[0]).trim() !== "");
-                
-                renderDashboard();
-                syncDailyTotalFromSheet();
-            }
-        } catch (e) {
-            console.error("JSON parse failed. Response was:", text);
-            showToast("⚠️ 請重新部署 Apps Script (選擇新版本)", true);
-        }
-    } catch (e) { 
-        console.error("Fetch failed", e); 
-        showToast("Network error", true); 
-    }
-}
-
-function syncDailyTotalFromSheet() {
-    if (!trainingData.length) return;
-    
-    const today = new Date();
-    let todayReps = 0;
-    
-    // Find today's row (search from bottom up) for current exercise
-    for (let i = trainingData.length - 1; i >= 0; i--) {
-        const rowDateStr = trainingData[i][0];
-        const rowType = trainingData[i][1];
-        if (!rowDateStr || rowType !== currentExercise) continue;
-
-        const rowDate = new Date(rowDateStr);
-        // Compare year, month, date
-        if (!isNaN(rowDate.getTime()) && 
-            rowDate.getFullYear() === today.getFullYear() && 
-            rowDate.getMonth() === today.getMonth() && 
-            rowDate.getDate() === today.getDate()) {
-            
-            // Sum sets (Columns C to H -> Indices 2 to 7)
-            for(let c=2; c<=7; c++) {
-                todayReps += parseInt(trainingData[i][c]) || 0;
-            }
-            break; // Found today's record
-        }
-    }
-    
-    // Update local variables and UI to match the sheet
-    dailyTotal = todayReps;
-    localStorage.setItem('dailyTotal', dailyTotal);
-    if (dailyTotalEl) dailyTotalEl.textContent = dailyTotal;
-}
-
-function renderDashboard() {
-    if (!trainingData.length || typeof Chart === 'undefined') return;
-
-    // Filter data for the current exercise type
-    const filteredData = trainingData.filter(row => row[1] === currentExercise);
-
-    let totalReps = 0, maxSet = 0, sessions = filteredData.length;
-    let currentRank = filteredData.length > 0 ? (filteredData[filteredData.length - 1][10] || '-') : '-';
-    
-    let weeklyReps = 0;
-    let weeklySessions = 0;
-    const today = new Date();
-    // Calculate Monday of the current week (adjusting if today is Sunday)
-    const day = today.getDay();
-    const diff = today.getDate() - day + (day === 0 ? -6 : 1);
-    const currentMonday = new Date(today.setDate(diff));
-    currentMonday.setHours(0,0,0,0);
-    
-    const labels = [], scores = [], dist = [[],[],[],[],[],[]];
-
-    filteredData.forEach((row, index) => {
-        const dateStr = row[0];
-        const dateObj = new Date(dateStr);
-        // Format to MM/DD for labels, safely fallback to string if invalid
-        const labelDate = !isNaN(dateObj.getTime()) ? `${dateObj.getMonth()+1}/${dateObj.getDate()}` : String(dateStr).substring(5,10);
-        
-        const score = parseFloat(row[9]) || 0;
-        let rowReps = 0;
-        for(let i=2; i<=7; i++) {
-            const v = parseInt(row[i]) || 0;
-            rowReps += v;
-            dist[i-2].push(v);
-            if (v > maxSet) maxSet = v;
-        }
-        totalReps += rowReps;
-        
-        if (!isNaN(dateObj.getTime()) && dateObj >= currentMonday) {
-            weeklySessions++;
-            weeklyReps += rowReps;
-        }
-        
-        labels.push(labelDate);
-        scores.push(score);
+    document.getElementById('settingsBtn').addEventListener('click', () => {
+        document.getElementById('apiUrl').value = apiUrl;
+        settingsModal.style.display = 'flex';
+        setTimeout(() => settingsModal.classList.add('show'), 10);
     });
+});
 
-    document.getElementById('totalReps').textContent = totalReps;
-    document.getElementById('maxSet').textContent = maxSet;
-    document.getElementById('sessionsDone').textContent = sessions;
-    document.getElementById('currentRank').textContent = currentRank;
-    
-    const wtEl = document.getElementById('weeklyTotal');
-    if (wtEl) wtEl.textContent = weeklyReps;
-    const wsEl = document.getElementById('weeklySessions');
-    if (wsEl) wsEl.textContent = weeklySessions;
-    
-    // Render History
-    const historyHtml = filteredData.slice().reverse().map((row, index) => {
-        const dateStr = row[0];
-        const dateObj = new Date(dateStr);
-        // Format to yyyy/mm/dd to match Google Sheet exactly
-        const mm = String(dateObj.getMonth() + 1).padStart(2, '0');
-        const dd = String(dateObj.getDate()).padStart(2, '0');
-        const formattedDate = !isNaN(dateObj.getTime()) ? `${dateObj.getFullYear()}/${mm}/${dd}` : dateStr;
-        
-        const rank = row[10] || '-';
-        let rankColor = '#8A8683';
-        if (rank === 'A' || rank === 'S') rankColor = '#F5B041'; // Light Orange
-        else if (rank === 'B') rankColor = '#F39C12'; // Yellow Orange
-        else if (rank === 'C') rankColor = '#E67E22'; // True Orange
-        else if (rank === 'D') rankColor = '#D35400'; // Dark Orange
-
-        const rankBadge = `<div class="rank-badge" style="color: ${rankColor}; border-color: ${rankColor}; background: ${rankColor}15;">${rank}</div>`;
-        
-        let repsHtml = '';
-        for(let i=2; i<=7; i++) {
-            const val = parseInt(row[i]);
-            if (val > 0) repsHtml += `<span class="rep-pill">${val}</span>`;
-        }
-
-        const score = parseFloat(row[9]) || 0;
-        
-        // Get the actual original index mapped earlier
-        const actualRowIndex = row[11];
-
-        return `
-            <div class="history-row">
-                <div class="col-date">
-                    <div class="h-date">${formattedDate}</div>
-                    ${rankBadge}
-                </div>
-                <div class="col-reps">${repsHtml}</div>
-                <div class="col-score">${score}</div>
-                <div class="col-actions">
-                    <svg class="action-icon edit-icon" onclick="editRecord(${actualRowIndex})" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg>
-                </div>
-            </div>`;
-    }).join('');
-    
-    document.getElementById('historyItems').innerHTML = historyHtml;
-
-    renderScoreChart(labels, scores);
-    renderDistributionChart(labels, dist);
+function initExerciseDropdown() {
+    exerciseDropdown.innerHTML = '';
+    Object.keys(EXERCISES).forEach(ex => {
+        const div = document.createElement('div');
+        div.className = 'dropdown-item';
+        div.innerHTML = `${EXERCISES[ex]} <span>${ex}</span>`;
+        div.onclick = () => selectExercise(ex);
+        exerciseDropdown.appendChild(div);
+    });
 }
 
-function renderScoreChart(l, d) {
-    const ctx = document.getElementById('scoreChart');
-    if (!ctx) return;
-    if (scoreChart) scoreChart.destroy();
-    
-    // Calculate animation delay per point for a smooth left-to-right draw
-    const totalDuration = 1500;
-    const delayBetweenPoints = totalDuration / (d.length || 1);
-    const previousY = (ctx) => ctx.index === 0 ? ctx.chart.scales.y.getPixelForValue(0) : ctx.chart.getDatasetMeta(ctx.datasetIndex).data[ctx.index - 1].getProps(['y'], true).y;
-
-    scoreChart = new Chart(ctx.getContext('2d'), {
-        type: 'line',
-        data: { labels: l, datasets: [{ data: d, borderColor: '#E67E22', backgroundColor: 'rgba(230, 126, 34, 0.1)', fill: true, tension: 0.4, pointRadius: 0, pointHoverRadius: 5 }] },
-        options: { 
-            responsive: true, maintainAspectRatio: false,
-            animation: {
-                x: {
-                    type: 'number',
-                    easing: 'linear',
-                    duration: delayBetweenPoints,
-                    from: NaN, 
-                    delay: function(ctx) {
-                        if (ctx.type !== 'data' || ctx.xStarted) return 0;
-                        ctx.xStarted = true;
-                        return ctx.index * delayBetweenPoints;
-                    }
-                },
-                y: {
-                    type: 'number',
-                    easing: 'linear',
-                    duration: delayBetweenPoints,
-                    from: previousY,
-                    delay: function(ctx) {
-                        if (ctx.type !== 'data' || ctx.yStarted) return 0;
-                        ctx.yStarted = true;
-                        return ctx.index * delayBetweenPoints;
+// Data Fetching
+async function fetchData() {
+    try {
+        const res = await fetch(`${apiUrl}?action=get`);
+        const json = await res.json();
+        if (json.status === 'success') {
+            // Data is [Date, Type, Set1, Set2, Set3, Set4, Set5, Set6]
+            trainingData = json.data.map((row, index) => {
+                const dateObj = new Date(row[0]);
+                const dateStr = `${dateObj.getFullYear()}/${String(dateObj.getMonth()+1).padStart(2, '0')}/${String(dateObj.getDate()).padStart(2, '0')}`;
+                
+                // Parse sets
+                let sets = [];
+                for(let i = 2; i <= 7; i++) {
+                    if (row[i] && !isNaN(parseInt(row[i]))) {
+                        sets.push(parseInt(row[i]));
                     }
                 }
-            },
-            plugins: { legend: { display: false }, tooltip: { enabled: true, mode: 'index', intersect: false } }, 
-            layout: { padding: { bottom: 5, left: 0, right: 0 } },
-            scales: { 
-                y: { beginAtZero: true, grid: { color: 'rgba(0,0,0,0.05)' }, ticks: { color: '#888' } }, 
-                x: { grid: { display: false }, ticks: { color: '#888', maxRotation: 0, autoSkip: true, maxTicksLimit: 6 } } 
-            } 
-        }
-    });
-}
-
-function renderDistributionChart(l, s) {
-    const ctx = document.getElementById('distributionChart');
-    if (!ctx) return;
-    if (distChart) distChart.destroy();
-    
-    // Pure Orange Spectrum: Deep Warm Brown -> Dark Orange -> True Orange -> Yellow Orange -> Light Orange -> Pale Peach
-    const colors = ['#935116', '#CA6F1E', '#E67E22', '#F39C12', '#F5B041', '#FAD7A1'];
-    
-    distChart = new Chart(ctx.getContext('2d'), {
-        type: 'bar',
-        data: { labels: l, datasets: s.map((set, i) => ({ label: `Set ${i+1}`, data: set, backgroundColor: colors[i], borderRadius: 4 })) },
-        options: { 
-            responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, 
-            layout: { padding: { bottom: 5, left: 0, right: 0 } },
-            scales: { 
-                x: { stacked: true, grid: { display: false }, ticks: { color: '#888', maxRotation: 0, autoSkip: true, maxTicksLimit: 6 } }, 
-                y: { stacked: true, beginAtZero: true, grid: { color: 'rgba(0,0,0,0.05)' }, ticks: { color: '#888' } } 
-            } 
-        }
-    });
-}
-
-let currentEditingIndex = -1;
-
-function editRecord(actualRowIndex) {
-    const row = trainingData.find(r => r[11] === actualRowIndex);
-    if (!row) return;
-    
-    currentEditingIndex = actualRowIndex;
-    const dateStr = row[0];
-    const dateObj = new Date(dateStr);
-    const mm = String(dateObj.getMonth() + 1).padStart(2, '0');
-    const dd = String(dateObj.getDate()).padStart(2, '0');
-    const formattedDate = !isNaN(dateObj.getTime()) ? `${dateObj.getFullYear()}/${mm}/${dd}` : dateStr;
-    
-    let currentSets = [];
-    for(let i=2; i<=7; i++) {
-        if(parseInt(row[i]) > 0) currentSets.push(row[i]);
-    }
-    
-    document.getElementById('editDateDisplay').textContent = formattedDate;
-    document.getElementById('editSetsInput').value = currentSets.join(', ');
-    
-    const editModal = document.getElementById('editModal');
-    editModal.style.display = 'flex';
-    
-    document.getElementById('saveEditBtn').onclick = () => saveEditedRecord();
-    document.getElementById('deleteRecordBtn').onclick = () => {
-        if(confirm(`Are you sure you want to delete the record for ${dateStr}?`)) {
-            sendAction('delete', currentEditingIndex, []);
-        }
-    };
-}
-
-function saveEditedRecord() {
-    const input = document.getElementById('editSetsInput').value;
-    const newSets = input.split(',').map(s => parseInt(s.trim()) || 0).filter(s => s > 0);
-    
-    if (newSets.length > 6) {
-        showToast("Maximum 6 sets allowed.", true);
-        return;
-    }
-    
-    sendAction('edit', currentEditingIndex, newSets);
-}
-
-async function sendAction(action, index, reps) {
-    document.getElementById('editModal').style.display = 'none';
-    showToast(`${action === 'delete' ? 'Deleting' : 'Saving'} record...`);
-    
-    try {
-        const response = await fetch(apiUrl, {
-            method: 'POST',
-            body: JSON.stringify({ action: action, rowIndex: index, reps: reps })
-        });
-        const result = await response.json();
-        
-        if (result.status === 'success') {
-            showToast("Success!");
-            // Delay fetch slightly to give Google Sheet ArrayFormulas time to recalculate
-            setTimeout(fetchData, 800);
-        } else {
-            showToast("Error updating sheet. Did you update Apps Script?", true);
+                
+                return {
+                    rowIndex: index + 2, // Sheet row
+                    dateStr: dateStr,
+                    type: row[1],
+                    sets: sets
+                };
+            });
+            renderCalendar(); // Re-render to show indicators
+            renderDailyLog(); // Re-render list
         }
     } catch (e) {
         console.error(e);
-        showToast("Failed. Update Apps Script and re-deploy.", true);
     }
 }
 
-// --- 5. Navigation ---
-function switchView(view) {
-    const logger = document.getElementById('loggerView');
-    const stats = document.getElementById('statsView');
-    const navL = document.getElementById('nav-logger');
-    const navS = document.getElementById('nav-stats');
+// Calendar Logic
+const MONTH_NAMES = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
 
-    if (view === 'logger') {
-        logger.style.display = 'block';
-        stats.style.display = 'none';
-        navL.classList.add('active');
-        navS.classList.remove('active');
-    } else {
-        logger.style.display = 'none';
-        stats.style.display = 'block';
-        navL.classList.remove('active');
-        navS.classList.add('active');
-        fetchData();
-    }
-}
-
-function openSettings() { settingsModal.style.display = 'flex'; }
-function saveSettings() {
-    apiUrl = apiUrlInput.value.trim();
-    localStorage.setItem('pushup_apiUrl', apiUrl);
-    settingsModal.style.display = 'none';
-    showToast("Saved!");
-    fetchData();
-}
-
-// --- 6. Custom Pull-to-Refresh ---
-let ptrStartY = 0;
-let isPulling = false;
-
-document.addEventListener('touchstart', e => {
-    if (window.scrollY === 0) {
-        ptrStartY = e.touches[0].clientY;
-        isPulling = true;
-    }
-}, { passive: true });
-
-document.addEventListener('touchmove', e => {
-    if (!isPulling) return;
-    const currentY = e.touches[0].clientY;
-    if (currentY < ptrStartY) isPulling = false;
-}, { passive: true });
-
-document.addEventListener('touchend', e => {
-    if (!isPulling) return;
-    const currentY = e.changedTouches[0].clientY;
-    const pullDistance = currentY - ptrStartY;
+function renderCalendar() {
+    const year = currentDate.getFullYear();
+    const month = currentDate.getMonth();
+    currentMonthYearEl.textContent = `${MONTH_NAMES[month]} ${year}`;
     
-    if (pullDistance > 80 && window.scrollY === 0) {
-        showToast("🔄 Refreshing data...");
+    calendarDaysEl.innerHTML = '';
+    
+    const firstDay = new Date(year, month, 1).getDay();
+    const daysInMonth = new Date(year, month + 1, 0).getDate();
+    
+    // Empty cells before month
+    for (let i = 0; i < firstDay; i++) {
+        const cell = document.createElement('div');
+        cell.className = 'day-cell empty';
+        calendarDaysEl.appendChild(cell);
+    }
+    
+    // Days
+    for (let i = 1; i <= daysInMonth; i++) {
+        const cell = document.createElement('div');
+        cell.className = 'day-cell';
+        cell.textContent = i;
+        
+        // Check if selected
+        if (year === selectedDate.getFullYear() && month === selectedDate.getMonth() && i === selectedDate.getDate()) {
+            cell.classList.add('selected');
+        }
+        
+        // Check for data
+        const dateStr = `${year}/${String(month+1).padStart(2, '0')}/${String(i).padStart(2, '0')}`;
+        const dayData = trainingData.filter(d => d.dateStr === dateStr);
+        let totalSetsToday = dayData.reduce((sum, d) => sum + d.sets.length, 0);
+        
+        if (totalSetsToday > 0) {
+            const ind = document.createElement('div');
+            ind.className = 'day-indicator';
+            ind.innerHTML = EXERCISES[dayData[0].type] || EXERCISES['Push-up']; // Use first exercise icon
+            
+            if (totalSetsToday > 1) {
+                const badge = document.createElement('div');
+                badge.className = 'day-indicator-badge';
+                badge.textContent = totalSetsToday;
+                ind.appendChild(badge);
+            }
+            cell.appendChild(ind);
+        }
+        
+        cell.onclick = () => {
+            selectedDate = new Date(year, month, i);
+            renderCalendar();
+            renderDailyLog();
+        };
+        
+        calendarDaysEl.appendChild(cell);
+    }
+}
+
+function prevMonth() {
+    currentDate.setMonth(currentDate.getMonth() - 1);
+    renderCalendar();
+}
+function nextMonth() {
+    currentDate.setMonth(currentDate.getMonth() + 1);
+    renderCalendar();
+}
+
+// Daily Log Logic
+function renderDailyLog() {
+    const month = MONTH_NAMES[selectedDate.getMonth()].substring(0, 3);
+    selectedDateDisplay.textContent = `${month} ${selectedDate.getDate()}`;
+    
+    const dateStr = `${selectedDate.getFullYear()}/${String(selectedDate.getMonth()+1).padStart(2, '0')}/${String(selectedDate.getDate()).padStart(2, '0')}`;
+    const dayData = trainingData.filter(d => d.dateStr === dateStr);
+    
+    dailyLogList.innerHTML = '';
+    
+    if (dayData.length === 0) {
+        dailyLogList.innerHTML = '<div style="text-align:center; padding: 20px; color: #aaa;">No workouts logged today.</div>';
+        return;
+    }
+    
+    dayData.forEach(entry => {
+        entry.sets.forEach((repCount, setIndex) => {
+            const card = document.createElement('div');
+            card.className = 'log-card';
+            
+            const iconSvg = EXERCISES[entry.type] || EXERCISES['Push-up'];
+            
+            card.innerHTML = `
+                <div class="log-card-left">
+                    <div class="log-icon">${iconSvg}</div>
+                    <div class="log-details">
+                        <span class="log-title">${entry.type}</span>
+                        <span class="log-time">Set ${setIndex + 1}</span>
+                    </div>
+                </div>
+                <div class="log-reps">${repCount}</div>
+            `;
+            dailyLogList.appendChild(card);
+        });
+    });
+}
+
+// Modal Logic
+function openAddWorkoutModal() {
+    selectedExerciseForLog = null;
+    document.getElementById('selectedExerciseText').textContent = 'Select exercise';
+    document.getElementById('workoutRepsInput').value = '';
+    document.getElementById('repsSection').style.display = 'none';
+    
+    addWorkoutModal.style.display = 'flex';
+    setTimeout(() => addWorkoutModal.classList.add('show'), 10);
+}
+
+function closeAddWorkoutModal() {
+    addWorkoutModal.classList.remove('show');
+    setTimeout(() => addWorkoutModal.style.display = 'none', 300);
+}
+
+function toggleDropdown() {
+    exerciseDropdown.classList.toggle('show');
+}
+
+function selectExercise(type) {
+    selectedExerciseForLog = type;
+    document.getElementById('selectedExerciseText').innerHTML = `<div style="display:flex; align-items:center; gap:8px;">${EXERCISES[type]} <span>${type}</span></div>`;
+    exerciseDropdown.classList.remove('show');
+    document.getElementById('repsSection').style.display = 'block';
+    document.getElementById('workoutRepsInput').focus();
+}
+
+async function submitWorkout() {
+    if (!selectedExerciseForLog) return alert('Please select an exercise.');
+    const reps = document.getElementById('workoutRepsInput').value;
+    if (!reps || isNaN(reps) || parseInt(reps) <= 0) return alert('Please enter valid reps.');
+    
+    const dateStr = `${selectedDate.getFullYear()}/${String(selectedDate.getMonth()+1).padStart(2, '0')}/${String(selectedDate.getDate()).padStart(2, '0')}`;
+    
+    const payload = {
+        action: 'log',
+        date: dateStr,
+        type: selectedExerciseForLog,
+        count: parseInt(reps)
+    };
+    
+    // Optimistic UI Update
+    let dayRow = trainingData.find(d => d.dateStr === dateStr && d.type === selectedExerciseForLog);
+    if (dayRow) {
+        if(dayRow.sets.length >= 6) {
+            alert('Max 6 sets allowed per day per exercise.');
+            return;
+        }
+        dayRow.sets.push(parseInt(reps));
+    } else {
+        trainingData.push({
+            rowIndex: -1,
+            dateStr: dateStr,
+            type: selectedExerciseForLog,
+            sets: [parseInt(reps)]
+        });
+    }
+    
+    closeAddWorkoutModal();
+    renderCalendar();
+    renderDailyLog();
+    showToast();
+    
+    try {
+        await fetch(apiUrl, {
+            method: 'POST',
+            body: JSON.stringify(payload)
+        });
+        fetchData(); // Sync exact state
+    } catch (e) {
+        console.error(e);
+    }
+}
+
+// Settings
+function saveSettings() {
+    const val = document.getElementById('apiUrl').value.trim();
+    if (val) {
+        apiUrl = val;
+        localStorage.setItem('pushup_apiUrl', apiUrl);
+        settingsModal.classList.remove('show');
+        setTimeout(() => settingsModal.style.display = 'none', 300);
         fetchData();
     }
-    isPulling = false;
-}, { passive: true });
+}
 
-// Start App
-init();
+// Utils
+function switchView(view) {
+    // Only one view in this scope, prepared for future Stats page.
+}
+
+function showToast() {
+    const t = document.getElementById('toast');
+    t.classList.add('show');
+    setTimeout(() => t.classList.remove('show'), 3000);
+}
