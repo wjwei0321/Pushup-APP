@@ -53,7 +53,7 @@ async function fetchData() {
         const json = await res.json();
         if (json.status === 'success') {
             // Data is [Date, Type, Set1, Set2, Set3, Set4, Set5, Set6]
-            trainingData = json.data.map((row, index) => {
+            trainingData = json.data.filter(row => row[0]).map((row, index) => {
                 const dateObj = new Date(row[0]);
                 const dateStr = `${dateObj.getFullYear()}/${String(dateObj.getMonth()+1).padStart(2, '0')}/${String(dateObj.getDate()).padStart(2, '0')}`;
                 
@@ -72,6 +72,18 @@ async function fetchData() {
                     sets: sets
                 };
             });
+
+            // 自動跳轉到「最近一筆紀錄」的月份與日期
+            if (trainingData.length > 0) {
+                const latestRecord = trainingData[trainingData.length - 1];
+                const latestDateObj = new Date(latestRecord.dateStr);
+                
+                // 設定日曆當前顯示月份
+                currentDate = new Date(latestDateObj.getFullYear(), latestDateObj.getMonth(), 1);
+                // 設定當前選中日期
+                selectedDate = new Date(latestDateObj.getFullYear(), latestDateObj.getMonth(), latestDateObj.getDate());
+            }
+
             renderCalendar(); // Re-render to show indicators
             renderDailyLog(); // Re-render list
         }
