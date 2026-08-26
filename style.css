@@ -467,13 +467,13 @@ body {
 }
 
 .quick-add-btn.clear-btn {
-    color: #e74c3c;
-    border-color: #fadbd8;
-    background: #fdedec;
+    background: #fff3e0;
+    color: var(--accent-color);
+    border-color: #ffe0b2;
 }
 
 .quick-add-btn.clear-btn:active {
-    background: #fadbd8;
+    background: #ffe0b2;
 }
 
 /* Toast */

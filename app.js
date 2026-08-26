@@ -478,7 +478,7 @@ function selectExercise(type) {
     const dateOptions = { weekday: 'short', month: 'short', day: 'numeric', year: 'numeric' };
     document.getElementById('selectedExerciseDate').textContent = selectedDate.toLocaleDateString('en-US', dateOptions);
     
-    document.getElementById('selectedExerciseIconLarge').innerHTML = `<div style="width: 80px; height: 80px; background: var(--accent-color); color: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; transform: scale(1.5);">${EXERCISES[type]}</div>`;
+    document.getElementById('selectedExerciseIconLarge').innerHTML = `<div style="width: 80px; height: 80px; background: var(--accent-color); color: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; transform: scale(1.2); padding: 16px; box-sizing: border-box;">${EXERCISES[type]}</div>`;
     
     updateModalStats();
 
