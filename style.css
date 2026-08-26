@@ -156,11 +156,13 @@ body {
 }
 
 .day-cell {
-    min-height: 48px;
+    min-height: 56px;
+    padding: 6px 0;
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
+    gap: 4px;
     font-size: 0.9rem;
     font-weight: 500;
     cursor: pointer;
@@ -196,7 +198,6 @@ body {
     display: flex;
     align-items: center;
     justify-content: center;
-    margin-top: 2px;
     position: relative;
     flex-shrink: 0;
 }
