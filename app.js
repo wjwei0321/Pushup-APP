@@ -191,10 +191,19 @@ function renderCalendar() {
     }
     
     // Days
+    const today = new Date();
     for (let i = 1; i <= daysInMonth; i++) {
         const cell = document.createElement('div');
         cell.className = 'day-cell';
-        cell.textContent = i;
+        
+        const numSpan = document.createElement('span');
+        numSpan.className = 'day-number';
+        numSpan.textContent = i;
+        
+        if (year === today.getFullYear() && month === today.getMonth() && i === today.getDate()) {
+            numSpan.classList.add('today');
+        }
+        cell.appendChild(numSpan);
         
         // Check if selected
         if (year === selectedDate.getFullYear() && month === selectedDate.getMonth() && i === selectedDate.getDate()) {

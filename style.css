@@ -157,19 +157,26 @@ body {
 
 .day-cell {
     min-height: 56px;
-    padding: 6px 0;
+    padding: 8px 0 4px 0;
     display: flex;
     flex-direction: column;
     align-items: center;
-    justify-content: center;
+    justify-content: flex-start;
     gap: 4px;
-    font-size: 0.9rem;
+    font-size: 1rem;
     font-weight: 500;
     cursor: pointer;
     border-radius: 12px;
     position: relative;
     transition: all 0.2s;
     border: 1px solid transparent;
+}
+
+.day-number.today {
+    text-decoration: underline;
+    text-underline-offset: 4px;
+    text-decoration-thickness: 2.5px;
+    font-weight: 800;
 }
 
 .day-cell:hover {
