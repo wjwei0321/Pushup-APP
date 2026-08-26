@@ -38,18 +38,20 @@ document.addEventListener('DOMContentLoaded', () => {
     initPullToRefresh();
     initScrollNav();
 
-    // Close modals when clicking outside
-    window.addEventListener('click', (e) => {
-        if (e.target === addWorkoutModal) {
-            closeAddWorkoutModal();
-        }
-        if (e.target === filterModal) {
-            closeFilterModal();
-        }
-        if (settingsModal && e.target === settingsModal) {
-            settingsModal.classList.remove('show');
-            setTimeout(() => settingsModal.style.display = 'none', 300);
-        }
+    // Close modals when clicking outside (using direct listeners for mobile compatibility)
+    document.querySelectorAll('.modal').forEach(modal => {
+        const dismissHandler = (e) => {
+            if (e.target === modal) {
+                if (modal.id === 'addWorkoutModal') closeAddWorkoutModal();
+                if (modal.id === 'filterModal') closeFilterModal();
+                if (modal.id === 'settingsModal') {
+                    modal.classList.remove('show');
+                    setTimeout(() => modal.style.display = 'none', 300);
+                }
+            }
+        };
+        modal.addEventListener('mousedown', dismissHandler);
+        modal.addEventListener('touchstart', dismissHandler, {passive: true});
     });
 });
 
