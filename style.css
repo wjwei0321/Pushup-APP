@@ -24,7 +24,9 @@ body {
     font-family: var(--font-main);
     line-height: 1.5;
     padding-bottom: 80px;
-    overscroll-behavior-y: none; /* Prevents native iOS pull-to-refresh */
+    overscroll-behavior-y: none;
+    overflow-x: hidden;
+    width: 100%;
 }
 
 /* Pull To Refresh */
