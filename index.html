@@ -105,10 +105,21 @@
                         <h3 id="selectedExerciseTitle" style="margin: 0; font-size: 1.2rem; font-weight: 700;">Exercise</h3>
                         <span id="selectedExerciseDate" style="font-size: 0.85rem; color: var(--text-secondary); margin-top: 4px; font-weight: 500;"></span>
                     </div>
-                    <button class="icon-btn check-btn" onclick="submitWorkout()"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2"><polyline points="20 6 9 17 4 12"></polyline></svg></button>
+                    <button class="icon-btn check-btn" onclick="submitWorkout()"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="17 8 12 3 7 8"></polyline><line x1="12" y1="3" x2="12" y2="15"></line></svg></button>
                 </div>
                 
-                <div id="selectedExerciseIconLarge" style="display: flex; justify-content: center; margin: 30px 0; color: var(--accent-color);">
+                <div id="selectedExerciseIconLarge" style="display: flex; justify-content: center; margin: 30px 0 15px 0; color: var(--accent-color);">
+                </div>
+
+                <div style="display: flex; justify-content: center; gap: 40px; margin-bottom: 30px;">
+                    <div style="text-align: center;">
+                        <div style="font-size: 0.85rem; color: var(--text-secondary); margin-bottom: 4px; font-weight: 600;">Sets Today</div>
+                        <div id="modalSetsToday" style="font-size: 1.4rem; font-weight: 800; color: var(--text-primary);">0</div>
+                    </div>
+                    <div style="text-align: center;">
+                        <div style="font-size: 0.85rem; color: var(--text-secondary); margin-bottom: 4px; font-weight: 600;">Total Reps</div>
+                        <div id="modalTotalRepsToday" style="font-size: 1.4rem; font-weight: 800; color: var(--text-primary);">0</div>
+                    </div>
                 </div>
 
                 <div class="reps-input-section" style="margin-top: 10px;" id="repsSection">

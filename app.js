@@ -480,6 +480,8 @@ function selectExercise(type) {
     
     document.getElementById('selectedExerciseIconLarge').innerHTML = `<div style="width: 80px; height: 80px; background: var(--accent-color); color: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; transform: scale(1.5);">${EXERCISES[type]}</div>`;
     
+    updateModalStats();
+
     document.getElementById('stepSelectExercise').style.display = 'none';
     document.getElementById('stepInputReps').style.display = 'flex';
 }
@@ -497,6 +499,22 @@ function clearReps() {
 function backToExerciseSelection() {
     document.getElementById('stepInputReps').style.display = 'none';
     document.getElementById('stepSelectExercise').style.display = 'flex';
+}
+
+function updateModalStats() {
+    if (!selectedExerciseForLog) return;
+    const dateStr = `${selectedDate.getFullYear()}/${String(selectedDate.getMonth()+1).padStart(2, '0')}/${String(selectedDate.getDate()).padStart(2, '0')}`;
+    const dayRow = trainingData.find(d => d.dateStr === dateStr && d.type === selectedExerciseForLog);
+    
+    let sets = 0;
+    let totalReps = 0;
+    if (dayRow) {
+        sets = dayRow.sets.length;
+        totalReps = dayRow.sets.reduce((sum, val) => sum + val, 0);
+    }
+    
+    document.getElementById('modalSetsToday').textContent = sets;
+    document.getElementById('modalTotalRepsToday').textContent = totalReps;
 }
 
 async function submitWorkout() {
@@ -531,10 +549,12 @@ async function submitWorkout() {
         });
     }
     
-    closeAddWorkoutModal();
+    // Update UI and keep modal open for continuous input
+    clearReps();
+    updateModalStats();
     renderCalendar();
     renderDailyLog();
-    showToast();
+    showToast("Logged!");
     
     try {
         await fetch(apiUrl, {
