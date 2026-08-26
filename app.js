@@ -165,7 +165,6 @@ function initPullToRefresh() {
                 ptr.classList.remove('spinning');
                 homeView.style.transform = `translateY(0)`;
                 ptr.style.opacity = 0;
-                showToast("Updated!");
             });
         } else {
             homeView.style.transform = `translateY(0)`;
