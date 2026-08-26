@@ -71,6 +71,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 if (startY === 0) return;
                 const deltaY = e.touches[0].clientY - startY;
                 if (deltaY > 0) {
+                    if (e.cancelable) e.preventDefault();
                     currentY = deltaY;
                     content.style.transform = `translateY(${deltaY}px)`;
                 }
