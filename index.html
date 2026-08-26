@@ -84,16 +84,11 @@
     <div class="modal" id="addWorkoutModal">
         <div class="modal-content add-workout-content" style="padding: 0; height: 100%; border-radius: 0;">
             <div id="stepSelectExercise" class="modal-step" style="height: 100%; display: flex; flex-direction: column; background: #fafafa;">
-                <div style="padding: calc(20px + env(safe-area-inset-top, 20px)) 20px 0 20px; display: flex; flex-direction: column; align-items: center; touch-action: none; position: relative;">
-                    <div style="width: 36px; height: 5px; background: #ddd; border-radius: 3px; margin-bottom: 15px;"></div>
-                    <div style="display: flex; justify-content: space-between; align-items: center; width: 100%; padding-bottom: 20px;">
-                        <div style="width: 44px;"></div> <!-- Spacer to center title -->
-                        <h3 style="margin: 0; font-size: 1.2rem; font-weight: 700;">Select exercise</h3>
-                        <button class="icon-btn close-btn" onclick="closeAddWorkoutModal()"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg></button>
-                    </div>
+                <div style="padding: calc(20px + env(safe-area-inset-top, 20px)) 20px 10px 20px; display: flex; flex-direction: column; align-items: center; touch-action: none; position: relative;">
+                    <div style="width: 36px; height: 5px; background: #ddd; border-radius: 3px; margin-bottom: 5px;"></div>
                 </div>
                 <div style="padding: 0 20px 20px 20px; flex: 1; overflow-y: auto;">
-                    <div class="exercise-list-grid" id="exerciseListGrid" style="display: flex; flex-direction: column; gap: 15px;">
+                    <div class="exercise-list-grid" id="exerciseListGrid" style="display: flex; flex-direction: column; gap: 10px;">
                         <!-- Buttons injected via JS -->
                     </div>
                 </div>
