@@ -108,22 +108,22 @@
                     <div style="width: 44px; height: 44px;"></div> <!-- Spacer -->
                 </div>
                 
-                <div id="selectedExerciseIconLarge" style="display: flex; justify-content: center; margin: 30px 0; color: var(--accent-color);">
+                <div id="selectedExerciseIconLarge" style="flex: 1; display: flex; align-items: center; justify-content: center; color: var(--accent-color);">
                 </div>
 
-                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 20px; width: 100%;">
-                    <div style="border: 1.5px solid var(--border-color); border-radius: 12px; padding: 15px 0; text-align: center; background: var(--card-bg); display: flex; flex-direction: column; justify-content: center; align-items: center; gap: 4px;">
-                        <div style="font-size: 0.85rem; color: var(--text-secondary); font-weight: 600;">Sets Today</div>
-                        <div id="modalSetsToday" style="font-size: 1.5rem; font-weight: 800; color: var(--text-primary);">0</div>
+                <div style="display: flex; flex-direction: column; gap: 20px; padding-bottom: env(safe-area-inset-bottom, 20px);">
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; width: 100%;">
+                        <div style="border: 1.5px solid var(--border-color); border-radius: 12px; padding: 15px 0; text-align: center; background: var(--card-bg); display: flex; flex-direction: column; justify-content: center; align-items: center; gap: 4px;">
+                            <div style="font-size: 0.85rem; color: var(--text-secondary); font-weight: 600;">Sets Today</div>
+                            <div id="modalSetsToday" style="font-size: 1.5rem; font-weight: 800; color: var(--text-primary);">0</div>
+                        </div>
+                        <div style="border: 1.5px solid var(--border-color); border-radius: 12px; padding: 15px 0; text-align: center; background: var(--card-bg); display: flex; flex-direction: column; justify-content: center; align-items: center; gap: 4px;">
+                            <div style="font-size: 0.85rem; color: var(--text-secondary); font-weight: 600;">Total Reps</div>
+                            <div id="modalTotalRepsToday" style="font-size: 1.5rem; font-weight: 800; color: var(--text-primary);">0</div>
+                        </div>
                     </div>
-                    <div style="border: 1.5px solid var(--border-color); border-radius: 12px; padding: 15px 0; text-align: center; background: var(--card-bg); display: flex; flex-direction: column; justify-content: center; align-items: center; gap: 4px;">
-                        <div style="font-size: 0.85rem; color: var(--text-secondary); font-weight: 600;">Total Reps</div>
-                        <div id="modalTotalRepsToday" style="font-size: 1.5rem; font-weight: 800; color: var(--text-primary);">0</div>
-                    </div>
-                </div>
 
-                <div class="reps-input-section" style="margin-top: 0; margin-bottom: 20px;" id="repsSection">
-                    <div id="workoutRepsDisplay" style="width: 100%; box-sizing: border-box; text-align: center; font-size: 2.5rem; font-weight: 800; padding: 15px; border-radius: 16px; border: 2px solid var(--border-color); margin-bottom: 20px; color: var(--text-primary);">0</div>
+                    <div id="workoutRepsDisplay" style="width: 100%; box-sizing: border-box; text-align: center; font-size: 2.5rem; font-weight: 800; padding: 15px; border-radius: 16px; border: 2px solid var(--border-color); color: var(--text-primary);">0</div>
                     
                     <div class="quick-add-grid" style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px;">
                         <div class="quick-add-btn" onclick="addReps(1)">+1</div>
@@ -133,12 +133,12 @@
                         <div class="quick-add-btn" onclick="addReps(20)">+20</div>
                         <div class="quick-add-btn clear-btn" onclick="clearReps()">C</div>
                     </div>
-                </div>
 
-                <div style="margin-top: auto; padding-top: 20px; padding-bottom: env(safe-area-inset-bottom, 20px); display: flex; justify-content: center;">
-                    <button onclick="submitWorkout()" style="width: 64px; height: 64px; border-radius: 50%; border: none; background: var(--accent-color); color: white; cursor: pointer; display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 15px rgba(243, 156, 18, 0.4); transition: transform 0.2s;">
-                        <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
-                    </button>
+                    <div style="display: flex; justify-content: center; margin-top: 10px;">
+                        <button onclick="submitWorkout()" style="width: 64px; height: 64px; border-radius: 50%; border: none; background: var(--accent-color); color: white; cursor: pointer; display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 15px rgba(243, 156, 18, 0.4); transition: transform 0.2s;">
+                            <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+                        </button>
+                    </div>
                 </div>
             </div>
         </div>
