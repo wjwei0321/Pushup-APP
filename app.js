@@ -52,6 +52,49 @@ document.addEventListener('DOMContentLoaded', () => {
         };
         modal.addEventListener('mousedown', dismissHandler);
         modal.addEventListener('touchstart', dismissHandler, {passive: true});
+        
+        // Swipe down to dismiss
+        const content = modal.querySelector('.modal-content');
+        if (content) {
+            let startY = 0;
+            let currentY = 0;
+            
+            content.addEventListener('touchstart', (e) => {
+                const scroller = e.target.closest('[style*="overflow-y"]');
+                if (scroller && scroller.scrollTop > 0) return; // Don't drag if scrolling inner content
+                startY = e.touches[0].clientY;
+                currentY = 0;
+                content.style.transition = 'none';
+            }, {passive: true});
+            
+            content.addEventListener('touchmove', (e) => {
+                if (startY === 0) return;
+                const deltaY = e.touches[0].clientY - startY;
+                if (deltaY > 0) {
+                    currentY = deltaY;
+                    content.style.transform = `translateY(${deltaY}px)`;
+                }
+            }, {passive: false});
+            
+            content.addEventListener('touchend', () => {
+                if (startY === 0) return;
+                content.style.transition = 'transform 0.3s ease-out';
+                if (currentY > 100) {
+                    // Dismiss
+                    if (modal.id === 'addWorkoutModal') closeAddWorkoutModal();
+                    if (modal.id === 'filterModal') closeFilterModal();
+                    if (modal.id === 'settingsModal') {
+                        modal.classList.remove('show');
+                        setTimeout(() => modal.style.display = 'none', 300);
+                    }
+                    setTimeout(() => { content.style.transform = ''; }, 300);
+                } else {
+                    // Snap back
+                    content.style.transform = '';
+                }
+                startY = 0;
+            });
+        }
     });
 });
 
@@ -81,13 +124,14 @@ function initPullToRefresh() {
     const ptr = document.getElementById('ptrIndicator');
 
     document.addEventListener('touchstart', e => {
+        if (document.querySelector('.modal.show')) return;
         if (window.scrollY <= 0) {
             touchStartY = e.touches[0].clientY;
         }
     }, {passive: true});
 
     document.addEventListener('touchmove', e => {
-        if (touchStartY === 0 || isRefreshing) return;
+        if (touchStartY === 0 || isRefreshing || document.querySelector('.modal.show')) return;
         const touchY = e.touches[0].clientY;
         const delta = touchY - touchStartY;
         
