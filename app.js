@@ -2,7 +2,7 @@
 let trainingData = [];
 let currentDate = new Date(); // Month currently viewed
 let selectedDate = new Date(); // Date currently selected
-let apiUrl = localStorage.getItem('pushup_apiUrl') || '';
+let apiUrl = 'https://script.google.com/macros/s/AKfycbwfobM0NgTTxeaenrd7FWY7z4OmX22QvNbkEjMUxBxlxBdAXPSmoY-ZqnSFM1eTnms/exec';
 let selectedExerciseForLog = null;
 
 // Icons Dictionary
@@ -32,19 +32,7 @@ const exerciseDropdown = document.getElementById('exerciseDropdown');
 document.addEventListener('DOMContentLoaded', () => {
     initExerciseDropdown();
     renderCalendar();
-    
-    if (!apiUrl) {
-        settingsModal.style.display = 'flex';
-        setTimeout(() => settingsModal.classList.add('show'), 10);
-    } else {
-        fetchData();
-    }
-
-    document.getElementById('settingsBtn').addEventListener('click', () => {
-        document.getElementById('apiUrl').value = apiUrl;
-        settingsModal.style.display = 'flex';
-        setTimeout(() => settingsModal.classList.add('show'), 10);
-    });
+    fetchData();
 });
 
 function initExerciseDropdown() {

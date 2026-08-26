@@ -21,10 +21,6 @@
                     <div style="display: flex; align-items: center; gap: 8px;">
                         <span style="font-size: 1.5rem;">💪</span>
                         <span class="app-title">MY CALY <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"></polyline></svg></span>
-                    </div>
-                    <div class="settings-btn" id="settingsBtn">
-                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>
-                    </div>
                 </div>
             </header>
 
@@ -97,18 +93,6 @@
                 <label style="font-size: 0.9rem; color: #888; font-weight: 600; display: block; margin-bottom: 8px;">Reps (Set)</label>
                 <input type="number" id="workoutRepsInput" placeholder="Enter reps" class="reps-input">
             </div>
-        </div>
-    </div>
-
-    <!-- Settings Modal -->
-    <div class="modal" id="settingsModal">
-        <div class="modal-content">
-            <h2>Settings</h2>
-            <div class="input-group">
-                <label>Apps Script Web App URL</label>
-                <input type="text" id="apiUrl" placeholder="https://script.google.com/macros/s/..." style="width: 100%; padding: 12px; border-radius: 12px; border: 1px solid #eee; margin-top: 8px;">
-            </div>
-            <button class="start-workout-btn" onclick="saveSettings()" style="width: 100%; margin-top: 15px;">Save & Close</button>
         </div>
     </div>
 
