@@ -1,14 +1,14 @@
 :root {
     --bg-color: #f7f7f7;
     --card-bg: #ffffff;
-    --text-primary: #000000;
-    --text-secondary: #888888;
-    --accent-color: #000000;
-    --accent-hover: #333333;
-    --border-color: #eeeeee;
+    --text-primary: #1d1d1f;
+    --text-secondary: #86868b;
+    --accent-color: #f39c12;
+    --accent-hover: #d68910;
+    --border-color: #e5e5ea;
     --danger-color: #ff3b30;
     --font-main: 'Outfit', sans-serif;
-    --shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+    --shadow: 0 4px 14px rgba(0,0,0,0.06);
 }
 
 * {
@@ -188,7 +188,7 @@ body {
 
 /* Data Indicator on Calendar */
 .day-indicator {
-    background: var(--danger-color);
+    background: var(--accent-color);
     color: white;
     width: 24px;
     height: 24px;
@@ -333,14 +333,15 @@ body {
 }
 
 .floating-nav .nav-item.active {
-    color: var(--text-primary);
+    color: var(--accent-color);
 }
 
 .floating-nav .nav-item.add-btn {
-    background: var(--text-primary);
+    background: var(--accent-color);
     color: white;
     width: 50px;
     height: 50px;
+    box-shadow: 0 4px 10px rgba(243, 156, 18, 0.3);
 }
 .floating-nav .nav-item.add-btn:active {
     transform: scale(0.9);
