@@ -37,6 +37,20 @@ document.addEventListener('DOMContentLoaded', () => {
     fetchData();
     initPullToRefresh();
     initScrollNav();
+
+    // Close modals when clicking outside
+    window.addEventListener('click', (e) => {
+        if (e.target === addWorkoutModal) {
+            closeAddWorkoutModal();
+        }
+        if (e.target === filterModal) {
+            closeFilterModal();
+        }
+        if (settingsModal && e.target === settingsModal) {
+            settingsModal.classList.remove('show');
+            setTimeout(() => settingsModal.style.display = 'none', 300);
+        }
+    });
 });
 
 // Scroll to hide/show navigation
