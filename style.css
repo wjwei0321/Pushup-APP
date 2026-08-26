@@ -449,21 +449,33 @@ body {
     color: white;
 }
 
-
-
-.reps-input {
-    width: 100%;
-    padding: 15px 20px;
-    border-radius: 12px;
-    border: 1px solid var(--border-color);
+.quick-add-btn {
     background: var(--card-bg);
+    border: 2px solid var(--border-color);
+    border-radius: 12px;
+    padding: 15px;
     font-size: 1.2rem;
-    font-family: var(--font-main);
-    font-weight: 700;
+    font-weight: 800;
+    text-align: center;
+    cursor: pointer;
+    color: var(--text-primary);
+    transition: all 0.1s;
+    user-select: none;
 }
-.reps-input:focus {
-    outline: none;
-    border-color: var(--text-primary);
+
+.quick-add-btn:active {
+    transform: scale(0.95);
+    background: var(--border-color);
+}
+
+.quick-add-btn.clear-btn {
+    color: #e74c3c;
+    border-color: #fadbd8;
+    background: #fdedec;
+}
+
+.quick-add-btn.clear-btn:active {
+    background: #fadbd8;
 }
 
 /* Toast */

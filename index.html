@@ -111,7 +111,16 @@
 
                 <div class="reps-input-section" style="margin-top: 10px;" id="repsSection">
                     <label style="font-size: 1rem; color: var(--text-primary); font-weight: 700; display: block; margin-bottom: 12px; text-align: center;">How many reps?</label>
-                    <input type="number" id="workoutRepsInput" placeholder="0" class="reps-input" style="width: 100%; box-sizing: border-box; text-align: center; font-size: 2rem; font-weight: 800; padding: 15px; border-radius: 16px;">
+                    <div id="workoutRepsDisplay" style="width: 100%; box-sizing: border-box; text-align: center; font-size: 2.5rem; font-weight: 800; padding: 15px; border-radius: 16px; border: 2px solid var(--border-color); margin-bottom: 20px; color: var(--text-primary);">0</div>
+                    
+                    <div class="quick-add-grid" style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px;">
+                        <div class="quick-add-btn" onclick="addReps(1)">+1</div>
+                        <div class="quick-add-btn" onclick="addReps(2)">+2</div>
+                        <div class="quick-add-btn" onclick="addReps(5)">+5</div>
+                        <div class="quick-add-btn" onclick="addReps(10)">+10</div>
+                        <div class="quick-add-btn" onclick="addReps(20)">+20</div>
+                        <div class="quick-add-btn clear-btn" onclick="clearReps()">C</div>
+                    </div>
                 </div>
             </div>
         </div>

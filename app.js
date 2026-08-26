@@ -409,7 +409,7 @@ function openAddWorkoutModal() {
     selectedExerciseForLog = null;
     document.getElementById('stepSelectExercise').style.display = 'flex';
     document.getElementById('stepInputReps').style.display = 'none';
-    document.getElementById('workoutRepsInput').value = '';
+    document.getElementById('workoutRepsDisplay').textContent = '0';
     
     addWorkoutModal.style.display = 'flex';
     setTimeout(() => addWorkoutModal.classList.add('show'), 10);
@@ -427,10 +427,16 @@ function selectExercise(type) {
     
     document.getElementById('stepSelectExercise').style.display = 'none';
     document.getElementById('stepInputReps').style.display = 'flex';
-    
-    setTimeout(() => {
-        document.getElementById('workoutRepsInput').focus();
-    }, 100);
+}
+
+function addReps(amount) {
+    const display = document.getElementById('workoutRepsDisplay');
+    let current = parseInt(display.textContent) || 0;
+    display.textContent = current + amount;
+}
+
+function clearReps() {
+    document.getElementById('workoutRepsDisplay').textContent = '0';
 }
 
 function backToExerciseSelection() {
@@ -440,7 +446,7 @@ function backToExerciseSelection() {
 
 async function submitWorkout() {
     if (!selectedExerciseForLog) return alert('Please select an exercise.');
-    const reps = document.getElementById('workoutRepsInput').value;
+    const reps = document.getElementById('workoutRepsDisplay').textContent;
     if (!reps || isNaN(reps) || parseInt(reps) <= 0) return alert('Please enter valid reps.');
     
     const dateStr = `${selectedDate.getFullYear()}/${String(selectedDate.getMonth()+1).padStart(2, '0')}/${String(selectedDate.getDate()).padStart(2, '0')}`;
