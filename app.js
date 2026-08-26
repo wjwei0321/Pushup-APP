@@ -122,7 +122,14 @@ function initExerciseDropdown() {
 // Data Fetching
 async function fetchData() {
     try {
-        const res = await fetch(`${apiUrl}?action=get`);
+        // 加入時間戳記避免瀏覽器快取 (Cache-busting)
+        const timestamp = new Date().getTime();
+        const res = await fetch(`${apiUrl}?action=get&t=${timestamp}`, {
+            cache: 'no-store',
+            headers: {
+                'Cache-Control': 'no-cache'
+            }
+        });
         const json = await res.json();
         if (json.status === 'success') {
             // Data is [Date, Type, Set1, Set2, Set3, Set4, Set5, Set6]
