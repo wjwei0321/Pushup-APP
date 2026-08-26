@@ -60,10 +60,12 @@ body {
 /* Calendar Card */
 .calendar-card {
     background: var(--card-bg);
-    border-radius: 24px;
-    padding: 20px;
+    border-radius: 0;
+    padding: 20px 10px;
+    margin-left: -20px;
+    margin-right: -20px;
     margin-bottom: 30px;
-    box-shadow: var(--shadow);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
 }
 
 .calendar-header {
@@ -71,6 +73,7 @@ body {
     justify-content: space-between;
     align-items: center;
     margin-bottom: 20px;
+    padding: 0 10px;
 }
 
 .calendar-header h2 {
@@ -158,13 +161,14 @@ body {
 .day-indicator {
     background: var(--danger-color);
     color: white;
-    width: 24px;
-    height: 24px;
+    width: 28px;
+    height: 28px;
     border-radius: 50%;
     display: flex;
     align-items: center;
     justify-content: center;
-    margin-top: -5px;
+    margin-top: 2px;
+    position: relative;
 }
 .day-indicator svg {
     width: 14px;
@@ -172,8 +176,8 @@ body {
 }
 .day-indicator-badge {
     position: absolute;
-    top: -4px;
-    right: -4px;
+    top: -2px;
+    right: -2px;
     background: black;
     color: white;
     font-size: 0.6rem;
@@ -184,6 +188,7 @@ body {
     display: flex;
     align-items: center;
     justify-content: center;
+    border: 1px solid white;
 }
 
 /* Daily Log Section */
