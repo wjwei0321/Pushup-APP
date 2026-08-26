@@ -471,6 +471,10 @@ function closeAddWorkoutModal() {
 function selectExercise(type) {
     selectedExerciseForLog = type;
     document.getElementById('selectedExerciseTitle').textContent = type;
+    
+    const dateOptions = { weekday: 'short', month: 'short', day: 'numeric', year: 'numeric' };
+    document.getElementById('selectedExerciseDate').textContent = selectedDate.toLocaleDateString('en-US', dateOptions);
+    
     document.getElementById('selectedExerciseIconLarge').innerHTML = `<div style="width: 80px; height: 80px; background: var(--text-primary); color: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; transform: scale(1.5);">${EXERCISES[type]}</div>`;
     
     document.getElementById('stepSelectExercise').style.display = 'none';
