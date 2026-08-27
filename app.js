@@ -128,14 +128,14 @@ function initPullToRefresh() {
     const homeView = document.getElementById('homeView');
 
     document.addEventListener('touchstart', e => {
-        if (document.querySelector('.modal.show')) return;
+        if (document.querySelector('.modal.show') || document.getElementById('statsView').style.display === 'block') return;
         if (window.scrollY <= 0) {
             touchStartY = e.touches[0].clientY;
         }
     }, {passive: true});
 
     document.addEventListener('touchmove', e => {
-        if (touchStartY === 0 || isRefreshing || document.querySelector('.modal.show')) return;
+        if (touchStartY === 0 || isRefreshing || document.querySelector('.modal.show') || document.getElementById('statsView').style.display === 'block') return;
         const touchY = e.touches[0].clientY;
         const delta = touchY - touchStartY;
         
