@@ -867,7 +867,7 @@ function renderStats() {
     let grandTotal = 0;
     let weeklyTotal = 0;
     let todayTotal = 0;
-    let weeklySetsCount = 0;
+    let weeklyDaysSet = new Set();
     let todaySetsCount = 0;
     
     filteredData.forEach(d => {
@@ -880,7 +880,7 @@ function renderStats() {
         const dDate = new Date(d.dateStr);
         if (dDate >= weekStart && dDate < weekEnd) {
             weeklyTotal += sum;
-            weeklySetsCount += d.sets.length;
+            weeklyDaysSet.add(d.dateStr);
         }
         
         if (d.dateStr === todayStr) {
@@ -893,7 +893,7 @@ function renderStats() {
     
     const todayLabel = document.getElementById('statsTodayLabel');
     if (todayTotal > 0) {
-        todayLabel.innerHTML = `x${todaySetsCount} sets &nbsp; +${todayTotal.toLocaleString()} reps today`;
+        todayLabel.innerHTML = `X ${todaySetsCount} sets &nbsp;&nbsp; + ${todayTotal.toLocaleString()} today`;
         todayLabel.style.display = 'block';
     } else {
         todayLabel.style.display = 'none';
@@ -901,7 +901,7 @@ function renderStats() {
     
     const weeklyLabel = document.getElementById('statsWeeklyLabel');
     if (weeklyTotal > 0) {
-        weeklyLabel.innerHTML = `x${weeklySetsCount} sets &nbsp; +${weeklyTotal.toLocaleString()} reps this week`;
+        weeklyLabel.innerHTML = `X ${weeklyDaysSet.size} days &nbsp;&nbsp; + ${weeklyTotal.toLocaleString()} this week`;
         weeklyLabel.style.display = 'block';
     } else {
         weeklyLabel.style.display = 'none';
