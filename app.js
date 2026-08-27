@@ -919,7 +919,7 @@ function renderStats() {
                 if (index === 0 || index === ticks.length - 1) return;
                 const y = yAxis.getPixelForTick(index);
                 ctx.beginPath();
-                ctx.roundRect(4, y - 10, 42, 20, 10);
+                ctx.roundRect(-5, y - 12, 54, 24, 12);
                 ctx.fill();
             });
             ctx.restore();
@@ -990,6 +990,7 @@ function renderStats() {
             },
             scales: {
                 x: {
+                    offset: currentStatsChartType === 'bar',
                     stacked: currentStatsChartType === 'bar',
                     grid: { display: false },
                     border: { display: false },
@@ -997,7 +998,8 @@ function renderStats() {
                         maxTicksLimit: 6,
                         font: { family: 'Outfit', size: 10, weight: '500' },
                         color: '#999',
-                        padding: 10
+                        padding: 10,
+                        align: 'inner'
                     }
                 },
                 y: {
