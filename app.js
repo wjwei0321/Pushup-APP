@@ -295,16 +295,6 @@ async function fetchData() {
                 };
             });
 
-            // 自動跳轉到「最近一筆紀錄」的月份與日期
-            if (trainingData.length > 0) {
-                const latestRecord = trainingData[trainingData.length - 1];
-                const latestDateObj = new Date(latestRecord.dateStr);
-                
-                // 設定日曆當前顯示月份
-                currentDate = new Date(latestDateObj.getFullYear(), latestDateObj.getMonth(), 1);
-                // 設定當前選中日期
-                selectedDate = new Date(latestDateObj.getFullYear(), latestDateObj.getMonth(), latestDateObj.getDate());
-            }
 
             renderCalendar(); // Re-render to show indicators
             renderDailyLog(); // Re-render list

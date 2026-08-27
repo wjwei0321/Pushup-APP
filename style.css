@@ -235,8 +235,13 @@ body {
     font-weight: 900;
 }
 
-.day-cell:hover {
-    background: #f0f0f0;
+@media (hover: hover) {
+    .day-cell:hover {
+        background: #f0f0f0;
+    }
+    .day-cell.empty:hover {
+        background: transparent;
+    }
 }
 
 .day-cell.selected {
@@ -246,9 +251,6 @@ body {
 
 .day-cell.empty {
     cursor: default;
-}
-.day-cell.empty:hover {
-    background: none;
 }
 
 /* Data Indicator on Calendar */
