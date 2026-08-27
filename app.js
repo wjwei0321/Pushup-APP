@@ -756,8 +756,23 @@ function saveSettings() {
 }
 
 // Utils
+// Stats State
+let currentStatsTimeFilter = '3M';
+let currentStatsChartType = 'line';
+let currentStatsExercise = 'All';
+let statsChartInstance = null;
+
 function switchView(view) {
-    // Only one view in this scope, prepared for future Stats page.
+    document.getElementById('homeView').style.display = view === 'home' ? 'block' : 'none';
+    document.getElementById('statsView').style.display = view === 'stats' ? 'block' : 'none';
+    
+    const navItems = document.querySelectorAll('.floating-nav .nav-item:not(.add-btn)');
+    navItems[0].classList.toggle('active', view === 'home');
+    navItems[1].classList.toggle('active', view === 'stats');
+    
+    if (view === 'stats') {
+        renderStats();
+    }
 }
 
 function showToast(msg = "Logged successfully!") {
@@ -765,4 +780,192 @@ function showToast(msg = "Logged successfully!") {
     t.textContent = msg;
     t.classList.add('show');
     setTimeout(() => t.classList.remove('show'), 3000);
+}
+
+// --- Statistics Logic ---
+
+function setTimeFilter(filter) {
+    currentStatsTimeFilter = filter;
+    renderStats();
+}
+
+function toggleChartType(type) {
+    currentStatsChartType = type;
+    renderStats();
+}
+
+function setStatsExercise(ex) {
+    currentStatsExercise = ex;
+    renderStats();
+}
+
+function renderStats() {
+    // 1. Update UI active states
+    document.querySelectorAll('.time-filter-btn').forEach(btn => btn.classList.remove('active'));
+    document.getElementById('tf-' + currentStatsTimeFilter)?.classList.add('active');
+    
+    document.getElementById('btnLineChart').classList.toggle('active-chart-type', currentStatsChartType === 'line');
+    document.getElementById('btnBarChart').classList.toggle('active-chart-type', currentStatsChartType === 'bar');
+    
+    // 2. Render Exercise Filter Pills
+    const filterContainer = document.getElementById('statsExerciseFilter');
+    // Get unique exercises from data
+    const allEx = [...new Set(trainingData.map(d => d.type))];
+    const exList = ['All', ...allEx];
+    
+    // Check if current exercise still exists, else default to All
+    if (!exList.includes(currentStatsExercise)) {
+        currentStatsExercise = 'All';
+    }
+    
+    filterContainer.innerHTML = '';
+    exList.forEach(ex => {
+        const pill = document.createElement('div');
+        pill.className = 'stats-exercise-pill' + (currentStatsExercise === ex ? ' active' : '');
+        pill.textContent = ex === 'All' ? '全部運動' : ex;
+        pill.onclick = () => setStatsExercise(ex);
+        filterContainer.appendChild(pill);
+    });
+    
+    // 3. Filter data by date and exercise
+    const now = new Date();
+    let cutoffDate = new Date(0); // For 'ALL'
+    if (currentStatsTimeFilter === '3M') {
+        cutoffDate = new Date(now.getFullYear(), now.getMonth() - 3, now.getDate());
+    } else if (currentStatsTimeFilter === '6M') {
+        cutoffDate = new Date(now.getFullYear(), now.getMonth() - 6, now.getDate());
+    } else if (currentStatsTimeFilter === '1Y') {
+        cutoffDate = new Date(now.getFullYear() - 1, now.getMonth(), now.getDate());
+    }
+    
+    let filteredData = trainingData.filter(d => {
+        const dDate = new Date(d.dateStr);
+        return dDate >= cutoffDate;
+    });
+    
+    if (currentStatsExercise !== 'All') {
+        filteredData = filteredData.filter(d => d.type === currentStatsExercise);
+    }
+    
+    // 4. Aggregate Data by Date
+    // Format: { 'yyyy/MM/dd': { 'Push-up': 120, 'Lunge': 60 } }
+    const dailyTotals = {};
+    let grandTotal = 0;
+    
+    filteredData.forEach(d => {
+        if (!dailyTotals[d.dateStr]) dailyTotals[d.dateStr] = {};
+        const sum = d.sets.reduce((a, b) => a + b, 0);
+        dailyTotals[d.dateStr][d.type] = (dailyTotals[d.dateStr][d.type] || 0) + sum;
+        grandTotal += sum;
+    });
+    
+    // Update main number
+    document.getElementById('statsTotalNumber').textContent = grandTotal;
+    
+    // 5. Prepare Chart.js datasets
+    // Sort dates
+    const sortedDates = Object.keys(dailyTotals).sort((a, b) => new Date(a) - new Date(b));
+    // Labels for X axis (e.g. "Aug 25" or "08/25")
+    const labels = sortedDates.map(dateStr => {
+        const d = new Date(dateStr);
+        return MONTH_NAMES[d.getMonth()].substring(0,3) + ' ' + d.getDate();
+    });
+    
+    const datasets = [];
+    
+    // If specific exercise selected, just one line/bar
+    if (currentStatsExercise !== 'All') {
+        const data = sortedDates.map(dateStr => dailyTotals[dateStr][currentStatsExercise] || 0);
+        datasets.push({
+            label: currentStatsExercise,
+            data: data,
+            borderColor: '#f39c12',
+            backgroundColor: currentStatsChartType === 'line' ? 'rgba(243, 156, 18, 0.2)' : '#f39c12',
+            fill: true,
+            tension: 0.4,
+            borderWidth: 2,
+            pointRadius: currentStatsChartType === 'line' ? 2 : 0,
+            borderRadius: currentStatsChartType === 'bar' ? 4 : 0
+        });
+    } else {
+        // If All, generate a dataset for each exercise
+        allEx.forEach((ex, i) => {
+            // Give different colors to different exercises
+            const colors = ['#f39c12', '#3498db', '#e74c3c', '#2ecc71', '#9b59b6'];
+            const color = colors[i % colors.length];
+            
+            const data = sortedDates.map(dateStr => dailyTotals[dateStr][ex] || 0);
+            datasets.push({
+                label: ex,
+                data: data,
+                borderColor: color,
+                backgroundColor: currentStatsChartType === 'line' ? 'transparent' : color,
+                fill: false,
+                tension: 0.4,
+                borderWidth: 2,
+                pointRadius: currentStatsChartType === 'line' ? 2 : 0,
+                borderRadius: currentStatsChartType === 'bar' ? 4 : 0
+            });
+        });
+    }
+    
+    // 6. Render Chart
+    const ctx = document.getElementById('statsChart').getContext('2d');
+    if (statsChartInstance) {
+        statsChartInstance.destroy();
+    }
+    
+    statsChartInstance = new Chart(ctx, {
+        type: currentStatsChartType,
+        data: {
+            labels: labels,
+            datasets: datasets
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            interaction: {
+                mode: 'index',
+                intersect: false,
+            },
+            plugins: {
+                legend: {
+                    display: currentStatsExercise === 'All', // Show legend when "All" is selected
+                    position: 'bottom',
+                    labels: {
+                        usePointStyle: true,
+                        boxWidth: 8
+                    }
+                },
+                tooltip: {
+                    backgroundColor: 'rgba(0,0,0,0.8)',
+                    titleFont: { size: 13, family: 'Outfit' },
+                    bodyFont: { size: 13, family: 'Outfit' },
+                    padding: 10,
+                    cornerRadius: 8
+                }
+            },
+            scales: {
+                x: {
+                    stacked: currentStatsChartType === 'bar',
+                    grid: { display: false, drawBorder: false },
+                    ticks: {
+                        maxTicksLimit: 7,
+                        font: { family: 'Outfit' }
+                    }
+                },
+                y: {
+                    stacked: currentStatsChartType === 'bar',
+                    beginAtZero: true,
+                    grid: {
+                        color: 'rgba(0,0,0,0.05)',
+                        drawBorder: false,
+                    },
+                    ticks: {
+                        font: { family: 'Outfit' }
+                    }
+                }
+            }
+        }
+    });
 }

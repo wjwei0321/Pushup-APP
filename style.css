@@ -492,3 +492,31 @@ body {
 .toast.show {
     transform: translateX(-50%) translateY(0);
 }
+
+/* --- Stats View Specific Styles --- */
+.active-chart-type {
+    background: #eaeaea;
+    color: var(--accent-color);
+}
+
+.time-filter-btn.active {
+    background: var(--card-bg) !important;
+    color: var(--text-primary) !important;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+}
+
+.stats-exercise-pill {
+    padding: 10px 18px;
+    border-radius: 20px;
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: var(--text-secondary);
+    background: #f0f0f0;
+    cursor: pointer;
+    white-space: nowrap;
+    transition: all 0.2s;
+}
+.stats-exercise-pill.active {
+    background: var(--accent-color);
+    color: white;
+}
