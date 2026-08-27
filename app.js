@@ -801,19 +801,17 @@ function setStatsExercise(ex) {
 
 function renderStats() {
     // 1. Update UI active states
-    document.querySelectorAll('.time-filter-btn').forEach(btn => btn.classList.remove('active'));
+    document.querySelectorAll('.stats-time-filter .time-filter-btn').forEach(btn => btn.classList.remove('active'));
     document.getElementById('tf-' + currentStatsTimeFilter)?.classList.add('active');
     
-    document.getElementById('btnLineChart').classList.toggle('active-chart-type', currentStatsChartType === 'line');
-    document.getElementById('btnBarChart').classList.toggle('active-chart-type', currentStatsChartType === 'bar');
+    document.getElementById('btnLineChart').classList.toggle('active', currentStatsChartType === 'line');
+    document.getElementById('btnBarChart').classList.toggle('active', currentStatsChartType === 'bar');
     
     // 2. Render Exercise Filter Pills
     const filterContainer = document.getElementById('statsExerciseFilter');
-    // Get unique exercises from data
     const allEx = [...new Set(trainingData.map(d => d.type))];
     const exList = ['All', ...allEx];
     
-    // Check if current exercise still exists, else default to All
     if (!exList.includes(currentStatsExercise)) {
         currentStatsExercise = 'All';
     }
@@ -822,14 +820,14 @@ function renderStats() {
     exList.forEach(ex => {
         const pill = document.createElement('div');
         pill.className = 'stats-exercise-pill' + (currentStatsExercise === ex ? ' active' : '');
-        pill.textContent = ex === 'All' ? '全部運動' : ex;
+        pill.textContent = ex === 'All' ? '全部' : ex;
         pill.onclick = () => setStatsExercise(ex);
         filterContainer.appendChild(pill);
     });
     
     // 3. Filter data by date and exercise
     const now = new Date();
-    let cutoffDate = new Date(0); // For 'ALL'
+    let cutoffDate = new Date(0);
     if (currentStatsTimeFilter === '3M') {
         cutoffDate = new Date(now.getFullYear(), now.getMonth() - 3, now.getDate());
     } else if (currentStatsTimeFilter === '6M') {
@@ -838,17 +836,13 @@ function renderStats() {
         cutoffDate = new Date(now.getFullYear() - 1, now.getMonth(), now.getDate());
     }
     
-    let filteredData = trainingData.filter(d => {
-        const dDate = new Date(d.dateStr);
-        return dDate >= cutoffDate;
-    });
+    let filteredData = trainingData.filter(d => new Date(d.dateStr) >= cutoffDate);
     
     if (currentStatsExercise !== 'All') {
         filteredData = filteredData.filter(d => d.type === currentStatsExercise);
     }
     
     // 4. Aggregate Data by Date
-    // Format: { 'yyyy/MM/dd': { 'Push-up': 120, 'Lunge': 60 } }
     const dailyTotals = {};
     let grandTotal = 0;
     
@@ -859,52 +853,61 @@ function renderStats() {
         grandTotal += sum;
     });
     
-    // Update main number
-    document.getElementById('statsTotalNumber').textContent = grandTotal;
+    document.getElementById('statsTotalNumber').textContent = grandTotal.toLocaleString();
     
     // 5. Prepare Chart.js datasets
-    // Sort dates
     const sortedDates = Object.keys(dailyTotals).sort((a, b) => new Date(a) - new Date(b));
-    // Labels for X axis (e.g. "Aug 25" or "08/25")
     const labels = sortedDates.map(dateStr => {
         const d = new Date(dateStr);
-        return MONTH_NAMES[d.getMonth()].substring(0,3) + ' ' + d.getDate();
+        return d.getDate() + '/' + (d.getMonth() + 1);
     });
     
     const datasets = [];
+    const CHART_COLORS = [
+        { line: '#f39c12', fill: 'rgba(243, 156, 18, 0.15)' },
+        { line: '#3498db', fill: 'rgba(52, 152, 219, 0.15)' },
+        { line: '#e74c3c', fill: 'rgba(231, 76, 60, 0.15)' },
+        { line: '#2ecc71', fill: 'rgba(46, 204, 113, 0.15)' },
+        { line: '#9b59b6', fill: 'rgba(155, 89, 182, 0.15)' },
+    ];
     
-    // If specific exercise selected, just one line/bar
     if (currentStatsExercise !== 'All') {
         const data = sortedDates.map(dateStr => dailyTotals[dateStr][currentStatsExercise] || 0);
         datasets.push({
             label: currentStatsExercise,
             data: data,
             borderColor: '#f39c12',
-            backgroundColor: currentStatsChartType === 'line' ? 'rgba(243, 156, 18, 0.2)' : '#f39c12',
-            fill: true,
-            tension: 0.4,
-            borderWidth: 2,
-            pointRadius: currentStatsChartType === 'line' ? 2 : 0,
-            borderRadius: currentStatsChartType === 'bar' ? 4 : 0
+            backgroundColor: 'USE_GRADIENT',
+            fill: currentStatsChartType === 'line',
+            tension: 0.45,
+            borderWidth: currentStatsChartType === 'line' ? 2.5 : 0,
+            pointRadius: 0,
+            pointHoverRadius: 5,
+            pointHoverBackgroundColor: '#f39c12',
+            pointHoverBorderColor: '#fff',
+            pointHoverBorderWidth: 2,
+            borderRadius: currentStatsChartType === 'bar' ? 6 : 0,
+            barPercentage: 0.6,
         });
     } else {
-        // If All, generate a dataset for each exercise
         allEx.forEach((ex, i) => {
-            // Give different colors to different exercises
-            const colors = ['#f39c12', '#3498db', '#e74c3c', '#2ecc71', '#9b59b6'];
-            const color = colors[i % colors.length];
-            
+            const c = CHART_COLORS[i % CHART_COLORS.length];
             const data = sortedDates.map(dateStr => dailyTotals[dateStr][ex] || 0);
             datasets.push({
                 label: ex,
                 data: data,
-                borderColor: color,
-                backgroundColor: currentStatsChartType === 'line' ? 'transparent' : color,
+                borderColor: c.line,
+                backgroundColor: currentStatsChartType === 'line' ? 'transparent' : c.line,
                 fill: false,
-                tension: 0.4,
-                borderWidth: 2,
-                pointRadius: currentStatsChartType === 'line' ? 2 : 0,
-                borderRadius: currentStatsChartType === 'bar' ? 4 : 0
+                tension: 0.45,
+                borderWidth: currentStatsChartType === 'line' ? 2 : 0,
+                pointRadius: 0,
+                pointHoverRadius: 4,
+                pointHoverBackgroundColor: c.line,
+                pointHoverBorderColor: '#fff',
+                pointHoverBorderWidth: 2,
+                borderRadius: currentStatsChartType === 'bar' ? 6 : 0,
+                barPercentage: 0.6,
             });
         });
     }
@@ -913,6 +916,20 @@ function renderStats() {
     const ctx = document.getElementById('statsChart').getContext('2d');
     if (statsChartInstance) {
         statsChartInstance.destroy();
+    }
+    
+    // Create gradient for single exercise line chart
+    if (currentStatsExercise !== 'All' && currentStatsChartType === 'line' && datasets.length > 0) {
+        const gradient = ctx.createLinearGradient(0, 0, 0, 260);
+        gradient.addColorStop(0, 'rgba(243, 156, 18, 0.3)');
+        gradient.addColorStop(0.5, 'rgba(243, 156, 18, 0.08)');
+        gradient.addColorStop(1, 'rgba(243, 156, 18, 0)');
+        datasets[0].backgroundColor = gradient;
+    } else if (currentStatsExercise !== 'All' && currentStatsChartType === 'bar' && datasets.length > 0) {
+        const gradient = ctx.createLinearGradient(0, 0, 0, 260);
+        gradient.addColorStop(0, 'rgba(243, 156, 18, 0.9)');
+        gradient.addColorStop(1, 'rgba(243, 156, 18, 0.5)');
+        datasets[0].backgroundColor = gradient;
     }
     
     statsChartInstance = new Chart(ctx, {
@@ -924,45 +941,69 @@ function renderStats() {
         options: {
             responsive: true,
             maintainAspectRatio: false,
+            animation: {
+                duration: 600,
+                easing: 'easeOutQuart'
+            },
             interaction: {
                 mode: 'index',
                 intersect: false,
             },
             plugins: {
                 legend: {
-                    display: currentStatsExercise === 'All', // Show legend when "All" is selected
+                    display: currentStatsExercise === 'All' && allEx.length > 1,
                     position: 'bottom',
                     labels: {
                         usePointStyle: true,
-                        boxWidth: 8
+                        pointStyle: 'circle',
+                        boxWidth: 6,
+                        padding: 16,
+                        font: { family: 'Outfit', size: 12, weight: '600' },
+                        color: '#999'
                     }
                 },
                 tooltip: {
-                    backgroundColor: 'rgba(0,0,0,0.8)',
-                    titleFont: { size: 13, family: 'Outfit' },
-                    bodyFont: { size: 13, family: 'Outfit' },
-                    padding: 10,
-                    cornerRadius: 8
+                    backgroundColor: '#1a1a2e',
+                    titleFont: { size: 12, family: 'Outfit', weight: '500' },
+                    bodyFont: { size: 14, family: 'Outfit', weight: '700' },
+                    titleColor: 'rgba(255,255,255,0.6)',
+                    bodyColor: '#fff',
+                    padding: { top: 10, bottom: 10, left: 14, right: 14 },
+                    cornerRadius: 10,
+                    displayColors: currentStatsExercise === 'All',
+                    boxPadding: 4,
+                    callbacks: {
+                        label: function(context) {
+                            return context.dataset.label + ': ' + context.parsed.y + ' reps';
+                        }
+                    }
                 }
             },
             scales: {
                 x: {
                     stacked: currentStatsChartType === 'bar',
-                    grid: { display: false, drawBorder: false },
+                    grid: { display: false },
+                    border: { display: false },
                     ticks: {
-                        maxTicksLimit: 7,
-                        font: { family: 'Outfit' }
+                        maxTicksLimit: 6,
+                        font: { family: 'Outfit', size: 11, weight: '500' },
+                        color: '#bbb',
+                        padding: 8
                     }
                 },
                 y: {
                     stacked: currentStatsChartType === 'bar',
                     beginAtZero: true,
+                    border: { display: false },
                     grid: {
-                        color: 'rgba(0,0,0,0.05)',
+                        color: 'rgba(0,0,0,0.04)',
                         drawBorder: false,
                     },
                     ticks: {
-                        font: { family: 'Outfit' }
+                        maxTicksLimit: 5,
+                        font: { family: 'Outfit', size: 11, weight: '500' },
+                        color: '#bbb',
+                        padding: 8
                     }
                 }
             }
