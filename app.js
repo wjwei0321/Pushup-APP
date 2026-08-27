@@ -1043,7 +1043,7 @@ if (statsDragHandle) {
         statsCurrentY = e.touches[0].clientY;
         const diff = statsCurrentY - statsStartY;
         if (diff > 0) {
-            statsViewEl.style.transform = 	ranslateY(px);
+            statsViewEl.style.transform = 'translateY(' + diff + 'px)';
         }
     }, {passive: true});
 
