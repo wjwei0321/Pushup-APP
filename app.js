@@ -763,15 +763,23 @@ let currentStatsExercise = 'All';
 let statsChartInstance = null;
 
 function switchView(view) {
-    document.getElementById('homeView').style.display = view === 'home' ? 'block' : 'none';
-    document.getElementById('statsView').style.display = view === 'stats' ? 'block' : 'none';
-    
+    const statsView = document.getElementById('statsView');
     const navItems = document.querySelectorAll('.floating-nav .nav-item:not(.add-btn)');
     navItems[0].classList.toggle('active', view === 'home');
     navItems[1].classList.toggle('active', view === 'stats');
     
     if (view === 'stats') {
+        statsView.style.display = 'block';
+        requestAnimationFrame(() => {
+            statsView.style.transform = 'translateY(0)';
+        });
         renderStats();
+    } else {
+        statsView.style.transition = 'transform 0.3s cubic-bezier(0.1, 0.8, 0.3, 1)';
+        statsView.style.transform = 'translateY(100%)';
+        setTimeout(() => {
+            statsView.style.display = 'none';
+        }, 300);
     }
 }
 
