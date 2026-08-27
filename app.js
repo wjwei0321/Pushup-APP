@@ -864,11 +864,7 @@ function renderStats() {
     
     const datasets = [];
     const CHART_COLORS = [
-        { line: '#f39c12', fill: 'rgba(243, 156, 18, 0.15)' },
-        { line: '#3498db', fill: 'rgba(52, 152, 219, 0.15)' },
-        { line: '#e74c3c', fill: 'rgba(231, 76, 60, 0.15)' },
-        { line: '#2ecc71', fill: 'rgba(46, 204, 113, 0.15)' },
-        { line: '#9b59b6', fill: 'rgba(155, 89, 182, 0.15)' },
+        '#222222', '#3498db', '#e74c3c', '#2ecc71', '#9b59b6'
     ];
     
     if (currentStatsExercise !== 'All') {
@@ -876,15 +872,15 @@ function renderStats() {
         datasets.push({
             label: currentStatsExercise,
             data: data,
-            borderColor: '#f39c12',
+            borderColor: '#333',
             backgroundColor: 'USE_GRADIENT',
             fill: currentStatsChartType === 'line',
-            tension: 0.45,
+            tension: 0.4,
             borderWidth: currentStatsChartType === 'line' ? 2.5 : 0,
             pointRadius: 0,
-            pointHoverRadius: 5,
-            pointHoverBackgroundColor: '#f39c12',
-            pointHoverBorderColor: '#fff',
+            pointHoverRadius: 6,
+            pointHoverBackgroundColor: '#c8f560',
+            pointHoverBorderColor: '#333',
             pointHoverBorderWidth: 2,
             borderRadius: currentStatsChartType === 'bar' ? 6 : 0,
             barPercentage: 0.6,
@@ -896,14 +892,14 @@ function renderStats() {
             datasets.push({
                 label: ex,
                 data: data,
-                borderColor: c.line,
-                backgroundColor: currentStatsChartType === 'line' ? 'transparent' : c.line,
+                borderColor: c,
+                backgroundColor: currentStatsChartType === 'line' ? 'transparent' : c,
                 fill: false,
-                tension: 0.45,
+                tension: 0.4,
                 borderWidth: currentStatsChartType === 'line' ? 2 : 0,
                 pointRadius: 0,
-                pointHoverRadius: 4,
-                pointHoverBackgroundColor: c.line,
+                pointHoverRadius: 5,
+                pointHoverBackgroundColor: c,
                 pointHoverBorderColor: '#fff',
                 pointHoverBorderWidth: 2,
                 borderRadius: currentStatsChartType === 'bar' ? 6 : 0,
@@ -918,19 +914,35 @@ function renderStats() {
         statsChartInstance.destroy();
     }
     
-    // Create gradient for single exercise line chart
     if (currentStatsExercise !== 'All' && currentStatsChartType === 'line' && datasets.length > 0) {
-        const gradient = ctx.createLinearGradient(0, 0, 0, 260);
-        gradient.addColorStop(0, 'rgba(243, 156, 18, 0.3)');
-        gradient.addColorStop(0.5, 'rgba(243, 156, 18, 0.08)');
-        gradient.addColorStop(1, 'rgba(243, 156, 18, 0)');
-        datasets[0].backgroundColor = gradient;
-    } else if (currentStatsExercise !== 'All' && currentStatsChartType === 'bar' && datasets.length > 0) {
-        const gradient = ctx.createLinearGradient(0, 0, 0, 260);
-        gradient.addColorStop(0, 'rgba(243, 156, 18, 0.9)');
-        gradient.addColorStop(1, 'rgba(243, 156, 18, 0.5)');
+        const gradient = ctx.createLinearGradient(0, 0, 0, 300);
+        gradient.addColorStop(0, 'rgba(0, 0, 0, 0.4)');
+        gradient.addColorStop(1, 'rgba(0, 0, 0, 0)');
         datasets[0].backgroundColor = gradient;
     }
+    
+    const crosshairPlugin = {
+        id: 'crosshair',
+        afterDraw: chart => {
+            if (chart.tooltip?._active?.length) {
+                const activePoint = chart.tooltip._active[0];
+                const ctx = chart.ctx;
+                const x = activePoint.element.x;
+                const topY = chart.scales.y.top;
+                const bottomY = chart.scales.y.bottom;
+
+                ctx.save();
+                ctx.beginPath();
+                ctx.moveTo(x, activePoint.element.y);
+                ctx.lineTo(x, bottomY);
+                ctx.lineWidth = 1;
+                ctx.strokeStyle = 'rgba(0, 0, 0, 0.15)';
+                ctx.setLineDash([4, 4]);
+                ctx.stroke();
+                ctx.restore();
+            }
+        }
+    };
     
     statsChartInstance = new Chart(ctx, {
         type: currentStatsChartType,
@@ -941,6 +953,9 @@ function renderStats() {
         options: {
             responsive: true,
             maintainAspectRatio: false,
+            layout: {
+                padding: { left: -10, right: 0, top: 20, bottom: 0 }
+            },
             animation: {
                 duration: 600,
                 easing: 'easeOutQuart'
@@ -963,18 +978,19 @@ function renderStats() {
                     }
                 },
                 tooltip: {
-                    backgroundColor: '#1a1a2e',
-                    titleFont: { size: 12, family: 'Outfit', weight: '500' },
+                    backgroundColor: '#222',
+                    titleFont: { size: 11, family: 'Outfit', weight: '500' },
                     bodyFont: { size: 14, family: 'Outfit', weight: '700' },
                     titleColor: 'rgba(255,255,255,0.6)',
                     bodyColor: '#fff',
-                    padding: { top: 10, bottom: 10, left: 14, right: 14 },
-                    cornerRadius: 10,
-                    displayColors: currentStatsExercise === 'All',
-                    boxPadding: 4,
+                    padding: { top: 8, bottom: 8, left: 14, right: 14 },
+                    cornerRadius: 8,
+                    displayColors: false,
+                    yAlign: 'bottom',
                     callbacks: {
+                        title: () => null,
                         label: function(context) {
-                            return context.dataset.label + ': ' + context.parsed.y + ' reps';
+                            return context.parsed.y + ' reps';
                         }
                     }
                 }
@@ -987,26 +1003,27 @@ function renderStats() {
                     ticks: {
                         maxTicksLimit: 6,
                         font: { family: 'Outfit', size: 11, weight: '500' },
-                        color: '#bbb',
-                        padding: 8
+                        color: '#999',
+                        padding: 10
                     }
                 },
                 y: {
+                    position: 'right',
                     stacked: currentStatsChartType === 'bar',
                     beginAtZero: true,
                     border: { display: false },
-                    grid: {
-                        color: 'rgba(0,0,0,0.04)',
-                        drawBorder: false,
-                    },
+                    grid: { display: false },
                     ticks: {
                         maxTicksLimit: 5,
                         font: { family: 'Outfit', size: 11, weight: '500' },
-                        color: '#bbb',
-                        padding: 8
+                        color: '#999',
+                        padding: 10,
+                        mirror: true,
+                        z: 10
                     }
                 }
             }
-        }
+        },
+        plugins: [crosshairPlugin]
     });
 }
