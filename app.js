@@ -852,15 +852,27 @@ function renderStats() {
     let filteredData = trainingData.filter(d => d.type === currentStatsExercise);
     
     const dailyTotals = {};
-    let grandTotal = 0;
+    
+    // Calculate current week boundaries (Sunday to Saturday)
+    const now = new Date();
+    const dayOfWeek = now.getDay(); // 0=Sunday
+    const weekStart = new Date(now.getFullYear(), now.getMonth(), now.getDate() - dayOfWeek);
+    const weekEnd = new Date(weekStart);
+    weekEnd.setDate(weekEnd.getDate() + 7);
+    
+    let weeklyTotal = 0;
     
     filteredData.forEach(d => {
         if (!dailyTotals[d.dateStr]) dailyTotals[d.dateStr] = { sets: [] };
         dailyTotals[d.dateStr].sets.push(...d.sets);
-        grandTotal += d.sets.reduce((a, b) => a + b, 0);
+        const dDate = new Date(d.dateStr);
+        if (dDate >= weekStart && dDate < weekEnd) {
+            weeklyTotal += d.sets.reduce((a, b) => a + b, 0);
+        }
     });
     
-    document.getElementById('statsTotalNumber').textContent = grandTotal.toLocaleString();
+    document.getElementById('statsTotalNumber').textContent = weeklyTotal.toLocaleString();
+    document.getElementById('statsWeeklyLabel').textContent = '+ THIS WEEK';
     
     const sortedDates = Object.keys(dailyTotals).sort((a, b) => new Date(a) - new Date(b));
     const labels = sortedDates.map(dateStr => {
