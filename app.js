@@ -800,61 +800,51 @@ function setStatsExercise(ex) {
 }
 
 function renderStats() {
-    // 1. Update UI active states
-    document.querySelectorAll('.stats-time-filter .time-filter-btn').forEach(btn => btn.classList.remove('active'));
-    document.getElementById('tf-' + currentStatsTimeFilter)?.classList.add('active');
-    
     document.getElementById('btnLineChart').classList.toggle('active', currentStatsChartType === 'line');
     document.getElementById('btnBarChart').classList.toggle('active', currentStatsChartType === 'bar');
     
-    // 2. Render Exercise Filter Pills
-    const filterContainer = document.getElementById('statsExerciseFilter');
     const exList = [...new Set(trainingData.map(d => d.type))];
-    
     if (!exList.includes(currentStatsExercise) && exList.length > 0) {
         currentStatsExercise = exList[0];
     }
+    if (!currentStatsExercise) { currentStatsExercise = 'Push-up'; }
     
+    // Update Header
+    document.getElementById('statsHeaderTitle').textContent = currentStatsExercise;
+    document.getElementById('statsHeaderIcon').innerHTML = EXERCISES[currentStatsExercise] || '';
+    
+    // Bottom Exercise Tabs
+    const filterContainer = document.getElementById('statsExerciseFilter');
     filterContainer.innerHTML = '';
-    exList.forEach(ex => {
-        const pill = document.createElement('div');
-        pill.className = 'stats-exercise-pill' + (currentStatsExercise === ex ? ' active' : '');
-        pill.textContent = ex;
-        pill.onclick = () => setStatsExercise(ex);
-        filterContainer.appendChild(pill);
+    Object.keys(EXERCISES).forEach(ex => {
+        
+        const iconWrap = document.createElement('div');
+        iconWrap.style.cssText = 'min-width: 48px; height: 48px; border-radius: 12px; display: flex; align-items: center; justify-content: center; padding: 10px; cursor: pointer; transition: all 0.2s;';
+        if (currentStatsExercise === ex) {
+            iconWrap.style.background = '#f39c12'; // Active tab
+            iconWrap.style.color = '#fff';
+        } else {
+            iconWrap.style.background = '#1a1e26';
+            iconWrap.style.color = '#787b86';
+        }
+        iconWrap.innerHTML = EXERCISES[ex];
+        iconWrap.onclick = () => setStatsExercise(ex);
+        filterContainer.appendChild(iconWrap);
     });
     
-    // 3. Filter data by date and exercise
-    const now = new Date();
-    let cutoffDate = new Date(0);
-    if (currentStatsTimeFilter === '3M') {
-        cutoffDate = new Date(now.getFullYear(), now.getMonth() - 3, now.getDate());
-    } else if (currentStatsTimeFilter === '6M') {
-        cutoffDate = new Date(now.getFullYear(), now.getMonth() - 6, now.getDate());
-    } else if (currentStatsTimeFilter === '1Y') {
-        cutoffDate = new Date(now.getFullYear() - 1, now.getMonth(), now.getDate());
-    }
+    let filteredData = trainingData.filter(d => d.type === currentStatsExercise);
     
-    let filteredData = trainingData.filter(d => new Date(d.dateStr) >= cutoffDate);
-    
-    if (currentStatsExercise) {
-        filteredData = filteredData.filter(d => d.type === currentStatsExercise);
-    }
-    
-    // 4. Aggregate Data by Date
     const dailyTotals = {};
     let grandTotal = 0;
     
     filteredData.forEach(d => {
-        if (!dailyTotals[d.dateStr]) dailyTotals[d.dateStr] = {};
-        const sum = d.sets.reduce((a, b) => a + b, 0);
-        dailyTotals[d.dateStr][d.type] = (dailyTotals[d.dateStr][d.type] || 0) + sum;
-        grandTotal += sum;
+        if (!dailyTotals[d.dateStr]) dailyTotals[d.dateStr] = { sets: [] };
+        dailyTotals[d.dateStr].sets.push(...d.sets);
+        grandTotal += d.sets.reduce((a, b) => a + b, 0);
     });
     
     document.getElementById('statsTotalNumber').textContent = grandTotal.toLocaleString();
     
-    // 5. Prepare Chart.js datasets
     const sortedDates = Object.keys(dailyTotals).sort((a, b) => new Date(a) - new Date(b));
     const labels = sortedDates.map(dateStr => {
         const d = new Date(dateStr);
@@ -863,37 +853,48 @@ function renderStats() {
     
     const datasets = [];
     
-    if (currentStatsExercise) {
-        const data = sortedDates.map(dateStr => dailyTotals[dateStr][currentStatsExercise] || 0);
+    if (currentStatsChartType === 'line') {
+        const data = sortedDates.map(dateStr => dailyTotals[dateStr].sets.reduce((a, b) => a + b, 0));
         datasets.push({
             label: currentStatsExercise,
             data: data,
             borderColor: '#f39c12',
             backgroundColor: 'USE_GRADIENT',
-            fill: currentStatsChartType === 'line',
-            tension: 0.4,
-            borderWidth: currentStatsChartType === 'line' ? 3 : 0,
+            fill: true,
+            tension: 0.2,
+            borderWidth: 2,
             pointRadius: 0,
             pointHoverRadius: 6,
             pointHoverBackgroundColor: '#fff',
             pointHoverBorderColor: '#f39c12',
-            pointHoverBorderWidth: 2,
-            borderRadius: currentStatsChartType === 'bar' ? 6 : 0,
-            barPercentage: 0.6,
+            pointHoverBorderWidth: 2
         });
+    } else {
+        const maxSets = Math.max(0, ...Object.values(dailyTotals).map(v => v.sets.length));
+        const ORANGE_SHADES = ['#f39c12', '#e67e22', '#d35400', '#f1c40f', '#e74c3c', '#ff7f50', '#ff8c00', '#ffa500'];
+        for (let i = 0; i < maxSets; i++) {
+            const data = sortedDates.map(dateStr => dailyTotals[dateStr].sets[i] || 0);
+            datasets.push({
+                label: Set ,
+                data: data,
+                backgroundColor: ORANGE_SHADES[i % ORANGE_SHADES.length],
+                borderRadius: 2,
+                barPercentage: 0.6,
+            });
+        }
     }
     
-    // 6. Render Chart
     const ctx = document.getElementById('statsChart').getContext('2d');
     if (statsChartInstance) {
         statsChartInstance.destroy();
     }
     
-    if (currentStatsExercise && currentStatsChartType === 'line' && datasets.length > 0) {
-        const gradient = ctx.createLinearGradient(0, 0, 0, 300);
+    if (currentStatsChartType === 'line' && datasets.length > 0) {
+        const gradient = ctx.createLinearGradient(0, 0, 0, 320);
         gradient.addColorStop(0, 'rgba(243, 156, 18, 0.4)');
         gradient.addColorStop(1, 'rgba(243, 156, 18, 0)');
         datasets[0].backgroundColor = gradient;
+        datasets[0].borderColor = '#f39c12'; // TradingView blue/green? Wait, user asked for orange!
     }
     
     const crosshairPlugin = {
@@ -903,16 +904,14 @@ function renderStats() {
                 const activePoint = chart.tooltip._active[0];
                 const ctx = chart.ctx;
                 const x = activePoint.element.x;
-                const topY = chart.scales.y.top;
                 const bottomY = chart.scales.y.bottom;
 
                 ctx.save();
                 ctx.beginPath();
-                ctx.moveTo(x, activePoint.element.y);
+                ctx.moveTo(x, chart.scales.y.top);
                 ctx.lineTo(x, bottomY);
                 ctx.lineWidth = 1;
-                ctx.strokeStyle = 'rgba(0, 0, 0, 0.15)';
-                ctx.setLineDash([4, 4]);
+                ctx.strokeStyle = '#2a2e39';
                 ctx.stroke();
                 ctx.restore();
             }
@@ -932,40 +931,30 @@ function renderStats() {
                 padding: { left: -10, right: 12, top: 20, bottom: 0 }
             },
             animation: {
-                duration: 600,
-                easing: 'easeOutQuart'
+                duration: 400
             },
             interaction: {
                 mode: 'index',
                 intersect: false,
             },
             plugins: {
-                legend: {
-                    display: false,
-                    position: 'bottom',
-                    labels: {
-                        usePointStyle: true,
-                        pointStyle: 'circle',
-                        boxWidth: 6,
-                        padding: 16,
-                        font: { family: 'Outfit', size: 12, weight: '600' },
-                        color: '#999'
-                    }
-                },
+                legend: { display: false },
                 tooltip: {
-                    backgroundColor: '#222',
-                    titleFont: { size: 11, family: 'Outfit', weight: '500' },
+                    backgroundColor: '#1a1e26',
+                    titleFont: { size: 12, family: 'Outfit', weight: '500' },
                     bodyFont: { size: 14, family: 'Outfit', weight: '700' },
-                    titleColor: 'rgba(255,255,255,0.6)',
+                    titleColor: '#787b86',
                     bodyColor: '#fff',
                     padding: { top: 8, bottom: 8, left: 14, right: 14 },
-                    cornerRadius: 8,
-                    displayColors: false,
-                    yAlign: 'bottom',
+                    cornerRadius: 6,
+                    displayColors: currentStatsChartType === 'bar',
+                    boxPadding: 4,
+                    borderColor: '#2a2e39',
+                    borderWidth: 1,
                     callbacks: {
-                        title: () => null,
                         label: function(context) {
-                            return context.parsed.y + ' reps';
+                            if (currentStatsChartType === 'line') return context.parsed.y + ' reps';
+                            return context.dataset.label + ': ' + context.parsed.y;
                         }
                     }
                 }
@@ -978,7 +967,7 @@ function renderStats() {
                     ticks: {
                         maxTicksLimit: 6,
                         font: { family: 'Outfit', size: 11, weight: '500' },
-                        color: '#999',
+                        color: '#787b86',
                         padding: 10
                     }
                 },
@@ -987,11 +976,14 @@ function renderStats() {
                     stacked: currentStatsChartType === 'bar',
                     beginAtZero: true,
                     border: { display: false },
-                    grid: { display: false },
+                    grid: { 
+                        color: '#1a1e26', // faint grid lines like tradingview
+                        drawBorder: false,
+                    },
                     ticks: {
                         maxTicksLimit: 5,
                         font: { family: 'Outfit', size: 11, weight: '500' },
-                        color: '#999',
+                        color: '#787b86',
                         padding: 12,
                         mirror: false,
                         z: 0
