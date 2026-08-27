@@ -819,13 +819,15 @@ function renderStats() {
     Object.keys(EXERCISES).forEach(ex => {
         
         const iconWrap = document.createElement('div');
-        iconWrap.style.cssText = 'min-width: 48px; height: 48px; border-radius: 12px; display: flex; align-items: center; justify-content: center; padding: 10px; cursor: pointer; transition: all 0.2s;';
+        iconWrap.style.cssText = 'width: 32px; height: 32px; border-radius: 50%; display: flex; align-items: center; justify-content: center; padding: 6px; cursor: pointer; transition: all 0.2s; flex-shrink: 0;';
         if (currentStatsExercise === ex) {
-            iconWrap.style.background = '#f39c12'; // Active tab
+            iconWrap.style.background = '#f39c12';
             iconWrap.style.color = '#fff';
+            iconWrap.style.boxShadow = '0 2px 8px rgba(243,156,18,0.4)';
         } else {
-            iconWrap.style.background = '#1a1e26';
-            iconWrap.style.color = '#787b86';
+            iconWrap.style.background = '#f5f5f5';
+            iconWrap.style.color = '#999';
+            iconWrap.style.boxShadow = 'none';
         }
         iconWrap.innerHTML = EXERCISES[ex];
         iconWrap.onclick = () => setStatsExercise(ex);
@@ -897,6 +899,23 @@ function renderStats() {
         datasets[0].borderColor = '#f39c12'; // TradingView blue/green? Wait, user asked for orange!
     }
     
+    const yAxisPillPlugin = {
+        id: 'yAxisPill',
+        beforeDraw: (chart) => {
+            const ctx = chart.ctx;
+            const yAxis = chart.scales.y;
+            ctx.save();
+            ctx.fillStyle = 'rgba(0, 0, 0, 0.05)';
+            yAxis.getTicks().forEach((tick, index) => {
+                const y = yAxis.getPixelForTick(index);
+                ctx.beginPath();
+                ctx.roundRect(4, y - 10, 40, 20, 10);
+                ctx.fill();
+            });
+            ctx.restore();
+        }
+    };
+
     const crosshairPlugin = {
         id: 'crosshair',
         afterDraw: chart => {
@@ -911,7 +930,7 @@ function renderStats() {
                 ctx.moveTo(x, chart.scales.y.top);
                 ctx.lineTo(x, bottomY);
                 ctx.lineWidth = 1;
-                ctx.strokeStyle = '#2a2e39';
+                ctx.strokeStyle = '#e0e0e0';
                 ctx.stroke();
                 ctx.restore();
             }
@@ -928,7 +947,7 @@ function renderStats() {
             responsive: true,
             maintainAspectRatio: false,
             layout: {
-                padding: { left: -10, right: 12, top: 20, bottom: 0 }
+                padding: { left: 0, right: 0, top: 20, bottom: 0 }
             },
             animation: {
                 duration: 400
@@ -940,16 +959,16 @@ function renderStats() {
             plugins: {
                 legend: { display: false },
                 tooltip: {
-                    backgroundColor: '#1a1e26',
+                    backgroundColor: '#fff',
                     titleFont: { size: 12, family: 'Outfit', weight: '500' },
                     bodyFont: { size: 14, family: 'Outfit', weight: '700' },
-                    titleColor: '#787b86',
-                    bodyColor: '#fff',
+                    titleColor: '#999',
+                    bodyColor: '#333',
                     padding: { top: 8, bottom: 8, left: 14, right: 14 },
                     cornerRadius: 6,
                     displayColors: currentStatsChartType === 'bar',
                     boxPadding: 4,
-                    borderColor: '#2a2e39',
+                    borderColor: '#eee',
                     borderWidth: 1,
                     callbacks: {
                         label: function(context) {
@@ -966,31 +985,65 @@ function renderStats() {
                     border: { display: false },
                     ticks: {
                         maxTicksLimit: 6,
-                        font: { family: 'Outfit', size: 11, weight: '500' },
-                        color: '#787b86',
+                        font: { family: 'Outfit', size: 10, weight: '500' },
+                        color: '#999',
                         padding: 10
                     }
                 },
                 y: {
-                    position: 'right',
+                    position: 'left',
                     stacked: currentStatsChartType === 'bar',
                     beginAtZero: true,
                     border: { display: false },
                     grid: { 
-                        color: '#1a1e26', // faint grid lines like tradingview
+                        color: '#f0f0f0',
                         drawBorder: false,
                     },
                     ticks: {
-                        maxTicksLimit: 5,
-                        font: { family: 'Outfit', size: 11, weight: '500' },
-                        color: '#787b86',
-                        padding: 12,
-                        mirror: false,
-                        z: 0
+                        maxTicksLimit: 3,
+                        font: { family: 'Outfit', size: 10, weight: '600' },
+                        color: '#666',
+                        padding: 0,
+                        mirror: true, // Draws labels inside the chart area, overlapping it
+                        z: 10, // Bring labels above the grid
+                        callback: function(value) {
+                            return '   ' + value; // Add small indent so it sits nicely inside the pill
+                        }
                     }
                 }
             }
         },
-        plugins: [crosshairPlugin]
+        plugins: [crosshairPlugin, yAxisPillPlugin]
+    });
+}
+
+// Drag to close stats modal
+let statsStartY = 0;
+let statsCurrentY = 0;
+const statsViewEl = document.getElementById('statsView');
+const statsDragHandle = document.getElementById('statsDragHandle');
+
+if (statsDragHandle) {
+    statsDragHandle.addEventListener('touchstart', (e) => {
+        statsStartY = e.touches[0].clientY;
+        statsViewEl.style.transition = 'none';
+    }, {passive: true});
+
+    statsDragHandle.addEventListener('touchmove', (e) => {
+        statsCurrentY = e.touches[0].clientY;
+        const diff = statsCurrentY - statsStartY;
+        if (diff > 0) {
+            statsViewEl.style.transform = 	ranslateY(px);
+        }
+    }, {passive: true});
+
+    statsDragHandle.addEventListener('touchend', (e) => {
+        statsViewEl.style.transition = 'transform 0.3s cubic-bezier(0.1, 0.8, 0.3, 1)';
+        const diff = statsCurrentY - statsStartY;
+        if (diff > 100) {
+            switchView('home'); 
+        } else {
+            statsViewEl.style.transform = 'translateY(0)';
+        }
     });
 }
