@@ -654,7 +654,7 @@ function selectExercise(type) {
     const dateOptions = { weekday: 'short', month: 'short', day: 'numeric', year: 'numeric' };
     document.getElementById('selectedExerciseDate').textContent = selectedDate.toLocaleDateString('en-US', dateOptions);
     
-    document.getElementById('selectedExerciseIconLarge').innerHTML = `<div style="width: 140px; height: 140px; background: var(--accent-color); color: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; padding: 28px; box-sizing: border-box;">${EXERCISES[type]}</div>`;
+    document.getElementById('selectedExerciseIconLarge').innerHTML = `<div style="width: 140px; height: 140px; background: var(--accent-color); color: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; padding: 28px; box-sizing: border-box;"><div style="width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; ${type === 'Push-up' ? 'transform: scale(1.4);' : ''}">${EXERCISES[type]}</div></div>`;
     
     updateModalStats();
 
@@ -893,7 +893,7 @@ function renderStats() {
     
     const todayLabel = document.getElementById('statsTodayLabel');
     if (todayTotal > 0) {
-        todayLabel.innerHTML = `<strong>${todaySetsCount}</strong> sets &nbsp;&nbsp; + <strong>${todayTotal.toLocaleString()}</strong> today`;
+        todayLabel.innerHTML = `${todaySetsCount} sets &nbsp;&nbsp; + ${todayTotal.toLocaleString()} today`;
         todayLabel.style.display = 'block';
     } else {
         todayLabel.style.display = 'none';
@@ -901,7 +901,7 @@ function renderStats() {
     
     const weeklyLabel = document.getElementById('statsWeeklyLabel');
     if (weeklyTotal > 0) {
-        weeklyLabel.innerHTML = `<strong>${weeklyDaysSet.size}</strong> days &nbsp;&nbsp; + <strong>${weeklyTotal.toLocaleString()}</strong> this week`;
+        weeklyLabel.innerHTML = `${weeklyDaysSet.size} days &nbsp;&nbsp; + ${weeklyTotal.toLocaleString()} this week`;
         weeklyLabel.style.display = 'block';
     } else {
         weeklyLabel.style.display = 'none';
