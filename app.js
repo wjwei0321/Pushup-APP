@@ -889,7 +889,7 @@ function renderStats() {
     
     const todayLabel = document.getElementById('statsTodayLabel');
     if (todayTotal > 0) {
-        todayLabel.textContent = `+${todayTotal.toLocaleString()} TODAY`;
+        todayLabel.textContent = `+${todayTotal.toLocaleString()} today`;
         todayLabel.style.display = 'block';
     } else {
         todayLabel.style.display = 'none';
@@ -897,7 +897,7 @@ function renderStats() {
     
     const weeklyLabel = document.getElementById('statsWeeklyLabel');
     if (weeklyTotal > 0) {
-        weeklyLabel.textContent = `+${weeklyTotal.toLocaleString()} THIS WEEK`;
+        weeklyLabel.textContent = `+${weeklyTotal.toLocaleString()} this week`;
         weeklyLabel.style.display = 'block';
     } else {
         weeklyLabel.style.display = 'none';
