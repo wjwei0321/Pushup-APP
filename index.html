@@ -68,7 +68,7 @@
     </div>
 
     <!-- Stats View (TradingView Light Style as Modal) -->
-    <div id="statsView" style="display: none; position: fixed; top: 40px; left: 0; right: 0; bottom: 0; z-index: 2000; background: #ffffff; border-radius: 20px 20px 0 0; box-shadow: 0 -4px 24px rgba(0,0,0,0.15); color: var(--text-primary); transition: transform 0.3s cubic-bezier(0.1, 0.8, 0.3, 1); transform: translateY(100%); overflow-y: auto; padding-bottom: 50px;">
+    <div id="statsView" style="display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; z-index: 2000; background: #ffffff; color: var(--text-primary); transition: transform 0.3s cubic-bezier(0.1, 0.8, 0.3, 1); transform: translateY(100%); overflow-y: auto; padding-bottom: 50px; padding-top: env(safe-area-inset-top, 20px);">
         <!-- Drag Handle -->
         <div id="statsDragHandle" style="width: 100%; padding: 16px 0; display: flex; justify-content: center; touch-action: none;">
             <div style="width: 40px; height: 5px; background: #e0e0e0; border-radius: 3px;"></div>
@@ -208,6 +208,6 @@
 
     <div class="toast" id="toast">Logged successfully!</div>
 
-    <script src="app.js?v=3.5"></script>
+    <script src="app.js?v=3.6"></script>
 </body>
 </html>

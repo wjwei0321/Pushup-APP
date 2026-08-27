@@ -769,12 +769,14 @@ function switchView(view) {
     navItems[1].classList.toggle('active', view === 'stats');
     
     if (view === 'stats') {
+        document.body.style.overflow = 'hidden';
         statsView.style.display = 'block';
         requestAnimationFrame(() => {
             statsView.style.transform = 'translateY(0)';
         });
         renderStats();
     } else {
+        document.body.style.overflow = '';
         statsView.style.transition = 'transform 0.3s cubic-bezier(0.1, 0.8, 0.3, 1)';
         statsView.style.transform = 'translateY(100%)';
         setTimeout(() => {
@@ -1055,29 +1057,35 @@ function renderStats() {
 let statsStartY = 0;
 let statsCurrentY = 0;
 const statsViewEl = document.getElementById('statsView');
-const statsDragHandle = document.getElementById('statsDragHandle');
 
-if (statsDragHandle) {
-    statsDragHandle.addEventListener('touchstart', (e) => {
+if (statsViewEl) {
+    statsViewEl.addEventListener('touchstart', (e) => {
+        if (statsViewEl.scrollTop > 0) return; // Don't drag if scrolled down
+        if (e.target.closest('#statsChart') || e.target.closest('.chart-container')) return; // Don't drag if touching chart
         statsStartY = e.touches[0].clientY;
+        statsCurrentY = 0;
         statsViewEl.style.transition = 'none';
     }, {passive: true});
 
-    statsDragHandle.addEventListener('touchmove', (e) => {
-        statsCurrentY = e.touches[0].clientY;
-        const diff = statsCurrentY - statsStartY;
+    statsViewEl.addEventListener('touchmove', (e) => {
+        if (statsStartY === 0) return;
+        const diff = e.touches[0].clientY - statsStartY;
         if (diff > 0) {
-            statsViewEl.style.transform = 'translateY(' + diff + 'px)';
+            if (e.cancelable) e.preventDefault();
+            statsCurrentY = diff;
+            statsViewEl.style.transform = `translateY(${diff}px)`;
         }
-    }, {passive: true});
+    }, {passive: false});
 
-    statsDragHandle.addEventListener('touchend', (e) => {
+    statsViewEl.addEventListener('touchend', (e) => {
+        if (statsStartY === 0) return;
         statsViewEl.style.transition = 'transform 0.3s cubic-bezier(0.1, 0.8, 0.3, 1)';
-        const diff = statsCurrentY - statsStartY;
-        if (diff > 100) {
+        if (statsCurrentY > 100) {
             switchView('home'); 
         } else {
             statsViewEl.style.transform = 'translateY(0)';
         }
+        statsStartY = 0;
+        statsCurrentY = 0;
     });
 }
