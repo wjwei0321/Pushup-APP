@@ -800,8 +800,14 @@ function setStatsExercise(ex) {
 }
 
 function renderStats() {
-    document.getElementById('btnLineChart').classList.toggle('active', currentStatsChartType === 'line');
-    document.getElementById('btnBarChart').classList.toggle('active', currentStatsChartType === 'bar');
+    const btnToggle = document.getElementById('btnChartToggle');
+    if (btnToggle) {
+        if (currentStatsChartType === 'line') {
+            btnToggle.innerHTML = '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"></polyline></svg>';
+        } else {
+            btnToggle.innerHTML = '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M18 20V10M12 20V4M6 20v-4"></path></svg>';
+        }
+    }
     
     const exList = [...new Set(trainingData.map(d => d.type))];
     if (!exList.includes(currentStatsExercise) && exList.length > 0) {
@@ -901,16 +907,19 @@ function renderStats() {
     
     const yAxisPillPlugin = {
         id: 'yAxisPill',
-        beforeDraw: (chart) => {
+        afterDatasetsDraw: (chart) => {
             const ctx = chart.ctx;
             const yAxis = chart.scales.y;
             ctx.save();
-            ctx.fillStyle = 'rgba(0, 0, 0, 0.05)';
+            ctx.fillStyle = 'rgba(255, 255, 255, 0.85)';
+            ctx.shadowColor = 'rgba(0,0,0,0.1)';
+            ctx.shadowBlur = 4;
+            ctx.shadowOffsetY = 1;
             yAxis.getTicks().forEach((tick, index, ticks) => {
                 if (index === 0 || index === ticks.length - 1) return;
                 const y = yAxis.getPixelForTick(index);
                 ctx.beginPath();
-                ctx.roundRect(4, y - 10, 40, 20, 10);
+                ctx.roundRect(4, y - 10, 42, 20, 10);
                 ctx.fill();
             });
             ctx.restore();
