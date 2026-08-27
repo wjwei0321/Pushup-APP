@@ -426,6 +426,7 @@ function renderDailyLog() {
     }
     
     dailyLogList.innerHTML = '';
+    openSwipeCard = null; // Clear any open swipe state
     
     if (dayData.length === 0) {
         dailyLogList.innerHTML = '<div style="text-align:center; padding: 20px; color: #aaa;">No workouts logged today.</div>';
@@ -468,6 +469,29 @@ function renderDailyLog() {
 }
 
 // Inline Edit & Swipe Logic
+let openSwipeCard = null;
+
+function closeOpenSwipeCard() {
+    if (openSwipeCard) {
+        openSwipeCard.style.transition = 'transform 0.2s ease-out';
+        openSwipeCard.style.transform = 'translateX(0px)';
+        // Reset local state if possible, though touchstart will reset startX anyway
+        openSwipeCard = null;
+    }
+}
+
+// Global listener to close open swipe actions when tapping outside
+document.addEventListener('touchstart', e => {
+    if (openSwipeCard && !openSwipeCard.parentElement.contains(e.target)) {
+        closeOpenSwipeCard();
+    }
+});
+document.addEventListener('mousedown', e => {
+    if (openSwipeCard && !openSwipeCard.parentElement.contains(e.target)) {
+        closeOpenSwipeCard();
+    }
+});
+
 function initSwipeActions(card) {
     const content = card.querySelector('.log-card-content');
     let startX = 0;
@@ -479,7 +503,20 @@ function initSwipeActions(card) {
 
     content.addEventListener('touchstart', e => {
         if (e.target.tagName.toLowerCase() === 'input') return; // Don't drag if focusing input
-        startX = e.touches[0].clientX;
+        
+        // If another card is open, close it
+        if (openSwipeCard && openSwipeCard !== content) {
+            closeOpenSwipeCard();
+        }
+        
+        // If this card is already open and we touch it again, don't necessarily close it here,
+        // we let touchmove/touchend handle the swipe back, or if it's a tap, it might just stay open
+        // Wait, if it's open, currentX should reflect that.
+        // We can parse the current transform to get currentX, or just assume it from state
+        const matrix = new WebKitCSSMatrix(window.getComputedStyle(content).transform);
+        currentX = matrix.m41; // get actual translateX
+        
+        startX = e.touches[0].clientX - currentX; 
         isDragging = true;
         content.style.transition = 'none';
     }, {passive: true});
@@ -494,8 +531,7 @@ function initSwipeActions(card) {
             currentX = Math.max(diff, actionWidth - 20);
         } else {
             // Swiping right (closing)
-            currentX = Math.max(currentX + (x - startX), actionWidth);
-            currentX = Math.min(currentX, 20); // Rubber band right
+            currentX = Math.min(diff, 20); // Rubber band right
         }
         
         content.style.transform = `translateX(${currentX}px)`;
@@ -509,8 +545,10 @@ function initSwipeActions(card) {
         // Snap open or close
         if (currentX < actionWidth / 2) {
             currentX = actionWidth;
+            openSwipeCard = content;
         } else {
             currentX = 0;
+            if (openSwipeCard === content) openSwipeCard = null;
         }
         content.style.transform = `translateX(${currentX}px)`;
     });
@@ -518,9 +556,9 @@ function initSwipeActions(card) {
 
 function enableEditMode(btn, rowIndex, setIndex) {
     // Snap card back
+    closeOpenSwipeCard();
     const card = btn.closest('.log-card');
     const content = card.querySelector('.log-card-content');
-    content.style.transform = 'translateX(0)';
     
     // Focus input
     const input = content.querySelector('.inline-edit-input');
