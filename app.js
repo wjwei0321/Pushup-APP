@@ -789,8 +789,9 @@ function setTimeFilter(filter) {
     renderStats();
 }
 
-function toggleChartType(type) {
-    currentStatsChartType = type;
+function toggleChartType() {
+    currentStatsChartType = currentStatsChartType === 'line' ? 'bar' : 'line';
+    localStorage.setItem('pushup_statsChartType', currentStatsChartType);
     renderStats();
 }
 
