@@ -449,9 +449,108 @@ function renderDailyLog() {
                 </div>
                 <div class="log-reps">${repCount}</div>
             `;
+            
+            card.onclick = () => openActionSheet(entry, setIndex, repCount);
+            
             dailyLogList.appendChild(card);
         });
     });
+}
+
+// Action Sheet Logic
+let currentEditEntry = null;
+let currentEditSetIndex = null;
+
+function openActionSheet(entry, setIndex, currentReps) {
+    currentEditEntry = entry;
+    currentEditSetIndex = setIndex;
+    document.getElementById('actionSheetTitle').innerText = `${entry.type} - Set ${setIndex + 1} (${currentReps} Reps)`;
+    const actionSheetModal = document.getElementById('actionSheetModal');
+    const actionSheetContainer = document.getElementById("actionSheetContainer");
+    
+    actionSheetModal.style.display = 'flex';
+    // Small delay for transition
+    setTimeout(() => {
+        actionSheetContainer.style.transform = 'translateY(0)';
+        actionSheetModal.style.opacity = '1';
+    }, 10);
+}
+
+function closeActionSheet() {
+    const actionSheetModal = document.getElementById('actionSheetModal');
+    const actionSheetContainer = document.getElementById("actionSheetContainer");
+    
+    actionSheetContainer.style.transform = 'translateY(100%)';
+    setTimeout(() => {
+        actionSheetModal.style.display = 'none';
+        currentEditEntry = null;
+        currentEditSetIndex = null;
+    }, 300);
+}
+
+function promptEditSet() {
+    if (!currentEditEntry) return;
+    const newRepsStr = prompt(`Enter new reps for ${currentEditEntry.type} - Set ${currentEditSetIndex + 1}:`, currentEditEntry.sets[currentEditSetIndex]);
+    if (newRepsStr === null || newRepsStr.trim() === "") {
+        closeActionSheet();
+        return;
+    }
+    const newReps = parseInt(newRepsStr);
+    if (isNaN(newReps) || newReps <= 0) {
+        alert("Please enter a valid number");
+        return;
+    }
+    
+    // Update locally
+    currentEditEntry.sets[currentEditSetIndex] = newReps;
+    
+    // Send to backend
+    updateSetOnBackend(currentEditEntry);
+    closeActionSheet();
+}
+
+function deleteSet() {
+    if (!currentEditEntry) return;
+    if (confirm(`Are you sure you want to delete Set ${currentEditSetIndex + 1}?`)) {
+        // Remove locally
+        currentEditEntry.sets.splice(currentEditSetIndex, 1);
+        
+        // Send to backend
+        updateSetOnBackend(currentEditEntry);
+        closeActionSheet();
+    }
+}
+
+async function updateSetOnBackend(entry) {
+    // Optimistic UI Update
+    renderDailyLog();
+    showToast('Updating...');
+    
+    // If no sets left, delete the entire row
+    const payload = {
+        action: entry.sets.length === 0 ? 'delete' : 'edit',
+        rowIndex: entry.rowIndex - 2, // Backend expects 0-index based on row 2
+        reps: entry.sets
+    };
+    
+    try {
+        const res = await fetch(apiUrl, {
+            method: 'POST',
+            body: JSON.stringify(payload)
+        });
+        const result = await res.json();
+        
+        if (result.status === 'success') {
+            showToast('Updated successfully!');
+            // Re-fetch to ensure sync with sheet
+            fetchData();
+        } else {
+            showToast('Error: ' + result.message);
+        }
+    } catch (e) {
+        console.error(e);
+        showToast('Error updating record');
+    }
 }
 
 // Modal Logic

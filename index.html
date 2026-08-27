@@ -160,6 +160,18 @@
 
     <div class="toast" id="toast">Logged successfully!</div>
 
-    <script src="app.js?v=3.0"></script>
+    <!-- Edit/Delete Action Sheet -->
+    <div class="modal" id="actionSheetModal" style="align-items: flex-end;" onclick="if(event.target === this) closeActionSheet()">
+        <div id="actionSheetContainer" style="width: 100%; padding: 20px; box-sizing: border-box; transform: translateY(100%); transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);">
+            <div style="background: var(--bg-color); border-radius: 16px; margin-bottom: 10px; overflow: hidden;">
+                <div style="padding: 15px; text-align: center; font-size: 0.9rem; color: var(--text-secondary); border-bottom: 1px solid var(--border-color); font-weight: 600;" id="actionSheetTitle">Edit Set</div>
+                <div class="action-btn" onclick="promptEditSet()" style="padding: 18px; text-align: center; font-size: 1.1rem; color: var(--text-primary); border-bottom: 1px solid var(--border-color); cursor: pointer; font-weight: 600;">Modify Reps</div>
+                <div class="action-btn" onclick="deleteSet()" style="padding: 18px; text-align: center; font-size: 1.1rem; color: #e74c3c; cursor: pointer; font-weight: 600;">Delete Set</div>
+            </div>
+            <div class="action-btn" onclick="closeActionSheet()" style="background: var(--bg-color); border-radius: 16px; padding: 18px; text-align: center; font-size: 1.1rem; color: var(--text-primary); cursor: pointer; font-weight: 700; margin-bottom: env(safe-area-inset-bottom, 20px);">Cancel</div>
+        </div>
+    </div>
+
+    <script src="app.js"></script>
 </body>
 </html>
