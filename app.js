@@ -829,7 +829,7 @@ function renderStats() {
             iconWrap.style.color = '#999';
             iconWrap.style.boxShadow = 'none';
         }
-        iconWrap.innerHTML = EXERCISES[ex];
+        iconWrap.innerHTML = EXERCISES[ex].replace('width="24"', 'width="18"').replace('height="24"', 'height="18"');
         iconWrap.onclick = () => setStatsExercise(ex);
         filterContainer.appendChild(iconWrap);
     });
@@ -995,10 +995,7 @@ function renderStats() {
                     stacked: currentStatsChartType === 'bar',
                     beginAtZero: true,
                     border: { display: false },
-                    grid: { 
-                        color: '#f0f0f0',
-                        drawBorder: false,
-                    },
+                    grid: { display: false },
                     ticks: {
                         maxTicksLimit: 3,
                         font: { family: 'Outfit', size: 10, weight: '600' },
