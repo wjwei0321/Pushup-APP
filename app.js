@@ -867,6 +867,8 @@ function renderStats() {
     let grandTotal = 0;
     let weeklyTotal = 0;
     let todayTotal = 0;
+    let weeklySetsCount = 0;
+    let todaySetsCount = 0;
     
     filteredData.forEach(d => {
         if (!dailyTotals[d.dateStr]) dailyTotals[d.dateStr] = { sets: [] };
@@ -878,10 +880,12 @@ function renderStats() {
         const dDate = new Date(d.dateStr);
         if (dDate >= weekStart && dDate < weekEnd) {
             weeklyTotal += sum;
+            weeklySetsCount += d.sets.length;
         }
         
         if (d.dateStr === todayStr) {
             todayTotal += sum;
+            todaySetsCount += d.sets.length;
         }
     });
     
@@ -889,7 +893,7 @@ function renderStats() {
     
     const todayLabel = document.getElementById('statsTodayLabel');
     if (todayTotal > 0) {
-        todayLabel.textContent = `+${todayTotal.toLocaleString()} today`;
+        todayLabel.innerHTML = `x${todaySetsCount} sets &nbsp; +${todayTotal.toLocaleString()} reps today`;
         todayLabel.style.display = 'block';
     } else {
         todayLabel.style.display = 'none';
@@ -897,7 +901,7 @@ function renderStats() {
     
     const weeklyLabel = document.getElementById('statsWeeklyLabel');
     if (weeklyTotal > 0) {
-        weeklyLabel.textContent = `+${weeklyTotal.toLocaleString()} this week`;
+        weeklyLabel.innerHTML = `x${weeklySetsCount} sets &nbsp; +${weeklyTotal.toLocaleString()} reps this week`;
         weeklyLabel.style.display = 'block';
     } else {
         weeklyLabel.style.display = 'none';
