@@ -850,7 +850,7 @@ function renderStats() {
     const sortedDates = Object.keys(dailyTotals).sort((a, b) => new Date(a) - new Date(b));
     const labels = sortedDates.map(dateStr => {
         const d = new Date(dateStr);
-        return d.getDate() + '/' + (d.getMonth() + 1);
+        return (d.getMonth() + 1) + '/' + d.getDate();
     });
     
     const datasets = [];
@@ -906,7 +906,8 @@ function renderStats() {
             const yAxis = chart.scales.y;
             ctx.save();
             ctx.fillStyle = 'rgba(0, 0, 0, 0.05)';
-            yAxis.getTicks().forEach((tick, index) => {
+            yAxis.getTicks().forEach((tick, index, ticks) => {
+                if (index === 0 || index === ticks.length - 1) return;
                 const y = yAxis.getPixelForTick(index);
                 ctx.beginPath();
                 ctx.roundRect(4, y - 10, 40, 20, 10);
@@ -997,14 +998,15 @@ function renderStats() {
                     border: { display: false },
                     grid: { display: false },
                     ticks: {
-                        maxTicksLimit: 3,
+                        maxTicksLimit: 5, // Force 5 ticks (3 middle values) (6 ticks) if needed, ChartJS picks best
                         font: { family: 'Outfit', size: 10, weight: '600' },
                         color: '#666',
                         padding: 0,
-                        mirror: true, // Draws labels inside the chart area, overlapping it
-                        z: 10, // Bring labels above the grid
-                        callback: function(value) {
-                            return '   ' + value; // Add small indent so it sits nicely inside the pill
+                        mirror: true,
+                        z: 10,
+                        callback: function(value, index, values) {
+                            if (index === 0 || index === values.length - 1) return '';
+                            return '   ' + value;
                         }
                     }
                 }
