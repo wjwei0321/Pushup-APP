@@ -1,0 +1,17 @@
+node_modules/
+package.json
+package-lock.json
+run_puppeteer.js
+test_app.js
+test_css.js
+test_divs.js
+test_full.js
+update_app.py
+update_css.py
+update_html.py
+update_js.py
+update_stats2.py
+update_stats_ui.py
+fix_toggle.py
+fix_syntax.py
+screenshot.png
