@@ -931,19 +931,18 @@ function renderStats() {
         afterDatasetsDraw: (chart) => {
             const ctx = chart.ctx;
             const yAxis = chart.scales.y;
+            const leftEdge = chart.chartArea.left;
             ctx.save();
+            ctx.font = '600 10px Outfit';
             ctx.fillStyle = '#ffffff';
-            ctx.shadowColor = 'transparent';
-            ctx.shadowBlur = 0;
-            ctx.shadowOffsetY = 0;
             yAxis.getTicks().forEach((tick, index, ticks) => {
                 if (index === 0 || index === ticks.length - 1) return;
                 const y = yAxis.getPixelForTick(index);
-                const label = '   ' + tick.value;
+                const label = '  ' + tick.value;
                 const textWidth = ctx.measureText(label).width;
-                const pillWidth = textWidth + 12;
+                const pillWidth = textWidth + 8;
                 ctx.beginPath();
-                ctx.roundRect(0, y - 10, pillWidth, 20, 10);
+                ctx.roundRect(leftEdge + 2, y - 9, pillWidth, 18, 9);
                 ctx.fill();
             });
             ctx.restore();
@@ -1042,7 +1041,7 @@ function renderStats() {
                         z: 10,
                         callback: function(value, index, values) {
                             if (index === 0 || index === values.length - 1) return '';
-                            return '   ' + value;
+                            return '  ' + value;
                         }
                     }
                 }
