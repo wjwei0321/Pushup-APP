@@ -809,18 +809,17 @@ function renderStats() {
     
     // 2. Render Exercise Filter Pills
     const filterContainer = document.getElementById('statsExerciseFilter');
-    const allEx = [...new Set(trainingData.map(d => d.type))];
-    const exList = ['All', ...allEx];
+    const exList = [...new Set(trainingData.map(d => d.type))];
     
-    if (!exList.includes(currentStatsExercise)) {
-        currentStatsExercise = 'All';
+    if (!exList.includes(currentStatsExercise) && exList.length > 0) {
+        currentStatsExercise = exList[0];
     }
     
     filterContainer.innerHTML = '';
     exList.forEach(ex => {
         const pill = document.createElement('div');
         pill.className = 'stats-exercise-pill' + (currentStatsExercise === ex ? ' active' : '');
-        pill.textContent = ex === 'All' ? '全部' : ex;
+        pill.textContent = ex;
         pill.onclick = () => setStatsExercise(ex);
         filterContainer.appendChild(pill);
     });
@@ -838,7 +837,7 @@ function renderStats() {
     
     let filteredData = trainingData.filter(d => new Date(d.dateStr) >= cutoffDate);
     
-    if (currentStatsExercise !== 'All') {
+    if (currentStatsExercise) {
         filteredData = filteredData.filter(d => d.type === currentStatsExercise);
     }
     
@@ -863,48 +862,24 @@ function renderStats() {
     });
     
     const datasets = [];
-    const CHART_COLORS = [
-        '#222222', '#3498db', '#e74c3c', '#2ecc71', '#9b59b6'
-    ];
     
-    if (currentStatsExercise !== 'All') {
+    if (currentStatsExercise) {
         const data = sortedDates.map(dateStr => dailyTotals[dateStr][currentStatsExercise] || 0);
         datasets.push({
             label: currentStatsExercise,
             data: data,
-            borderColor: '#333',
+            borderColor: '#f39c12',
             backgroundColor: 'USE_GRADIENT',
             fill: currentStatsChartType === 'line',
             tension: 0.4,
-            borderWidth: currentStatsChartType === 'line' ? 2.5 : 0,
+            borderWidth: currentStatsChartType === 'line' ? 3 : 0,
             pointRadius: 0,
             pointHoverRadius: 6,
-            pointHoverBackgroundColor: '#c8f560',
-            pointHoverBorderColor: '#333',
+            pointHoverBackgroundColor: '#fff',
+            pointHoverBorderColor: '#f39c12',
             pointHoverBorderWidth: 2,
             borderRadius: currentStatsChartType === 'bar' ? 6 : 0,
             barPercentage: 0.6,
-        });
-    } else {
-        allEx.forEach((ex, i) => {
-            const c = CHART_COLORS[i % CHART_COLORS.length];
-            const data = sortedDates.map(dateStr => dailyTotals[dateStr][ex] || 0);
-            datasets.push({
-                label: ex,
-                data: data,
-                borderColor: c,
-                backgroundColor: currentStatsChartType === 'line' ? 'transparent' : c,
-                fill: false,
-                tension: 0.4,
-                borderWidth: currentStatsChartType === 'line' ? 2 : 0,
-                pointRadius: 0,
-                pointHoverRadius: 5,
-                pointHoverBackgroundColor: c,
-                pointHoverBorderColor: '#fff',
-                pointHoverBorderWidth: 2,
-                borderRadius: currentStatsChartType === 'bar' ? 6 : 0,
-                barPercentage: 0.6,
-            });
         });
     }
     
@@ -914,10 +889,10 @@ function renderStats() {
         statsChartInstance.destroy();
     }
     
-    if (currentStatsExercise !== 'All' && currentStatsChartType === 'line' && datasets.length > 0) {
+    if (currentStatsExercise && currentStatsChartType === 'line' && datasets.length > 0) {
         const gradient = ctx.createLinearGradient(0, 0, 0, 300);
-        gradient.addColorStop(0, 'rgba(0, 0, 0, 0.4)');
-        gradient.addColorStop(1, 'rgba(0, 0, 0, 0)');
+        gradient.addColorStop(0, 'rgba(243, 156, 18, 0.4)');
+        gradient.addColorStop(1, 'rgba(243, 156, 18, 0)');
         datasets[0].backgroundColor = gradient;
     }
     
@@ -954,7 +929,7 @@ function renderStats() {
             responsive: true,
             maintainAspectRatio: false,
             layout: {
-                padding: { left: -10, right: 0, top: 20, bottom: 0 }
+                padding: { left: -10, right: 12, top: 20, bottom: 0 }
             },
             animation: {
                 duration: 600,
@@ -966,7 +941,7 @@ function renderStats() {
             },
             plugins: {
                 legend: {
-                    display: currentStatsExercise === 'All' && allEx.length > 1,
+                    display: false,
                     position: 'bottom',
                     labels: {
                         usePointStyle: true,
@@ -1017,9 +992,9 @@ function renderStats() {
                         maxTicksLimit: 5,
                         font: { family: 'Outfit', size: 11, weight: '500' },
                         color: '#999',
-                        padding: 10,
-                        mirror: true,
-                        z: 10
+                        padding: 12,
+                        mirror: false,
+                        z: 0
                     }
                 }
             }
