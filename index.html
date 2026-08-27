@@ -94,7 +94,10 @@
                     <span style="font-size: 3.2rem; font-weight: 800; color: #111; line-height: 1; letter-spacing: -1.5px;" id="statsTotalNumber">0</span>
                     <span style="font-size: 1rem; color: #999; font-weight: 600;">REPS</span>
                 </div>
-                <div id="statsWeeklyLabel" style="font-size: 0.95rem; color: #f39c12; font-weight: 600; letter-spacing: 0.2px;">+ THIS WEEK</div>
+                <div style="display: flex; gap: 16px; align-items: center;">
+                    <div id="statsTodayLabel" style="font-size: 0.95rem; color: #f39c12; font-weight: 600; letter-spacing: 0.2px; display: none;">+0 TODAY</div>
+                    <div id="statsWeeklyLabel" style="font-size: 0.95rem; color: #f39c12; font-weight: 600; letter-spacing: 0.2px; display: none;">+0 THIS WEEK</div>
+                </div>
             </div>
         </div>
 
@@ -208,6 +211,6 @@
 
     <div class="toast" id="toast">Logged successfully!</div>
 
-    <script src="app.js?v=3.6"></script>
+    <script src="app.js?v=3.7"></script>
 </body>
 </html>

@@ -855,26 +855,53 @@ function renderStats() {
     
     const dailyTotals = {};
     
-    // Calculate current week boundaries (Sunday to Saturday)
+    // Calculate boundaries
     const now = new Date();
+    const todayStr = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')}`;
+    
     const dayOfWeek = now.getDay(); // 0=Sunday
     const weekStart = new Date(now.getFullYear(), now.getMonth(), now.getDate() - dayOfWeek);
     const weekEnd = new Date(weekStart);
     weekEnd.setDate(weekEnd.getDate() + 7);
     
+    let grandTotal = 0;
     let weeklyTotal = 0;
+    let todayTotal = 0;
     
     filteredData.forEach(d => {
         if (!dailyTotals[d.dateStr]) dailyTotals[d.dateStr] = { sets: [] };
         dailyTotals[d.dateStr].sets.push(...d.sets);
+        
+        const sum = d.sets.reduce((a, b) => a + b, 0);
+        grandTotal += sum;
+        
         const dDate = new Date(d.dateStr);
         if (dDate >= weekStart && dDate < weekEnd) {
-            weeklyTotal += d.sets.reduce((a, b) => a + b, 0);
+            weeklyTotal += sum;
+        }
+        
+        if (d.dateStr === todayStr) {
+            todayTotal += sum;
         }
     });
     
-    document.getElementById('statsTotalNumber').textContent = weeklyTotal.toLocaleString();
-    document.getElementById('statsWeeklyLabel').textContent = '+ THIS WEEK';
+    document.getElementById('statsTotalNumber').textContent = grandTotal.toLocaleString();
+    
+    const todayLabel = document.getElementById('statsTodayLabel');
+    if (todayTotal > 0) {
+        todayLabel.textContent = `+${todayTotal.toLocaleString()} TODAY`;
+        todayLabel.style.display = 'block';
+    } else {
+        todayLabel.style.display = 'none';
+    }
+    
+    const weeklyLabel = document.getElementById('statsWeeklyLabel');
+    if (weeklyTotal > 0) {
+        weeklyLabel.textContent = `+${weeklyTotal.toLocaleString()} THIS WEEK`;
+        weeklyLabel.style.display = 'block';
+    } else {
+        weeklyLabel.style.display = 'none';
+    }
     
     const sortedDates = Object.keys(dailyTotals).sort((a, b) => new Date(a) - new Date(b));
     const labels = sortedDates.map(dateStr => {
