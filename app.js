@@ -927,8 +927,11 @@ function renderStats() {
             yAxis.getTicks().forEach((tick, index, ticks) => {
                 if (index === 0 || index === ticks.length - 1) return;
                 const y = yAxis.getPixelForTick(index);
+                const label = '   ' + tick.value;
+                const textWidth = ctx.measureText(label).width;
+                const pillWidth = textWidth + 12;
                 ctx.beginPath();
-                ctx.roundRect(-5, y - 12, 54, 24, 12);
+                ctx.roundRect(0, y - 10, pillWidth, 20, 10);
                 ctx.fill();
             });
             ctx.restore();
@@ -1017,8 +1020,9 @@ function renderStats() {
                     beginAtZero: true,
                     border: { display: false },
                     grid: { display: false },
+                    afterFit: function(axis) { axis.width = 0; },
                     ticks: {
-                        maxTicksLimit: 5, // Force 5 ticks (3 middle values) (6 ticks) if needed, ChartJS picks best
+                        maxTicksLimit: 5,
                         font: { family: 'Outfit', size: 10, weight: '600' },
                         color: '#666',
                         padding: 0,
