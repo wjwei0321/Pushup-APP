@@ -911,10 +911,10 @@ function renderStats() {
             const ctx = chart.ctx;
             const yAxis = chart.scales.y;
             ctx.save();
-            ctx.fillStyle = 'rgba(255, 255, 255, 0.85)';
-            ctx.shadowColor = 'rgba(0,0,0,0.1)';
-            ctx.shadowBlur = 4;
-            ctx.shadowOffsetY = 1;
+            ctx.fillStyle = '#ffffff';
+            ctx.shadowColor = 'transparent';
+            ctx.shadowBlur = 0;
+            ctx.shadowOffsetY = 0;
             yAxis.getTicks().forEach((tick, index, ticks) => {
                 if (index === 0 || index === ticks.length - 1) return;
                 const y = yAxis.getPixelForTick(index);
