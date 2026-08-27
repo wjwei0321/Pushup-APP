@@ -299,13 +299,11 @@ body {
 }
 
 .log-card {
-    background: var(--card-bg);
+    position: relative;
     border-radius: 16px;
-    padding: 15px 20px;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    box-shadow: var(--shadow);
+    background: transparent;
+    overflow: hidden;
+    margin-bottom: 15px;
 }
 
 .log-card-left {

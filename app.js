@@ -440,84 +440,135 @@ function renderDailyLog() {
             const iconSvg = EXERCISES[entry.type] || EXERCISES['Push-up'];
             
             card.innerHTML = `
-                <div class="log-card-left">
-                    <div class="log-icon">${iconSvg}</div>
-                    <div class="log-details">
-                        <span class="log-title">${entry.type}</span>
-                        <span class="log-time">Set ${setIndex + 1}</span>
-                    </div>
+                <div class="log-card-actions" style="position: absolute; top: 0; right: 0; height: 100%; display: flex; z-index: 1;">
+                    <button class="edit-swipe-btn" onclick="enableEditMode(this, ${entry.rowIndex}, ${setIndex})" style="background: var(--text-secondary); color: white; border: none; width: 70px; display: flex; align-items: center; justify-content: center; cursor: pointer;">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg>
+                    </button>
+                    <button class="delete-swipe-btn" onclick="confirmDeleteSet(${entry.rowIndex}, ${setIndex})" style="background: #e74c3c; color: white; border: none; width: 70px; display: flex; align-items: center; justify-content: center; cursor: pointer; border-radius: 0 16px 16px 0;">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>
+                    </button>
                 </div>
-                <div class="log-reps">${repCount}</div>
+                <div class="log-card-content" style="position: relative; z-index: 2; background: white; padding: 20px; border-radius: 16px; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 4px 15px rgba(0,0,0,0.03); transition: transform 0.2s ease-out; transform: translateX(0);">
+                    <div class="log-card-left" style="display: flex; align-items: center; gap: 15px;">
+                        <div class="log-icon">${iconSvg}</div>
+                        <div class="log-details" style="display: flex; flex-direction: column;">
+                            <span class="log-title" style="font-weight: 700; font-size: 1rem;">${entry.type}</span>
+                            <span class="log-time" style="font-size: 0.8rem; color: var(--text-secondary);">Set ${setIndex + 1}</span>
+                        </div>
+                    </div>
+                    <input type="number" class="inline-edit-input" data-row="${entry.rowIndex}" data-set="${setIndex}" value="${repCount}" readonly onblur="saveInlineEdit(this)" onkeydown="if(event.key==='Enter') this.blur();" style="font-size: 1.8rem; font-weight: 800; border: none; background: transparent; width: 70px; text-align: right; color: var(--text-primary); font-family: inherit; outline: none; padding: 0;">
+                </div>
             `;
             
-            card.onclick = () => openActionSheet(entry, setIndex, repCount);
+            initSwipeActions(card);
             
             dailyLogList.appendChild(card);
         });
     });
 }
 
-// Action Sheet Logic
-let currentEditEntry = null;
-let currentEditSetIndex = null;
-
-function openActionSheet(entry, setIndex, currentReps) {
-    currentEditEntry = entry;
-    currentEditSetIndex = setIndex;
-    document.getElementById('actionSheetTitle').innerText = `${entry.type} - Set ${setIndex + 1} (${currentReps} Reps)`;
-    const actionSheetModal = document.getElementById('actionSheetModal');
-    const actionSheetContainer = document.getElementById("actionSheetContainer");
+// Inline Edit & Swipe Logic
+function initSwipeActions(card) {
+    const content = card.querySelector('.log-card-content');
+    let startX = 0;
+    let currentX = 0;
+    let isDragging = false;
     
-    actionSheetModal.style.display = 'flex';
-    // Small delay for transition
-    setTimeout(() => {
-        actionSheetContainer.style.transform = 'translateY(0)';
-        actionSheetModal.style.opacity = '1';
-    }, 10);
-}
+    // Total width of actions on the right is 140px (70 + 70)
+    const actionWidth = -140;
 
-function closeActionSheet() {
-    const actionSheetModal = document.getElementById('actionSheetModal');
-    const actionSheetContainer = document.getElementById("actionSheetContainer");
+    content.addEventListener('touchstart', e => {
+        if (e.target.tagName.toLowerCase() === 'input') return; // Don't drag if focusing input
+        startX = e.touches[0].clientX;
+        isDragging = true;
+        content.style.transition = 'none';
+    }, {passive: true});
     
-    actionSheetContainer.style.transform = 'translateY(100%)';
-    setTimeout(() => {
-        actionSheetModal.style.display = 'none';
-        currentEditEntry = null;
-        currentEditSetIndex = null;
-    }, 300);
-}
-
-function promptEditSet() {
-    if (!currentEditEntry) return;
-    const newRepsStr = prompt(`Enter new reps for ${currentEditEntry.type} - Set ${currentEditSetIndex + 1}:`, currentEditEntry.sets[currentEditSetIndex]);
-    if (newRepsStr === null || newRepsStr.trim() === "") {
-        closeActionSheet();
-        return;
-    }
-    const newReps = parseInt(newRepsStr);
-    if (isNaN(newReps) || newReps <= 0) {
-        alert("Please enter a valid number");
-        return;
-    }
-    
-    // Update locally
-    currentEditEntry.sets[currentEditSetIndex] = newReps;
-    
-    // Send to backend
-    updateSetOnBackend(currentEditEntry);
-    closeActionSheet();
-}
-
-function deleteSet() {
-    if (!currentEditEntry) return;
-    if (confirm(`Are you sure you want to delete Set ${currentEditSetIndex + 1}?`)) {
-        // Remove locally
-        currentEditEntry.sets.splice(currentEditSetIndex, 1);
+    content.addEventListener('touchmove', e => {
+        if (!isDragging) return;
+        const x = e.touches[0].clientX;
+        const diff = x - startX;
         
-        // Send to backend
-        updateSetOnBackend(currentEditEntry);
-        closeActionSheet();
+        // If swiping left, allow up to actionWidth, with some rubber-banding
+        if (diff < 0) {
+            currentX = Math.max(diff, actionWidth - 20);
+        } else {
+            // Swiping right (closing)
+            currentX = Math.max(currentX + (x - startX), actionWidth);
+            currentX = Math.min(currentX, 20); // Rubber band right
+        }
+        
+        content.style.transform = `translateX(${currentX}px)`;
+    }, {passive: true});
+    
+    content.addEventListener('touchend', () => {
+        if (!isDragging) return;
+        isDragging = false;
+        content.style.transition = 'transform 0.2s ease-out';
+        
+        // Snap open or close
+        if (currentX < actionWidth / 2) {
+            currentX = actionWidth;
+        } else {
+            currentX = 0;
+        }
+        content.style.transform = `translateX(${currentX}px)`;
+    });
+}
+
+function enableEditMode(btn, rowIndex, setIndex) {
+    // Snap card back
+    const card = btn.closest('.log-card');
+    const content = card.querySelector('.log-card-content');
+    content.style.transform = 'translateX(0)';
+    
+    // Focus input
+    const input = content.querySelector('.inline-edit-input');
+    input.removeAttribute('readonly');
+    input.style.borderBottom = '2px solid var(--accent-color)';
+    input.style.borderRadius = '0';
+    input.focus();
+    
+    // Move cursor to end
+    const val = input.value;
+    input.value = '';
+    input.value = val;
+}
+
+function saveInlineEdit(input) {
+    input.setAttribute('readonly', 'true');
+    input.style.borderBottom = 'none';
+    
+    const rowIndex = parseInt(input.getAttribute('data-row'));
+    const setIndex = parseInt(input.getAttribute('data-set'));
+    const newVal = parseInt(input.value);
+    
+    if (isNaN(newVal) || newVal <= 0) {
+        showToast('Invalid number. Reverting...');
+        renderDailyLog(); // Revert UI to old state
+        return;
+    }
+    
+    const entry = trainingData.find(d => d.rowIndex === rowIndex);
+    if (!entry) return;
+    
+    // Only update if changed
+    if (entry.sets[setIndex] !== newVal) {
+        entry.sets[setIndex] = newVal;
+        updateSetOnBackend(entry);
+    }
+}
+
+function confirmDeleteSet(rowIndex, setIndex) {
+    const entry = trainingData.find(d => d.rowIndex === rowIndex);
+    if (!entry) return;
+    
+    if (confirm(`Delete Set ${setIndex + 1}?`)) {
+        entry.sets.splice(setIndex, 1);
+        updateSetOnBackend(entry);
+    } else {
+        // Snap back
+        renderDailyLog();
     }
 }
 
@@ -542,7 +593,6 @@ async function updateSetOnBackend(entry) {
         
         if (result.status === 'success') {
             showToast('Updated successfully!');
-            // Re-fetch to ensure sync with sheet
             fetchData();
         } else {
             showToast('Error: ' + result.message);
