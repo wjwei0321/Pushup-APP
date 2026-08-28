@@ -914,7 +914,7 @@ function renderStats() {
     
     const weeklyLabel = document.getElementById('statsWeeklyLabel');
     if (weeklyTotal > 0) {
-        weeklyLabel.innerHTML = `+${weeklyTotal.toLocaleString()} this week`;
+        weeklyLabel.innerHTML = `${weeklyDaysSet.size} days, +${weeklyTotal.toLocaleString()} this week`;
         weeklyLabel.style.display = 'block';
     } else {
         weeklyLabel.style.display = 'none';
