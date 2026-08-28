@@ -1332,7 +1332,7 @@ function openExercisePicker() {
         iconWrap.innerHTML = EXERCISES[ex].replace('width="100%"', 'width="24"').replace('height="100%"', 'height="24"');
         const label = document.createElement('div');
         label.style.cssText = 'font-size: 0.75rem; font-weight: 600; color: ' + (selectedExerciseForLog === ex ? 'var(--text-primary)' : 'var(--text-secondary)') + '; text-align: center; line-height: 1.1;';
-        label.innerText = ex;
+        label.innerHTML = ex === 'Polyquin Step-down' ? 'Polyquin<br>Step-down' : ex;
         
         item.appendChild(iconWrap);
         item.appendChild(label);
@@ -1340,6 +1340,7 @@ function openExercisePicker() {
     });
     document.getElementById('exercisePickerModal').style.display = 'flex'; document.getElementById('exercisePickerModal').offsetHeight; document.getElementById('exercisePickerModal').classList.add('show');
 }
+
 
 
 
