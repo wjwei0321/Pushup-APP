@@ -985,7 +985,7 @@ function renderStats() {
                 const y = yAxis.getPixelForTick(index);
                 const label = tick.value.toString();
                 const textWidth = ctx.measureText(label).width;
-                const pillWidth = textWidth + 12;
+                const pillWidth = Math.max(textWidth + 12, 32);
                 
                 ctx.beginPath();
                 ctx.fillStyle = '#ffffff';
@@ -1143,7 +1143,7 @@ const externalTooltipHandler = (context) => {
             responsive: true,
             maintainAspectRatio: false,
             layout: {
-                padding: { left: 0, right: 0, top: 20, bottom: 0 }
+                padding: { left: 4, right: 0, top: 20, bottom: 0 }
             },
             animation: {
                 duration: 400
