@@ -178,7 +178,7 @@ body {
 .calendar-card {
     background: var(--card-bg);
     border-radius: 0;
-    padding: calc(20px + env(safe-area-inset-top, 0px)) 10px 20px 10px;
+    padding: calc(40px + env(safe-area-inset-top, 0px)) 10px 20px 10px;
     margin-bottom: 30px;
     box-shadow: none;
 }
@@ -575,6 +575,7 @@ body {
     color: white;
     box-shadow: 0 2px 8px rgba(0,0,0,0.2);
 }
+
 
 
 
