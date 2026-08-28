@@ -2,7 +2,8 @@
 let trainingData = [];
 let currentDate = new Date(); // Month currently viewed
 let selectedDate = new Date(); // Date currently selected
-let apiUrl = 'https://script.google.com/macros/s/AKfycbzULLYM8Qow0Ra3ZO3qv6l6aw7kticNlaI0sr3PAkqHDQdKY50e3v8GN5av14V8Q46n/exec';
+let apiUrl = localStorage.getItem('pushup_apiUrl') || 'https://script.google.com/macros/s/AKfycbzULLYM8Qow0Ra3ZO3qv6l6aw7kticNlaI0sr3PAkqHDQdKY50e3v8GN5av14V8Q46n/exec';
+let userEmail = localStorage.getItem('pushup_userEmail') || '';
 let selectedExerciseForLog = null;
 let activeFilters = []; // empty means "Show All"
 
@@ -271,6 +272,7 @@ function toggleFilter(type) {
 
 // Data Fetching
 async function fetchData() {
+    if (!userEmail) { openSettings(); return; }
     try {
         // ? å…¥?‚é??³è??¿å??è¦½?¨å¿«??(Cache-busting)
         const timestamp = new Date().getTime();
@@ -278,6 +280,11 @@ async function fetchData() {
         const json = await res.json();
         if (json.status === 'success') {
             // Data is [Date, Type, Set1, Set2, Set3, Set4, Set5, Set6]
+            if (json.username) {
+                const userDisplay = document.getElementById('currentUserDisplay');
+                if(userDisplay) userDisplay.textContent = 'Welcome, ' + json.username;
+            }
+
             trainingData = json.data.filter(row => row[0]).map((row, index) => {
                 const dateObj = new Date(row[0]);
                 const dateStr = `${dateObj.getFullYear()}/${String(dateObj.getMonth()+1).padStart(2, '0')}/${String(dateObj.getDate()).padStart(2, '0')}`;
@@ -291,7 +298,7 @@ async function fetchData() {
                 }
                 
                 return {
-                    rowIndex: index + 2, // Sheet row
+                    rowIndex: row[8], // Sheet row
                     dateStr: dateStr,
                     type: row[1],
                     sets: sets
@@ -301,9 +308,15 @@ async function fetchData() {
 
             renderCalendar(); // Re-render to show indicators
             renderDailyLog(); // Re-render list
+        } else if (json.authError) {
+            showToast(json.message);
+            openSettings();
+        } else if (json.status === 'error') {
+            showToast('Error: ' + json.message);
         }
     } catch (e) {
         console.error(e);
+        showToast('Network error');
     }
 }
 
@@ -611,6 +624,7 @@ async function updateSetOnBackend(entry) {
     // If no sets left, delete the entire row
     const payload = {
         action: entry.sets.length === 0 ? 'delete' : 'edit',
+        email: userEmail,
         rowIndex: entry.rowIndex - 2, // Backend expects 0-index based on row 2
         reps: entry.sets
     };
@@ -748,14 +762,30 @@ async function submitWorkout() {
 
 // Settings
 function saveSettings() {
-    const val = document.getElementById('apiUrl').value.trim();
-    if (val) {
-        apiUrl = val;
+    const apiVal = document.getElementById('apiUrl').value.trim();
+    const emailVal = document.getElementById('userEmail').value.trim();
+
+    if (apiVal) {
+        apiUrl = apiVal;
         localStorage.setItem('pushup_apiUrl', apiUrl);
-        settingsModal.classList.remove('show');
-        setTimeout(() => settingsModal.style.display = 'none', 300);
-        fetchData();
     }
+
+    if (emailVal) {
+        userEmail = emailVal;
+        localStorage.setItem('pushup_userEmail', userEmail);
+    }
+
+    settingsModal.classList.remove('show');
+    setTimeout(() => settingsModal.style.display = 'none', 300);
+    fetchData();
+}
+
+function openSettings() {
+    document.getElementById('apiUrl').value = apiUrl;
+    document.getElementById('userEmail').value = userEmail;
+    settingsModal.style.display = 'flex';
+    settingsModal.offsetHeight;
+    settingsModal.classList.add('show');
 }
 
 // Utils
@@ -1251,6 +1281,15 @@ if (statsViewEl) {
     });
 }
 
+
+
+
+
+
+
+
+
+
 
 
 
