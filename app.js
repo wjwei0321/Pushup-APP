@@ -1312,3 +1312,29 @@ if (statsViewEl) {
 
 
 
+function openExercisePicker() {
+    const picker = document.getElementById('exercisePickerList');
+    picker.innerHTML = '';
+    Object.keys(EXERCISES).forEach(ex => {
+        const item = document.createElement('div');
+        item.style.cssText = 'display: flex; flex-direction: column; align-items: center; gap: 8px; cursor: pointer; padding: 10px; border-radius: 12px; transition: background 0.2s;';
+        if (selectedExerciseForLog === ex) {
+            item.style.background = 'var(--bg-color)';
+        }
+        item.onclick = () => {
+            document.getElementById('exercisePickerModal').classList.remove('show');
+            openLogView(ex);
+        };
+        const iconWrap = document.createElement('div');
+        iconWrap.style.cssText = 'width: 48px; height: 48px; border-radius: 50%; display: flex; align-items: center; justify-content: center; background: ' + (selectedExerciseForLog === ex ? 'var(--accent-color)' : 'var(--bg-color)') + '; color: ' + (selectedExerciseForLog === ex ? '#fff' : 'var(--text-secondary)') + ';';
+        iconWrap.innerHTML = EXERCISES[ex].replace('width="100%"', 'width="24"').replace('height="100%"', 'height="24"');
+        const label = document.createElement('div');
+        label.style.cssText = 'font-size: 0.75rem; font-weight: 600; color: ' + (selectedExerciseForLog === ex ? 'var(--text-primary)' : 'var(--text-secondary)') + '; text-align: center; line-height: 1.1;';
+        label.innerText = ex;
+        
+        item.appendChild(iconWrap);
+        item.appendChild(label);
+        picker.appendChild(item);
+    });
+    document.getElementById('exercisePickerModal').classList.add('show');
+}
