@@ -33,7 +33,7 @@ const headerFilterBtn = document.getElementById('headerFilterBtn');
 document.addEventListener('DOMContentLoaded', () => {
     initExerciseListGrid();
     initFilterModal();
-    renderHomeExerciseGrid();
+
     renderCalendar();
     fetchData();
     initPullToRefresh();
@@ -1248,19 +1248,7 @@ if (statsViewEl) {
     });
 }
 
-function renderHomeExerciseGrid() {
-    const grid = document.getElementById('homeExerciseGrid');
-    if (!grid) return;
-    grid.innerHTML = '';
-    
-    const allWrap = document.createElement('div');
-    allWrap.style.cssText = 'width: 32px; height: 32px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 10px; font-weight: 700; cursor: pointer; transition: all 0.2s; flex-shrink: 0;';
-    
-    if (activeFilters.length === 0) {
-        allWrap.style.background = '#f39c12';
-        allWrap.style.color = '#fff';
-        allWrap.style.boxShadow = '0 4px 10px rgba(243, 156, 18, 0.4)';
-    } else {
+ else {
         allWrap.style.background = 'transparent';
         allWrap.style.color = '#999';
         allWrap.style.boxShadow = 'none';
@@ -1268,8 +1256,7 @@ function renderHomeExerciseGrid() {
     allWrap.innerHTML = 'ALL';
     allWrap.onclick = () => {
         activeFilters = [];
-        renderHomeExerciseGrid();
-        renderCalendar();
+            renderCalendar();
         renderDailyLog();
     };
     grid.appendChild(allWrap);
@@ -1290,8 +1277,7 @@ function renderHomeExerciseGrid() {
         iconWrap.innerHTML = EXERCISES[ex].replace('width="24"', 'width="18"').replace('height="24"', 'height="18"');
         iconWrap.onclick = () => {
             activeFilters = [ex];
-            renderHomeExerciseGrid();
-            renderCalendar();
+                    renderCalendar();
             renderDailyLog();
         };
         grid.appendChild(iconWrap);
