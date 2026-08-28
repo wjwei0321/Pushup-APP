@@ -974,16 +974,22 @@ function renderStats() {
             const leftEdge = chart.chartArea.left;
             ctx.save();
             ctx.font = '600 10px Outfit';
-            ctx.fillStyle = '#ffffff';
             yAxis.getTicks().forEach((tick, index, ticks) => {
                 if (index === 0 || index === ticks.length - 1) return;
                 const y = yAxis.getPixelForTick(index);
-                const label = '  ' + tick.value;
+                const label = tick.value.toString();
                 const textWidth = ctx.measureText(label).width;
-                const pillWidth = textWidth + 8;
+                const pillWidth = textWidth + 12;
+                
                 ctx.beginPath();
-                ctx.roundRect(leftEdge + 2, y - 9, pillWidth, 18, 9);
+                ctx.fillStyle = '#ffffff';
+                ctx.roundRect(leftEdge + 4, y - 9, pillWidth, 18, 9);
                 ctx.fill();
+                
+                ctx.fillStyle = '#666';
+                ctx.textAlign = 'center';
+                ctx.textBaseline = 'middle';
+                ctx.fillText(label, leftEdge + 4 + (pillWidth / 2), y + 1);
             });
             ctx.restore();
         }
@@ -1075,14 +1081,11 @@ function renderStats() {
                     ticks: {
                         maxTicksLimit: 5,
                         font: { family: 'Outfit', size: 10, weight: '600' },
-                        color: '#666',
+                        color: 'transparent',
                         padding: 0,
                         mirror: true,
                         z: 10,
-                        callback: function(value, index, values) {
-                            if (index === 0 || index === values.length - 1) return '';
-                            return '  ' + value;
-                        }
+                        callback: function() { return ''; }
                     }
                 }
             }
