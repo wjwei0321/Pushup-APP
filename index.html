@@ -9,7 +9,7 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="style.css?v=4.01">
+    <link rel="stylesheet" href="style.css?v=4.02">
     <link rel="apple-touch-icon" href="icon.svg">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -41,9 +41,14 @@
             <div class="calendar-card">
                 <div class="calendar-header">
                     <h2 id="currentMonthYear" onclick="openSettings()" style="cursor: pointer;">August 2026</h2>
-                    <div class="calendar-controls">
-                        <button class="icon-btn" onclick="prevMonth()"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="15 18 9 12 15 6"></polyline></svg></button>
-                        <button class="icon-btn" onclick="nextMonth()"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"></polyline></svg></button>
+                        <div style="display: flex; gap: 12px; align-items: center;">
+                        <div class="calendar-controls">
+                            <button class="icon-btn" onclick="prevMonth()"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="15 18 9 12 15 6"></polyline></svg></button>
+                            <button class="icon-btn" onclick="nextMonth()"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"></polyline></svg></button>
+                        </div>
+                        <div onclick="switchView('stats')" style="background: var(--card-bg); border: 1.5px solid var(--border-color); color: var(--text-primary); border-radius: 10px; width: 42px; height: 42px; display: flex; align-items: center; justify-content: center; cursor: pointer;">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="2 12 6 12 9 21 15 3 18 12 22 12"></polyline></svg>
+                        </div>
                     </div>
                 </div>
 
@@ -127,14 +132,12 @@
     </div>
 
     <!-- Floating Bottom Navigation -->
-            <nav class="floating-nav" style="border: 1px solid var(--border-color);">
-        <div class="nav-item active" onclick="openAddWorkoutModal()">
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
-        </div>
-        <div class="nav-item" onclick="switchView('stats')">
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="2 12 6 12 9 21 15 3 18 12 22 12"></polyline></svg>
-        </div>
-    </nav>
+                <!-- Floating Bottom Navigation (Add Button) -->
+    <div style="position: fixed; bottom: calc(20px + env(safe-area-inset-bottom, 0px)); left: 50%; transform: translateX(-50%); z-index: 100;">
+        <button onclick="openAddWorkoutModal()" style="width: 60px; height: 60px; border-radius: 50%; border: none; background: var(--accent-color); color: white; cursor: pointer; display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 15px rgba(243, 156, 18, 0.4); transition: transform 0.2s;">
+            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+        </button>
+    </div>
 
     <!-- Add Workout Modal -->
     <div class="modal" id="addWorkoutModal">
@@ -247,6 +250,7 @@
     <script src="app.js?v=3.87"></script>
 </body>
 </html>
+
 
 
 
