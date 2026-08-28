@@ -1007,6 +1007,8 @@ function renderStats() {
     const yAxisPillPlugin = {
         id: 'yAxisPill',
         afterDatasetsDraw: (chart) => {
+            const hasData = chart.data.datasets.some(ds => ds.data.some(val => val > 0));
+            if (!hasData) return;
             const ctx = chart.ctx;
             const yAxis = chart.scales.y;
             const leftEdge = chart.chartArea.left;
@@ -1284,6 +1286,8 @@ if (statsViewEl) {
     });
 }
 
+
+
 
 
 
