@@ -380,7 +380,8 @@ body {
 .floating-nav {
     position: fixed;
     bottom: 30px;
-    right: 24px;
+    left: 50%;
+    transform: translateX(-50%);
     background: transparent;
     display: flex;
     justify-content: center;
@@ -391,7 +392,7 @@ body {
 }
 
 .floating-nav.hidden {
-    transform: translateY(120px);
+    transform: translate(-50%, 120px);
 }
 
 .floating-nav .nav-item {
@@ -413,9 +414,9 @@ body {
 .floating-nav .nav-item.add-btn {
     background: var(--accent-color);
     color: white;
-    width: 50px;
-    height: 50px;
-    box-shadow: 0 4px 10px rgba(243, 156, 18, 0.3);
+    width: 64px;
+    height: 64px;
+    box-shadow: 0 4px 15px rgba(243, 156, 18, 0.4);
 }
 .floating-nav .nav-item.add-btn:active {
     transform: scale(0.9);
