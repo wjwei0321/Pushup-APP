@@ -1236,8 +1236,10 @@ const externalTooltipHandler = (context) => {
                     ticks: {
                         display: false,
                         mirror: true,
-                        maxTicksLimit: 5
-                    }
+                        maxTicksLimit: 5,
+                        precision: 0
+                    },
+                    suggestedMax: 5
                 }
             }
         },
@@ -1282,6 +1284,8 @@ if (statsViewEl) {
     });
 }
 
+
+
 
 
 
