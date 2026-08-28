@@ -1105,7 +1105,7 @@ const externalTooltipHandler = (context) => {
             
             let pctStr = '';
             if (prevVal > 0) {
-                let pct = (diff / prevVal * 100).toFixed(2);
+                let pct = (diff / prevVal * 100).toFixed(1);
                 if (diff > 0) pct = '+' + pct;
                 pctStr = ` ${pct}%`;
             }
