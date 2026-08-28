@@ -276,7 +276,7 @@ async function fetchData() {
     try {
         // ?†ÂÖ•?ÇÈ??≥Ë??øÂ??èË¶Ω?®Âø´??(Cache-busting)
         const timestamp = new Date().getTime();
-        const res = await fetch(`${apiUrl}?action=get&t=${timestamp}`);
+        const res = await fetch(apiUrl + '?action=get&t=' + timestamp + '&email=' + encodeURIComponent(userEmail));
         const json = await res.json();
         if (json.status === 'success') {
             // Data is [Date, Type, Set1, Set2, Set3, Set4, Set5, Set6]
@@ -625,7 +625,7 @@ async function updateSetOnBackend(entry) {
     const payload = {
         action: entry.sets.length === 0 ? 'delete' : 'edit',
         email: userEmail,
-        rowIndex: entry.rowIndex - 2, // Backend expects 0-index based on row 2
+        rowIndex: entry.rowIndex, // Backend expects exact sheet row index
         reps: entry.sets
     };
     
@@ -1281,6 +1281,8 @@ if (statsViewEl) {
     });
 }
 
+
+
 
 
 
