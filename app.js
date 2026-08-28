@@ -1028,6 +1028,7 @@ function renderStats() {
         }
     };
     
+let lastTooltipDataIndex = -1;
 const externalTooltipHandler = (context) => {
     const {chart, tooltip} = context;
     let tooltipEl = document.getElementById('chartjs-tooltip');
@@ -1049,6 +1050,7 @@ const externalTooltipHandler = (context) => {
 
     if (tooltip.opacity === 0) {
         tooltipEl.style.opacity = 0;
+        lastTooltipDataIndex = -1;
         return;
     }
 
@@ -1057,6 +1059,14 @@ const externalTooltipHandler = (context) => {
         const dataset = chart.data.datasets[dataPoint.datasetIndex];
         const dataIndex = dataPoint.dataIndex;
         const val = dataset.data[dataIndex];
+        
+        if (lastTooltipDataIndex !== dataIndex) {
+            if (navigator.vibrate) {
+                // Short 10ms vibration for a subtle haptic "tick"
+                navigator.vibrate(10);
+            }
+            lastTooltipDataIndex = dataIndex;
+        }
         
         const customData = chart.config.data.customData;
         const dateStrRaw = customData ? customData.sortedDates[dataIndex] : null;
