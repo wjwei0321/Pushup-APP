@@ -1176,15 +1176,10 @@ const externalTooltipHandler = (context) => {
             },
             scales: {
                 x: {
-                    offset: false,
+                    offset: currentStatsChartType === 'bar',
                     stacked: currentStatsChartType === 'bar',
                     grid: { display: false },
                     border: { display: false },
-                    afterFit: function(axis) {
-                        axis.paddingLeft = 0;
-                        axis.paddingRight = 0;
-                        axis.margins = {left: 0, right: 0, top: 0, bottom: 0};
-                    },
                     ticks: {
                         maxTicksLimit: 6,
                         font: { family: 'Outfit', size: 10, weight: '500' },
