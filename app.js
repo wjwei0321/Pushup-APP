@@ -858,7 +858,7 @@ function renderStats() {
         if (currentStatsChartType === 'line') {
             btnToggle.innerHTML = '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M18 20V10M12 20V4M6 20v-4"></path></svg>';
         } else {
-            btnToggle.innerHTML = '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"></polyline></svg>';
+            btnToggle.innerHTML = '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="2 12 6 12 9 21 15 3 18 12 22 12"></polyline></svg>';
         }
     }
     
@@ -1282,6 +1282,7 @@ if (statsViewEl) {
     });
 }
 
+
 
 
 
