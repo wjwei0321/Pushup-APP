@@ -454,8 +454,8 @@ function renderDailyLog() {
         entry.sets.forEach((repCount, setIndex) => {
             const card = document.createElement('div');
             card.className = 'log-card';
-            card.style.margin = '0 20px';
-            card.style.borderBottom = '1px solid var(--border-color)';
+            card.style.margin = '0 10px';
+            card.style.borderBottom = '0.5px solid #E5E5EA';
             
             const iconSvg = EXERCISES[entry.type] || EXERCISES['Push-up'];
             
@@ -1351,6 +1351,9 @@ function openExercisePicker() {
     });
     document.getElementById('exercisePickerModal').style.display = 'flex'; document.getElementById('exercisePickerModal').offsetHeight; document.getElementById('exercisePickerModal').classList.add('show');
 }
+
+
+
 
 
 
