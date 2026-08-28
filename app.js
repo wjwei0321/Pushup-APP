@@ -1372,3 +1372,33 @@ function openExercisePicker() {
 
 
 
+
+// Calendar Swipe Logic
+let calStartX = 0;
+let calStartY = 0;
+const calendarCard = document.getElementById('calendarCard');
+if (calendarCard) {
+    calendarCard.addEventListener('touchstart', e => {
+        calStartX = e.touches[0].clientX;
+        calStartY = e.touches[0].clientY;
+    }, {passive: true});
+
+    calendarCard.addEventListener('touchend', e => {
+        if (calStartX === 0) return;
+        const endX = e.changedTouches[0].clientX;
+        const endY = e.changedTouches[0].clientY;
+        const diffX = calStartX - endX;
+        const diffY = calStartY - endY;
+        
+        // Only trigger if horizontal swipe is much larger than vertical
+        if (Math.abs(diffX) > 50 && Math.abs(diffX) > Math.abs(diffY)) {
+            if (diffX > 0) {
+                nextMonth();
+            } else {
+                prevMonth();
+            }
+        }
+        calStartX = 0;
+        calStartY = 0;
+    });
+}
