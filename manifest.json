@@ -1,0 +1,15 @@
+{
+  "name": "Strive to Evolve",
+  "short_name": "Strive",
+  "icons": [
+    {
+      "src": "icon.svg",
+      "sizes": "512x512",
+      "type": "image/svg+xml"
+    }
+  ],
+  "start_url": "./index.html",
+  "display": "standalone",
+  "theme_color": "#F7F7F7",
+  "background_color": "#F7F7F7"
+}
