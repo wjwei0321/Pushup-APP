@@ -831,10 +831,6 @@ function renderStats() {
         }
     }
     
-    const exList = [...new Set(trainingData.map(d => d.type))];
-    if (!exList.includes(currentStatsExercise) && exList.length > 0) {
-        currentStatsExercise = exList[0];
-    }
     if (!currentStatsExercise) { currentStatsExercise = 'Push-up'; }
     
     // Update Header
@@ -1255,6 +1251,7 @@ if (statsViewEl) {
     });
 }
 
+
 
 
 
