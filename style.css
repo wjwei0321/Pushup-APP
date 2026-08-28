@@ -414,8 +414,8 @@ body {
 .floating-nav .nav-item.add-btn {
     background: var(--accent-color);
     color: white;
-    width: 64px;
-    height: 64px;
+    width: 58px;
+    height: 58px;
     box-shadow: 0 4px 15px rgba(243, 156, 18, 0.4);
 }
 .floating-nav .nav-item.add-btn:active {
@@ -584,3 +584,4 @@ body {
     color: white;
     box-shadow: 0 2px 8px rgba(0,0,0,0.2);
 }
+
