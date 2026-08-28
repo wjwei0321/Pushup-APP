@@ -1189,7 +1189,7 @@ const externalTooltipHandler = (context) => {
                     }
                 },
                 y: {
-                    position: 'left',
+                    position: 'right',
                     stacked: currentStatsChartType === 'bar',
                     beginAtZero: true,
                     border: { display: false },

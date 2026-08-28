@@ -89,8 +89,12 @@ body {
 
 /* Header */
 .app-header {
-    margin-bottom: 20px;
-    padding: 0 20px;
+    margin-bottom: 10px;
+    padding: calc(20px + env(safe-area-inset-top, 0px)) 20px 10px 20px;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    background: var(--bg-color);
 }
 
 .header-top {
