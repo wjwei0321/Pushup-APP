@@ -970,10 +970,10 @@ function renderStats() {
             const chart = context.chart;
             const {ctx, chartArea} = chart;
             if (!chartArea) return 'rgba(243, 156, 18, 0.2)'; // fallback before layout
-            const gradient = ctx.createLinearGradient(0, chartArea.bottom, 0, chartArea.top); // bottom to top
-            gradient.addColorStop(0, '#ffffff'); // pure white at bottom (ground)
-            gradient.addColorStop(0.3, 'rgba(243, 156, 18, 0.1)'); // fades up
-            gradient.addColorStop(1, 'rgba(243, 156, 18, 0.4)'); // darker orange at the line
+            const gradient = ctx.createLinearGradient(0, chartArea.bottom, 0, chartArea.top);
+            gradient.addColorStop(0, 'rgba(243, 156, 18, 0)'); // fully transparent at bottom (shows white background smoothly)
+            gradient.addColorStop(0.5, 'rgba(243, 156, 18, 0.15)'); // smooth transition
+            gradient.addColorStop(1, 'rgba(243, 156, 18, 0.5)'); // theme orange at the top
             return gradient;
         };
     }
