@@ -955,10 +955,28 @@ function renderStats() {
     const datasets = [];
     
     if (currentStatsChartType === 'line') {
-            btnToggle.innerHTML = '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M18 20V10M12 20V4M6 20v-4"></path></svg>';
-        } else {
-            btnToggle.innerHTML = '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"></polyline></svg>';
-        }`,
+        const data = sortedDates.map(dateStr => dailyTotals[dateStr].sets.reduce((a, b) => a + b, 0));
+        datasets.push({
+            label: currentStatsExercise,
+            data: data,
+            borderColor: '#f39c12',
+            backgroundColor: 'USE_GRADIENT',
+            fill: true,
+            tension: 0.2,
+            borderWidth: 2,
+            pointRadius: 0,
+            pointHoverRadius: 4,
+            pointHoverBackgroundColor: '#fff',
+            pointHoverBorderColor: '#f39c12',
+            pointHoverBorderWidth: 2
+        });
+    } else {
+        const maxSets = Math.max(0, ...Object.values(dailyTotals).map(v => v.sets.length));
+        const ORANGE_SHADES = ['#fedba6', '#fcc87d', '#fab355', '#f79d2e', '#f39c12', '#e67e22', '#d35400', '#b84600', '#9c3700', '#822900', '#6a1e00'];
+        for (let i = 0; i < maxSets; i++) {
+            const data = sortedDates.map(dateStr => dailyTotals[dateStr].sets[i] || 0);
+            datasets.push({
+                label: `Set ${i + 1}`,
                 data: data,
                 backgroundColor: ORANGE_SHADES[i % ORANGE_SHADES.length],
                 borderRadius: 2,
@@ -1191,9 +1209,73 @@ const externalTooltipHandler = (context) => {
                     border: { display: false },
                     afterFit: function(axis) {
                         if (currentStatsChartType === 'line') {
-            btnToggle.innerHTML = '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M18 20V10M12 20V4M6 20v-4"></path></svg>';
+                            axis.paddingLeft = 0;
+                            axis.paddingRight = 0;
+                        }
+                    },
+                    ticks: {
+                        maxTicksLimit: 6,
+                        font: { family: 'Outfit', size: 10, weight: '500' },
+                        color: '#999',
+                        padding: 10,
+                        align: 'inner'
+                    }
+                },
+                y: {
+                    position: 'left',
+                    stacked: currentStatsChartType === 'bar',
+                    beginAtZero: true,
+                    border: { display: false },
+                    grid: { display: false, drawBorder: false, drawTicks: false },
+                    afterFit: function(axis) {
+                        axis.width = 0;
+                        axis.paddingLeft = 0;
+                        axis.paddingRight = 0;
+                        axis.margins = {left: 0, right: 0, top: 0, bottom: 0};
+                    },
+                    ticks: {
+                        display: false,
+                        mirror: true,
+                        maxTicksLimit: 5
+                    }
+                }
+            }
+        },
+        plugins: [crosshairPlugin, yAxisPillPlugin]
+    });
+}
+
+// Drag to close stats modal
+let statsStartY = 0;
+let statsCurrentY = 0;
+const statsViewEl = document.getElementById('statsView');
+
+if (statsViewEl) {
+    statsViewEl.addEventListener('touchstart', (e) => {
+        if (statsViewEl.scrollTop > 0) return; // Don't drag if scrolled down
+        if (e.target.closest('#statsChart') || e.target.closest('.chart-container')) return; // Don't drag if touching chart
+        statsStartY = e.touches[0].clientY;
+        statsCurrentY = 0;
+        statsViewEl.style.transition = 'none';
+    }, {passive: true});
+
+    statsViewEl.addEventListener('touchmove', (e) => {
+        if (statsStartY === 0) return;
+        const diff = e.touches[0].clientY - statsStartY;
+        if (diff > 0) {
+            if (e.cancelable) e.preventDefault();
+            statsCurrentY = diff;
+            statsViewEl.style.transform = `translateY(${diff}px)`;
+        }
+    }, {passive: false});
+
+    statsViewEl.addEventListener('touchend', (e) => {
+        if (statsStartY === 0) return;
+        statsViewEl.style.transition = 'transform 0.3s cubic-bezier(0.1, 0.8, 0.3, 1)';
+        if (statsCurrentY > 100) {
+            switchView('home'); 
         } else {
-            btnToggle.innerHTML = '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"></polyline></svg>';
+            statsViewEl.style.transform = 'translateY(0)';
         }
         statsStartY = 0;
         statsCurrentY = 0;
