@@ -993,7 +993,7 @@ function renderStats() {
                 const pillWidth = Math.max(textWidth + 12, 32);
                 
                 ctx.beginPath();
-                ctx.fillStyle = '#ffffff';
+                ctx.fillStyle = 'rgba(255, 255, 255, 0.65)';
                 ctx.roundRect(leftEdge, y - 9, pillWidth, 18, 9);
                 ctx.fill();
                 
