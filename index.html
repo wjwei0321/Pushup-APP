@@ -27,14 +27,12 @@
             <header class="app-header">
                 <div class="header-top" style="justify-content: space-between;">
                     <div style="display: flex; align-items: center; gap: 8px;">
-                        <span class="app-title">STRIVE TO EVOLVE</span>
+                        <span class="app-title" onclick="openSettings()" style="cursor: pointer;">STRIVE TO EVOLVE</span>
                     </div>
                     <div style="display: flex; gap: 8px;">
-                        <div id="headerSettingsBtn" onclick="openSettings()" style="background: var(--card-bg); border: 1.5px solid var(--border-color); color: var(--text-primary); border-radius: 50%; width: 42px; height: 42px; display: flex; align-items: center; justify-content: center; cursor: pointer;">
-                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
-                        </div>
+                        
                         <div id="headerStatsBtn" onclick="switchView('stats')" style="background: var(--card-bg); border: 1.5px solid var(--border-color); color: var(--text-primary); border-radius: 10px; width: 42px; height: 42px; display: flex; align-items: center; justify-content: center; cursor: pointer;">
-                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M18 20V10M12 20V4M6 20v-4"></path></svg>
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"></polyline></svg>
                         </div>
                     </div>
                 </div>
@@ -235,9 +233,13 @@
     </div>
     <div class="toast" id="toast">Logged successfully!</div>
 
-    <script src="app.js?v=3.69"></script>
+    <script src="app.js?v=3.70"></script>
 </body>
 </html>
+
+
+
+
 
 
 
