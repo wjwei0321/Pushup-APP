@@ -811,11 +811,7 @@ let statsChartInstance = null;
 
 function switchView(view) {
     const statsView = document.getElementById('statsView');
-    const navItems = document.querySelectorAll('.floating-nav .nav-item:not(.add-btn)');
-    if (navItems.length >= 2) {
-        navItems[0].classList.toggle('active', view === 'home');
-        navItems[1].classList.toggle('active', view === 'stats');
-    }
+    
     
     // Hide custom tooltip when switching views
     const tooltipEl = document.getElementById('chartjs-tooltip');
@@ -1353,6 +1349,7 @@ function openExercisePicker() {
     });
     document.getElementById('exercisePickerModal').style.display = 'flex'; document.getElementById('exercisePickerModal').offsetHeight; document.getElementById('exercisePickerModal').classList.add('show');
 }
+
 
 
 
