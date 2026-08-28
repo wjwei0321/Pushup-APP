@@ -719,6 +719,7 @@ async function submitWorkout() {
     
     const payload = {
         action: 'log',
+        email: userEmail,
         date: dateStr,
         type: selectedExerciseForLog,
         exerciseType: selectedExerciseForLog,
@@ -1281,6 +1282,8 @@ if (statsViewEl) {
     });
 }
 
+
+
 
 
 
