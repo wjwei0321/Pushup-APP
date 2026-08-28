@@ -1180,6 +1180,12 @@ const externalTooltipHandler = (context) => {
                     stacked: currentStatsChartType === 'bar',
                     grid: { display: false },
                     border: { display: false },
+                    afterFit: function(axis) {
+                        if (currentStatsChartType === 'line') {
+                            axis.paddingLeft = 0;
+                            axis.paddingRight = 0;
+                        }
+                    },
                     ticks: {
                         maxTicksLimit: 6,
                         font: { family: 'Outfit', size: 10, weight: '500' },
