@@ -192,7 +192,8 @@ body {
     background: var(--card-bg);
     border-radius: 0;
     padding: 10px 10px 20px 10px;
-    margin-bottom: 30px;
+    margin-bottom: 0;
+    min-height: calc(100dvh - 80px - env(safe-area-inset-top, 0px));
     box-shadow: none;
 }
 
@@ -580,6 +581,9 @@ body {
     color: white;
     box-shadow: 0 2px 8px rgba(0,0,0,0.2);
 }
+
+
+
 
 
 
