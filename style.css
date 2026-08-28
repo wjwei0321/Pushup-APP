@@ -37,7 +37,25 @@ body {
 }
 
 ::-webkit-scrollbar {
-    display: none;
+    display: none !important;
+    width: 0 !important;
+    height: 0 !important;
+}
+
+* {
+    scrollbar-width: none !important;
+    -ms-overflow-style: none !important;
+}
+
+#statsView {
+    scrollbar-width: none !important;
+    -ms-overflow-style: none !important;
+    -webkit-overflow-scrolling: touch;
+}
+
+#statsView::-webkit-scrollbar {
+    display: none !important;
+    width: 0 !important;
 }
 
 /* Pull To Refresh */

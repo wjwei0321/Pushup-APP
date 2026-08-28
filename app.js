@@ -1033,7 +1033,7 @@ const externalTooltipHandler = (context) => {
         tooltipEl.style.borderRadius = '6px';
         tooltipEl.style.boxShadow = '0 2px 8px rgba(0,0,0,0.1)';
         tooltipEl.style.border = '1px solid #e0e0e0';
-        tooltipEl.style.position = 'absolute';
+        tooltipEl.style.position = 'fixed';
         tooltipEl.style.pointerEvents = 'none';
         tooltipEl.style.padding = '4px 8px';
         tooltipEl.style.transition = 'opacity .1s ease';
@@ -1116,9 +1116,9 @@ const externalTooltipHandler = (context) => {
     
     tooltipEl.style.opacity = 1;
     
-    // Position above the chart area line
-    const top = position.top + window.scrollY + chart.chartArea.top - tooltipEl.offsetHeight - 6; 
-    let left = position.left + window.scrollX + caretX;
+    // Position above the chart area line (fixed positioning = viewport coords)
+    const top = position.top + chart.chartArea.top - tooltipEl.offsetHeight - 6; 
+    let left = position.left + caretX;
     
     const width = tooltipEl.offsetWidth;
     let finalLeft = left - (width / 2);
