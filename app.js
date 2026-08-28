@@ -1151,9 +1151,7 @@ const externalTooltipHandler = (context) => {
             layout: {
                 padding: { left: 0, right: 0, top: 20, bottom: 0 }
             },
-            animation: {
-                duration: 400
-            },
+            animation: false,
             interaction: {
                 mode: 'index',
                 intersect: false,
