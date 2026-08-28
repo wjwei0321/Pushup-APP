@@ -1176,7 +1176,7 @@ const externalTooltipHandler = (context) => {
             },
             scales: {
                 x: {
-                    offset: currentStatsChartType === 'bar',
+                    offset: false,
                     stacked: currentStatsChartType === 'bar',
                     grid: { display: false },
                     border: { display: false },
@@ -1189,20 +1189,14 @@ const externalTooltipHandler = (context) => {
                     }
                 },
                 y: {
-                    position: 'right',
+                    position: 'left',
                     stacked: currentStatsChartType === 'bar',
                     beginAtZero: true,
                     border: { display: false },
-                    grid: { display: false },
-                    afterFit: function(axis) { axis.width = 0; },
+                    grid: { display: false, drawBorder: false, drawTicks: false },
                     ticks: {
-                        maxTicksLimit: 5,
-                        font: { family: 'Outfit', size: 10, weight: '600' },
-                        color: 'transparent',
-                        padding: 0,
-                        mirror: true,
-                        z: 10,
-                        callback: function() { return ''; }
+                        display: false,
+                        maxTicksLimit: 5
                     }
                 }
             }
