@@ -275,6 +275,8 @@ function hideSplashScreen() {
     const splash = document.getElementById('splashScreen');
     if (splash && splash.style.display !== 'none') {
         splash.style.opacity = '0';
+        const themeMeta = document.getElementById('themeColorMeta');
+        if (themeMeta) themeMeta.setAttribute('content', '#F7F7F7');
         setTimeout(() => splash.style.display = 'none', 500);
     }
 }
@@ -1354,6 +1356,8 @@ function openExercisePicker() {
     });
     document.getElementById('exercisePickerModal').style.display = 'flex'; document.getElementById('exercisePickerModal').offsetHeight; document.getElementById('exercisePickerModal').classList.add('show');
 }
+
+
 
 
 
