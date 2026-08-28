@@ -1016,6 +1016,89 @@ function renderStats() {
         }
     };
     
+const externalTooltipHandler = (context) => {
+    const {chart, tooltip} = context;
+    let tooltipEl = document.getElementById('chartjs-tooltip');
+
+    if (!tooltipEl) {
+        tooltipEl = document.createElement('div');
+        tooltipEl.id = 'chartjs-tooltip';
+        tooltipEl.style.background = 'rgba(255, 255, 255, 0.95)';
+        tooltipEl.style.borderRadius = '8px';
+        tooltipEl.style.boxShadow = '0 2px 10px rgba(0,0,0,0.1)';
+        tooltipEl.style.border = '1px solid #e0e0e0';
+        tooltipEl.style.position = 'absolute';
+        tooltipEl.style.pointerEvents = 'none';
+        tooltipEl.style.padding = '6px 12px';
+        tooltipEl.style.transition = 'opacity .1s ease';
+        tooltipEl.style.zIndex = 100;
+        document.body.appendChild(tooltipEl);
+    }
+
+    if (tooltip.opacity === 0) {
+        tooltipEl.style.opacity = 0;
+        return;
+    }
+
+    if (tooltip.body) {
+        const dataPoint = tooltip.dataPoints[0];
+        const dataset = chart.data.datasets[dataPoint.datasetIndex];
+        const dataIndex = dataPoint.dataIndex;
+        const val = dataset.data[dataIndex];
+        
+        let prevVal = val;
+        if (dataIndex > 0) prevVal = dataset.data[dataIndex - 1];
+        
+        const diff = val - prevVal;
+        let diffStr = diff.toString();
+        let diffColor = '#999';
+        if (diff > 0) { diffStr = '+' + diff; diffColor = '#2bb596'; }
+        else if (diff < 0) { diffColor = '#f23645'; }
+        
+        let pctStr = '';
+        if (prevVal > 0) {
+            let pct = (diff / prevVal * 100).toFixed(2);
+            if (diff > 0) pct = '+' + pct;
+            pctStr = ` ${pct}%`;
+        }
+
+        let dateFormatted = chart.data.labels[dataIndex];
+        if (filteredData && filteredData[dataIndex]) {
+            const dateObj = new Date(filteredData[dataIndex].dateStr);
+            dateFormatted = dateObj.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+        }
+        
+        tooltipEl.innerHTML = `
+            <div style="font-family: Outfit; text-align: center; display: flex; flex-direction: column; gap: 2px;">
+                <div style="display: flex; align-items: baseline; justify-content: center; gap: 6px;">
+                    <span style="font-size: 1rem; font-weight: 700; color: #111;">${val.toLocaleString()}</span>
+                    <span style="font-size: 0.75rem; color: ${diffColor}; font-weight: 600;">${diffStr}${pctStr}</span>
+                </div>
+                <div style="font-size: 0.75rem; color: #888; font-weight: 500;">
+                    ${dateFormatted}
+                </div>
+            </div>
+        `;
+    }
+
+    const position = chart.canvas.getBoundingClientRect();
+    const caretX = tooltip.caretX;
+    
+    // Position near the top of the chart
+    const top = position.top + window.scrollY + chart.chartArea.top + 10; 
+    let left = position.left + window.scrollX + caretX;
+    
+    tooltipEl.style.opacity = 1;
+    
+    const width = tooltipEl.offsetWidth;
+    let finalLeft = left - (width / 2);
+    if (finalLeft < 10) finalLeft = 10;
+    if (finalLeft + width > window.innerWidth - 10) finalLeft = window.innerWidth - 10 - width;
+    
+    tooltipEl.style.left = finalLeft + 'px';
+    tooltipEl.style.top = top + 'px';
+};
+
     statsChartInstance = new Chart(ctx, {
         type: currentStatsChartType,
         data: {
@@ -1038,23 +1121,8 @@ function renderStats() {
             plugins: {
                 legend: { display: false },
                 tooltip: {
-                    backgroundColor: '#fff',
-                    titleFont: { size: 12, family: 'Outfit', weight: '500' },
-                    bodyFont: { size: 14, family: 'Outfit', weight: '700' },
-                    titleColor: '#999',
-                    bodyColor: '#333',
-                    padding: { top: 8, bottom: 8, left: 14, right: 14 },
-                    cornerRadius: 6,
-                    displayColors: currentStatsChartType === 'bar',
-                    boxPadding: 4,
-                    borderColor: '#eee',
-                    borderWidth: 1,
-                    callbacks: {
-                        label: function(context) {
-                            if (currentStatsChartType === 'line') return context.parsed.y + ' reps';
-                            return context.dataset.label + ': ' + context.parsed.y;
-                        }
-                    }
+                    enabled: false,
+                    external: externalTooltipHandler
                 }
             },
             scales: {
