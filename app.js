@@ -161,15 +161,19 @@ function initPullToRefresh() {
             ptr.classList.add('spinning');
             homeView.style.transform = `translateY(60px)`;
             
-            fetchData().then(() => {
+                        fetchData().then(() => {
                 isRefreshing = false;
                 ptr.classList.remove('spinning');
-                homeView.style.transform = `translateY(0)`;
+                homeView.style.transition = 'transform 0.3s';
+                homeView.style.transform = '';
                 ptr.style.opacity = 0;
+                setTimeout(() => homeView.style.transition = '', 300);
             });
-        } else {
-            homeView.style.transform = `translateY(0)`;
+                } else {
+            homeView.style.transition = 'transform 0.3s';
+            homeView.style.transform = '';
             ptr.style.opacity = 0;
+            setTimeout(() => homeView.style.transition = '', 300);
         }
         touchStartY = 0;
     });
@@ -1407,6 +1411,9 @@ if (calendarCard) {
         calStartY = 0;
     });
 }
+
+
+
 
 
 

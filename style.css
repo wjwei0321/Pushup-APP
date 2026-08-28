@@ -90,6 +90,7 @@ body {
 .app-header {
     margin-bottom: 10px;
     padding: calc(20px + env(safe-area-inset-top, 0px)) 20px 10px 20px;
+    position: -webkit-sticky;
     position: sticky;
     top: 0;
     z-index: 100;
@@ -176,6 +177,7 @@ body {
 
 /* Calendar Card */
 .calendar-header {
+    position: -webkit-sticky;
     position: sticky;
     top: 0;
     z-index: 50;
@@ -578,6 +580,7 @@ body {
     color: white;
     box-shadow: 0 2px 8px rgba(0,0,0,0.2);
 }
+
 
 
 
