@@ -766,7 +766,7 @@ function saveSettings() {
 // Stats State
 let currentStatsTimeFilter = '3M';
 let currentStatsChartType = 'line';
-let currentStatsExercise = 'All';
+let currentStatsExercise = 'Push-up';
 let statsChartInstance = null;
 
 function switchView(view) {
