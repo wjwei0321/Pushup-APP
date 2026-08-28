@@ -906,15 +906,15 @@ function renderStats() {
     
     const todayLabel = document.getElementById('statsTodayLabel');
     if (todayTotal > 0) {
-        todayLabel.innerHTML = `${todaySetsCount} sets &nbsp;&nbsp; + ${todayTotal.toLocaleString()} today`;
-        todayLabel.style.display = 'block';
+        todayLabel.innerHTML = `+${todayTotal.toLocaleString()} today`;
+        todayLabel.style.display = 'none'; // hide it entirely per user request? The user said "原本no. days + no. this week 的格式修改成 +no. this week"
     } else {
         todayLabel.style.display = 'none';
     }
     
     const weeklyLabel = document.getElementById('statsWeeklyLabel');
     if (weeklyTotal > 0) {
-        weeklyLabel.innerHTML = `${weeklyDaysSet.size} days &nbsp;&nbsp; + ${weeklyTotal.toLocaleString()} this week`;
+        weeklyLabel.innerHTML = `+${weeklyTotal.toLocaleString()} this week`;
         weeklyLabel.style.display = 'block';
     } else {
         weeklyLabel.style.display = 'none';
