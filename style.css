@@ -175,20 +175,23 @@ body {
 }
 
 /* Calendar Card */
+.calendar-header {
+    position: sticky;
+    top: 0;
+    z-index: 50;
+    background: var(--bg-color);
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    padding: calc(40px + env(safe-area-inset-top, 0px)) 10px 10px 10px;
+}
+
 .calendar-card {
     background: var(--card-bg);
     border-radius: 0;
-    padding: calc(40px + env(safe-area-inset-top, 0px)) 10px 20px 10px;
+    padding: 10px 10px 20px 10px;
     margin-bottom: 30px;
     box-shadow: none;
-}
-
-.calendar-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 20px;
-    padding: 0 10px;
 }
 
 .calendar-header h2 {
@@ -575,6 +578,7 @@ body {
     color: white;
     box-shadow: 0 2px 8px rgba(0,0,0,0.2);
 }
+
 
 
 

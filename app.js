@@ -21,7 +21,6 @@ const EXERCISES = {
 
 // DOM Elements
 const calendarDaysEl = document.getElementById('calendarDays');
-const currentMonthYearEl = document.getElementById('currentMonthYear');
 const selectedDateDisplay = document.getElementById('selectedDateDisplay');
 const dailyLogList = document.getElementById('dailyLogList');
 const addWorkoutModal = document.getElementById('addWorkoutModal');
@@ -337,8 +336,7 @@ const MONTH_NAMES = ["January", "February", "March", "April", "May", "June", "Ju
 function renderCalendar() {
     const year = currentDate.getFullYear();
     const month = currentDate.getMonth();
-    currentMonthYearEl.textContent = `${MONTH_NAMES[month]} ${year}`;
-    
+        
     calendarDaysEl.innerHTML = '';
     
     const firstDay = new Date(year, month, 1).getDay();
@@ -436,6 +434,13 @@ function nextMonth() {
 
 // Daily Log Logic
 function renderDailyLog() {
+    // Update sticky header with selected date
+    const headerYearEl = document.getElementById('headerYear');
+    const headerMonthDayEl = document.getElementById('headerMonthDay');
+    if (headerYearEl && headerMonthDayEl) {
+        headerYearEl.textContent = selectedDate.getFullYear();
+        headerMonthDayEl.textContent = `${MONTH_NAMES[selectedDate.getMonth()]} ${selectedDate.getDate()}`;
+    }
     const month = MONTH_NAMES[selectedDate.getMonth()].substring(0, 3);
     selectedDateDisplay.textContent = `${month} ${selectedDate.getDate()}`;
     
@@ -1402,6 +1407,8 @@ if (calendarCard) {
         calStartY = 0;
     });
 }
+
+
 
 
 

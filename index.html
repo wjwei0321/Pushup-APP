@@ -9,7 +9,7 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="style.css?v=4.05">
+    <link rel="stylesheet" href="style.css?v=4.06">
     <link rel="apple-touch-icon" href="icon.svg">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -38,15 +38,19 @@
                 </svg>
             </div>
 
-            <div class="calendar-card" id="calendarCard">
-                <div class="calendar-header">
-                    <h2 id="currentMonthYear" onclick="openSettings()" style="cursor: pointer;">August 2026</h2>
-                        <div style="display: flex; gap: 12px; align-items: center;">
-                        
-                        <div onclick="switchView('stats')" style="background: var(--card-bg); border: 1.5px solid var(--border-color); color: var(--text-primary); border-radius: 10px; width: 42px; height: 42px; display: flex; align-items: center; justify-content: center; cursor: pointer;">
-                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="2 12 6 12 9 21 15 3 18 12 22 12"></polyline></svg>
-                        </div>
+            <div class="calendar-header" id="stickyHeader">
+                <div onclick="openSettings()" style="cursor: pointer; display: flex; flex-direction: column; padding-left: 10px;">
+                    <span id="headerYear" style="font-size: 0.85rem; color: var(--text-secondary); font-weight: 700; line-height: 1.2; letter-spacing: 0.5px;">2026</span>
+                    <span id="headerMonthDay" style="font-size: 1.6rem; font-weight: 800; line-height: 1.1;">August 27</span>
+                </div>
+                <div style="display: flex; gap: 12px; align-items: center; padding-right: 10px;">
+                    <div onclick="switchView('stats')" style="background: var(--card-bg); border: 1.5px solid var(--border-color); color: var(--text-primary); border-radius: 10px; width: 42px; height: 42px; display: flex; align-items: center; justify-content: center; cursor: pointer;">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="2 12 6 12 9 21 15 3 18 12 22 12"></polyline></svg>
                     </div>
+                </div>
+            </div>
+
+            <div class="calendar-card" id="calendarCard">
                 </div>
 
                 <div class="calendar-grid">
@@ -247,6 +251,8 @@
     <script src="app.js?v=3.87"></script>
 </body>
 </html>
+
+
 
 
 
