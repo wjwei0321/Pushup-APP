@@ -965,13 +965,25 @@ function renderStats() {
     }
     
     if (currentStatsChartType === 'line' && datasets.length > 0) {
-        const gradient = ctx.createLinearGradient(0, 0, 0, 320);
-        gradient.addColorStop(0, 'rgba(243, 156, 18, 0.35)');
-        gradient.addColorStop(0.7, 'rgba(243, 156, 18, 0.08)');
-        gradient.addColorStop(1, 'rgba(255, 255, 255, 1)');
-        datasets[0].backgroundColor = gradient;
-        datasets[0].borderColor = '#f39c12'; // TradingView blue/green? Wait, user asked for orange!
+        datasets[0].backgroundColor = 'rgba(243, 156, 18, 0.2)'; // placeholder, overridden by plugin
+        datasets[0].borderColor = '#f39c12';
     }
+
+    const gradientPlugin = {
+        id: 'dynamicGradient',
+        beforeDraw: (chart) => {
+            if (chart.config.type !== 'line') return;
+            const ds = chart.data.datasets[0];
+            if (!ds) return;
+            const {top, bottom} = chart.chartArea;
+            const ctx = chart.ctx;
+            const gradient = ctx.createLinearGradient(0, top, 0, bottom);
+            gradient.addColorStop(0, 'rgba(243, 156, 18, 0.35)');
+            gradient.addColorStop(0.6, 'rgba(243, 156, 18, 0.10)');
+            gradient.addColorStop(1, 'rgba(255, 255, 255, 0)');
+            ds.backgroundColor = gradient;
+        }
+    };
     
     const yAxisPillPlugin = {
         id: 'yAxisPill',
@@ -1193,7 +1205,7 @@ const externalTooltipHandler = (context) => {
                 }
             }
         },
-        plugins: [crosshairPlugin, yAxisPillPlugin]
+        plugins: [gradientPlugin, crosshairPlugin, yAxisPillPlugin]
     });
 }
 
