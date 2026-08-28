@@ -651,12 +651,10 @@ async function updateSetOnBackend(entry) {
 // Modal Logic
 function openAddWorkoutModal() {
     selectedExerciseForLog = null;
-    document.getElementById('stepSelectExercise').style.display = 'flex';
+    document.getElementById('stepSelectExercise').style.display = 'none';
     document.getElementById('stepInputReps').style.display = 'none';
     document.getElementById('workoutRepsDisplay').textContent = '0';
-    
-    addWorkoutModal.style.display = 'flex';
-    setTimeout(() => addWorkoutModal.classList.add('show'), 10);
+    openExercisePicker();
 }
 
 function closeAddWorkoutModal() {
@@ -677,6 +675,8 @@ function selectExercise(type) {
 
     document.getElementById('stepSelectExercise').style.display = 'none';
     document.getElementById('stepInputReps').style.display = 'flex';
+    addWorkoutModal.style.display = 'flex';
+    setTimeout(() => addWorkoutModal.classList.add('show'), 10);
 }
 
 function addReps(amount) {
@@ -1326,7 +1326,9 @@ function openExercisePicker() {
             selectExercise(ex);
         };
         const iconWrap = document.createElement('div');
-        iconWrap.style.cssText = 'width: 48px; height: 48px; border-radius: 50%; display: flex; align-items: center; justify-content: center; background: ' + (selectedExerciseForLog === ex ? 'var(--accent-color)' : 'var(--bg-color)') + '; color: ' + (selectedExerciseForLog === ex ? '#fff' : 'var(--text-secondary)') + ';';
+        const isSelected = selectedExerciseForLog === ex;
+        const borderStyle = isSelected ? 'border: 1.5px solid transparent;' : 'border: 1.5px solid var(--border-color);';
+        iconWrap.style.cssText = 'width: 48px; height: 48px; border-radius: 50%; display: flex; align-items: center; justify-content: center; background: ' + (isSelected ? 'var(--accent-color)' : 'var(--bg-color)') + '; color: ' + (isSelected ? '#fff' : 'var(--text-secondary)') + ';' + borderStyle;
         iconWrap.innerHTML = EXERCISES[ex].replace('width="100%"', 'width="24"').replace('height="100%"', 'height="24"');
         const label = document.createElement('div');
         label.style.cssText = 'font-size: 0.75rem; font-weight: 600; color: ' + (selectedExerciseForLog === ex ? 'var(--text-primary)' : 'var(--text-secondary)') + '; text-align: center; line-height: 1.1;';
@@ -1338,5 +1340,6 @@ function openExercisePicker() {
     });
     document.getElementById('exercisePickerModal').style.display = 'flex'; document.getElementById('exercisePickerModal').offsetHeight; document.getElementById('exercisePickerModal').classList.add('show');
 }
+
 
 
