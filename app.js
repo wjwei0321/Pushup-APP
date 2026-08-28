@@ -939,7 +939,7 @@ function renderStats() {
             tension: 0.2,
             borderWidth: 2,
             pointRadius: 0,
-            pointHoverRadius: 6,
+            pointHoverRadius: 4,
             pointHoverBackgroundColor: '#fff',
             pointHoverBorderColor: '#f39c12',
             pointHoverBorderWidth: 2
@@ -1151,7 +1151,9 @@ const externalTooltipHandler = (context) => {
             layout: {
                 padding: { left: 0, right: 0, top: 20, bottom: 0 }
             },
-            animation: false,
+            animations: {
+                y: { duration: 0 } // Disable only the jumpy vertical growth animation
+            },
             interaction: {
                 mode: 'index',
                 intersect: false,
