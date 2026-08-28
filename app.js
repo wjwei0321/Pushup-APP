@@ -654,7 +654,14 @@ function selectExercise(type) {
     const dateOptions = { weekday: 'short', month: 'short', day: 'numeric', year: 'numeric' };
     document.getElementById('selectedExerciseDate').textContent = selectedDate.toLocaleDateString('en-US', dateOptions);
     
-    document.getElementById('selectedExerciseIconLarge').innerHTML = `<div style="width: 140px; height: 140px; background: var(--accent-color); color: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; padding: 28px; box-sizing: border-box;"><div style="width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; ${type === 'Push-up' ? 'transform: scale(1.4) translateX(-6%);' : ''}">${EXERCISES[type]}</div></div>`;
+    let iconTransform = '';
+    if (type === 'Push-up') {
+        iconTransform = 'transform: scale(1.4) translateX(-6%);';
+    } else if (type === 'Romanian Deadlift') {
+        iconTransform = 'transform: scale(1.3);';
+    }
+    
+    document.getElementById('selectedExerciseIconLarge').innerHTML = `<div style="width: 140px; height: 140px; background: var(--accent-color); color: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; padding: 28px; box-sizing: border-box;"><div style="width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; ${iconTransform}">${EXERCISES[type]}</div></div>`;
     
     updateModalStats();
 
