@@ -966,8 +966,9 @@ function renderStats() {
     
     if (currentStatsChartType === 'line' && datasets.length > 0) {
         const gradient = ctx.createLinearGradient(0, 0, 0, 320);
-        gradient.addColorStop(0, 'rgba(243, 156, 18, 0.4)');
-        gradient.addColorStop(1, 'rgba(243, 156, 18, 0)');
+        gradient.addColorStop(0, 'rgba(243, 156, 18, 0.35)');
+        gradient.addColorStop(0.7, 'rgba(243, 156, 18, 0.08)');
+        gradient.addColorStop(1, 'rgba(255, 255, 255, 1)');
         datasets[0].backgroundColor = gradient;
         datasets[0].borderColor = '#f39c12'; // TradingView blue/green? Wait, user asked for orange!
     }
@@ -1143,7 +1144,7 @@ const externalTooltipHandler = (context) => {
             responsive: true,
             maintainAspectRatio: false,
             layout: {
-                padding: { left: 4, right: 0, top: 20, bottom: 0 }
+                padding: { left: 0, right: 0, top: 20, bottom: 0 }
             },
             animation: {
                 duration: 400
