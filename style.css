@@ -1,5 +1,5 @@
 :root {
-    --bg-color: #f7f7f7;
+    --bg-color: #ffffff;
     --card-bg: #ffffff;
     --text-primary: #1d1d1f;
     --text-secondary: #86868b;
@@ -180,7 +180,7 @@ body {
     border-radius: 0;
     padding: calc(20px + env(safe-area-inset-top, 0px)) 10px 20px 10px;
     margin-bottom: 30px;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+    box-shadow: none;
 }
 
 .calendar-header {
@@ -583,6 +583,7 @@ body {
     color: white;
     box-shadow: 0 2px 8px rgba(0,0,0,0.2);
 }
+
 
 
 
