@@ -46,7 +46,7 @@ document.addEventListener('DOMContentLoaded', () => {
             if (e.target === modal) {
                 if (modal.id === 'addWorkoutModal') closeAddWorkoutModal();
                 if (modal.id === 'filterModal') closeFilterModal();
-                if (modal.id === 'settingsModal') {
+                if (modal.id === 'settingsModal' || modal.id === 'exercisePickerModal') {
                     modal.classList.remove('show');
                     setTimeout(() => modal.style.display = 'none', 300);
                 }
@@ -88,7 +88,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     
                     if (modal.id === 'addWorkoutModal') closeAddWorkoutModal();
                     if (modal.id === 'filterModal') closeFilterModal();
-                    if (modal.id === 'settingsModal') {
+                    if (modal.id === 'settingsModal' || modal.id === 'exercisePickerModal') {
                         modal.classList.remove('show');
                         setTimeout(() => modal.style.display = 'none', 300);
                     }
@@ -1402,3 +1402,6 @@ if (calendarCard) {
         calStartY = 0;
     });
 }
+
+
+
