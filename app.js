@@ -271,8 +271,16 @@ function toggleFilter(type) {
 }
 
 // Data Fetching
+function hideSplashScreen() {
+    const splash = document.getElementById('splashScreen');
+    if (splash && splash.style.display !== 'none') {
+        splash.style.opacity = '0';
+        setTimeout(() => splash.style.display = 'none', 500);
+    }
+}
+
 async function fetchData() {
-    if (!userEmail) { openSettings(); return; }
+    if (!userEmail) { hideSplashScreen(); openSettings(); return; }
     try {
         // ?†ÂÖ•?ÇÈ??≥Ë??øÂ??èË¶Ω?®Âø´??(Cache-busting)
         const timestamp = new Date().getTime();
@@ -308,14 +316,18 @@ async function fetchData() {
 
             renderCalendar(); // Re-render to show indicators
             renderDailyLog(); // Re-render list
+            hideSplashScreen();
         } else if (json.authError) {
             showToast(json.message);
+            hideSplashScreen();
             openSettings();
         } else if (json.status === 'error') {
             showToast('Error: ' + json.message);
+            hideSplashScreen();
         }
     } catch (e) {
         console.error(e);
+        hideSplashScreen();
         showToast('Network error');
     }
 }
@@ -644,6 +656,7 @@ async function updateSetOnBackend(entry) {
         }
     } catch (e) {
         console.error(e);
+        hideSplashScreen();
         showToast('Error updating record');
     }
 }
@@ -758,6 +771,7 @@ async function submitWorkout() {
         fetchData(); // Sync exact state
     } catch (e) {
         console.error(e);
+        hideSplashScreen();
     }
 }
 
@@ -1340,6 +1354,8 @@ function openExercisePicker() {
     });
     document.getElementById('exercisePickerModal').style.display = 'flex'; document.getElementById('exercisePickerModal').offsetHeight; document.getElementById('exercisePickerModal').classList.add('show');
 }
+
+
 
 
 
