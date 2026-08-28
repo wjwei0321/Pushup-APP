@@ -31,6 +31,9 @@ body {
     line-height: 1.5;
     padding-bottom: 80px;
     overscroll-behavior-y: none;
+    -webkit-user-select: none;
+    user-select: none;
+    -webkit-touch-callout: none;
 }
 
 /* Pull To Refresh */

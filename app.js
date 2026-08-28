@@ -775,6 +775,12 @@ function switchView(view) {
     navItems[0].classList.toggle('active', view === 'home');
     navItems[1].classList.toggle('active', view === 'stats');
     
+    // Hide custom tooltip when switching views
+    const tooltipEl = document.getElementById('chartjs-tooltip');
+    if (tooltipEl) {
+        tooltipEl.style.opacity = 0;
+    }
+    
     if (view === 'stats') {
         document.body.style.overflow = 'hidden';
         statsView.style.display = 'block';
