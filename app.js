@@ -1385,14 +1385,14 @@ function openExercisePicker() {
 // Calendar Swipe Logic
 let calStartX = 0;
 let calStartY = 0;
-const calendarCard = document.getElementById('calendarCard');
-if (calendarCard) {
-    calendarCard.addEventListener('touchstart', e => {
+const attachCalendarSwipe = (el) => {
+    if (!el) return;
+    el.addEventListener('touchstart', e => {
         calStartX = e.touches[0].clientX;
         calStartY = e.touches[0].clientY;
     }, {passive: true});
 
-    calendarCard.addEventListener('touchend', e => {
+    el.addEventListener('touchend', e => {
         if (calStartX === 0) return;
         const endX = e.changedTouches[0].clientX;
         const endY = e.changedTouches[0].clientY;
@@ -1410,7 +1410,10 @@ if (calendarCard) {
         calStartX = 0;
         calStartY = 0;
     });
-}
+};
+attachCalendarSwipe(document.getElementById('calendarCard'));
+attachCalendarSwipe(document.getElementById('stickyHeader'));
+
 
 
 
