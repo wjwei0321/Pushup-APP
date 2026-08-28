@@ -965,25 +965,18 @@ function renderStats() {
     }
     
     if (currentStatsChartType === 'line' && datasets.length > 0) {
-        datasets[0].backgroundColor = 'rgba(243, 156, 18, 0.2)'; // placeholder, overridden by plugin
         datasets[0].borderColor = '#f39c12';
+        datasets[0].backgroundColor = (context) => {
+            const chart = context.chart;
+            const {ctx, chartArea} = chart;
+            if (!chartArea) return 'rgba(243, 156, 18, 0.2)'; // fallback before layout
+            const gradient = ctx.createLinearGradient(0, chartArea.bottom, 0, chartArea.top); // bottom to top
+            gradient.addColorStop(0, '#ffffff'); // pure white at bottom (ground)
+            gradient.addColorStop(0.3, 'rgba(243, 156, 18, 0.1)'); // fades up
+            gradient.addColorStop(1, 'rgba(243, 156, 18, 0.4)'); // darker orange at the line
+            return gradient;
+        };
     }
-
-    const gradientPlugin = {
-        id: 'dynamicGradient',
-        beforeDraw: (chart) => {
-            if (chart.config.type !== 'line') return;
-            const ds = chart.data.datasets[0];
-            if (!ds) return;
-            const {top, bottom} = chart.chartArea;
-            const ctx = chart.ctx;
-            const gradient = ctx.createLinearGradient(0, top, 0, bottom);
-            gradient.addColorStop(0, 'rgba(243, 156, 18, 0.35)');
-            gradient.addColorStop(0.6, 'rgba(243, 156, 18, 0.10)');
-            gradient.addColorStop(1, 'rgba(255, 255, 255, 0)');
-            ds.backgroundColor = gradient;
-        }
-    };
     
     const yAxisPillPlugin = {
         id: 'yAxisPill',
@@ -1002,13 +995,13 @@ function renderStats() {
                 
                 ctx.beginPath();
                 ctx.fillStyle = '#ffffff';
-                ctx.roundRect(leftEdge + 4, y - 9, pillWidth, 18, 9);
+                ctx.roundRect(leftEdge + 16, y - 9, pillWidth, 18, 9);
                 ctx.fill();
                 
                 ctx.fillStyle = '#666';
                 ctx.textAlign = 'center';
                 ctx.textBaseline = 'middle';
-                ctx.fillText(label, leftEdge + 4 + (pillWidth / 2), y + 1);
+                ctx.fillText(label, leftEdge + 16 + (pillWidth / 2), y + 1);
             });
             ctx.restore();
         }
@@ -1205,7 +1198,7 @@ const externalTooltipHandler = (context) => {
                 }
             }
         },
-        plugins: [gradientPlugin, crosshairPlugin, yAxisPillPlugin]
+        plugins: [crosshairPlugin, yAxisPillPlugin]
     });
 }
 
