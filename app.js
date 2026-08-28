@@ -1037,7 +1037,7 @@ const externalTooltipHandler = (context) => {
         tooltipEl.style.pointerEvents = 'none';
         tooltipEl.style.padding = '6px 12px';
         tooltipEl.style.transition = 'opacity .1s ease';
-        tooltipEl.style.zIndex = 100;
+        tooltipEl.style.zIndex = '2050';
         document.body.appendChild(tooltipEl);
     }
 

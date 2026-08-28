@@ -36,6 +36,10 @@ body {
     -webkit-touch-callout: none;
 }
 
+::-webkit-scrollbar {
+    display: none;
+}
+
 /* Pull To Refresh */
 .ptr-indicator {
     position: absolute;
