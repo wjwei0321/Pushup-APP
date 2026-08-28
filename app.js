@@ -1180,6 +1180,11 @@ const externalTooltipHandler = (context) => {
                     stacked: currentStatsChartType === 'bar',
                     grid: { display: false },
                     border: { display: false },
+                    afterFit: function(axis) {
+                        axis.paddingLeft = 0;
+                        axis.paddingRight = 0;
+                        axis.margins = {left: 0, right: 0, top: 0, bottom: 0};
+                    },
                     ticks: {
                         maxTicksLimit: 6,
                         font: { family: 'Outfit', size: 10, weight: '500' },
@@ -1194,8 +1199,15 @@ const externalTooltipHandler = (context) => {
                     beginAtZero: true,
                     border: { display: false },
                     grid: { display: false, drawBorder: false, drawTicks: false },
+                    afterFit: function(axis) {
+                        axis.width = 0;
+                        axis.paddingLeft = 0;
+                        axis.paddingRight = 0;
+                        axis.margins = {left: 0, right: 0, top: 0, bottom: 0};
+                    },
                     ticks: {
                         display: false,
+                        mirror: true,
                         maxTicksLimit: 5
                     }
                 }
