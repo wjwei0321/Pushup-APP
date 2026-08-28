@@ -423,11 +423,15 @@ function renderCalendar() {
 
 function prevMonth() {
     currentDate.setMonth(currentDate.getMonth() - 1);
+    selectedDate = new Date(currentDate.getFullYear(), currentDate.getMonth(), 1);
     renderCalendar();
+    renderDailyLog();
 }
 function nextMonth() {
     currentDate.setMonth(currentDate.getMonth() + 1);
+    selectedDate = new Date(currentDate.getFullYear(), currentDate.getMonth(), 1);
     renderCalendar();
+    renderDailyLog();
 }
 
 // Daily Log Logic
@@ -1351,6 +1355,7 @@ function openExercisePicker() {
     });
     document.getElementById('exercisePickerModal').style.display = 'flex'; document.getElementById('exercisePickerModal').offsetHeight; document.getElementById('exercisePickerModal').classList.add('show');
 }
+
 
 
 
