@@ -946,11 +946,11 @@ function renderStats() {
         });
     } else {
         const maxSets = Math.max(0, ...Object.values(dailyTotals).map(v => v.sets.length));
-        const ORANGE_SHADES = ['#f39c12', '#e67e22', '#d35400', '#f1c40f', '#e74c3c', '#ff7f50', '#ff8c00', '#ffa500'];
+        const ORANGE_SHADES = ['#fedba6', '#fcc87d', '#fab355', '#f79d2e', '#f39c12', '#e67e22', '#d35400', '#b84600', '#9c3700', '#822900', '#6a1e00'];
         for (let i = 0; i < maxSets; i++) {
             const data = sortedDates.map(dateStr => dailyTotals[dateStr].sets[i] || 0);
             datasets.push({
-                label: Set ,
+                label: `Set ${i + 1}`,
                 data: data,
                 backgroundColor: ORANGE_SHADES[i % ORANGE_SHADES.length],
                 borderRadius: 2,
@@ -1052,39 +1052,63 @@ const externalTooltipHandler = (context) => {
         const dataIndex = dataPoint.dataIndex;
         const val = dataset.data[dataIndex];
         
-        let prevVal = val;
-        if (dataIndex > 0) prevVal = dataset.data[dataIndex - 1];
-        
-        const diff = val - prevVal;
-        let diffStr = diff.toString();
-        let diffColor = '#999';
-        if (diff > 0) { diffStr = '+' + diff; diffColor = '#2bb596'; }
-        else if (diff < 0) { diffColor = '#f23645'; }
-        
-        let pctStr = '';
-        if (prevVal > 0) {
-            let pct = (diff / prevVal * 100).toFixed(2);
-            if (diff > 0) pct = '+' + pct;
-            pctStr = ` ${pct}%`;
-        }
-
+        const customData = chart.config.data.customData;
+        const dateStrRaw = customData ? customData.sortedDates[dataIndex] : null;
         let dateFormatted = chart.data.labels[dataIndex];
-        if (filteredData && filteredData[dataIndex]) {
-            const dateObj = new Date(filteredData[dataIndex].dateStr);
+        if (dateStrRaw) {
+            const dateObj = new Date(dateStrRaw);
             dateFormatted = dateObj.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
         }
         
-        tooltipEl.innerHTML = `
-            <div style="font-family: Outfit; text-align: center; display: flex; flex-direction: column; gap: 0px; white-space: nowrap;">
-                <div style="display: flex; align-items: baseline; justify-content: center; gap: 4px;">
-                    <span style="font-size: 0.9rem; font-weight: 700; color: #111;">${val.toLocaleString()}</span>
-                    <span style="font-size: 0.75rem; color: ${diffColor}; font-weight: 600;">${diffStr}${pctStr}</span>
+        let innerHTMLContent = '';
+
+        if (chart.config.type === 'bar' && customData) {
+            // Stack chart: display all sets separated by space
+            const sets = customData.dailyTotals[dateStrRaw]?.sets || [];
+            const setsStr = sets.join(' ');
+            
+            innerHTMLContent = `
+                <div style="font-family: Outfit; text-align: center; display: flex; flex-direction: column; gap: 0px; white-space: nowrap;">
+                    <div style="display: flex; align-items: baseline; justify-content: center; gap: 4px;">
+                        <span style="font-size: 0.9rem; font-weight: 700; color: #111;">${setsStr || '0'}</span>
+                    </div>
+                    <div style="font-size: 0.65rem; color: #888; font-weight: 500; margin-top: 1px;">
+                        ${dateFormatted}
+                    </div>
                 </div>
-                <div style="font-size: 0.65rem; color: #888; font-weight: 500; margin-top: 1px;">
-                    ${dateFormatted}
+            `;
+        } else {
+            // Line chart: display value, diff, and percentage
+            let prevVal = val;
+            if (dataIndex > 0) prevVal = dataset.data[dataIndex - 1];
+            
+            const diff = val - prevVal;
+            let diffStr = diff.toString();
+            let diffColor = '#999';
+            if (diff > 0) { diffStr = '+' + diff; diffColor = '#2bb596'; }
+            else if (diff < 0) { diffColor = '#f23645'; }
+            
+            let pctStr = '';
+            if (prevVal > 0) {
+                let pct = (diff / prevVal * 100).toFixed(2);
+                if (diff > 0) pct = '+' + pct;
+                pctStr = ` ${pct}%`;
+            }
+            
+            innerHTMLContent = `
+                <div style="font-family: Outfit; text-align: center; display: flex; flex-direction: column; gap: 0px; white-space: nowrap;">
+                    <div style="display: flex; align-items: baseline; justify-content: center; gap: 4px;">
+                        <span style="font-size: 0.9rem; font-weight: 700; color: #111;">${val.toLocaleString()}</span>
+                        <span style="font-size: 0.75rem; color: ${diffColor}; font-weight: 600;">${diffStr}${pctStr}</span>
+                    </div>
+                    <div style="font-size: 0.65rem; color: #888; font-weight: 500; margin-top: 1px;">
+                        ${dateFormatted}
+                    </div>
                 </div>
-            </div>
-        `;
+            `;
+        }
+        
+        tooltipEl.innerHTML = innerHTMLContent;
     }
 
     const position = chart.canvas.getBoundingClientRect();
@@ -1109,7 +1133,11 @@ const externalTooltipHandler = (context) => {
         type: currentStatsChartType,
         data: {
             labels: labels,
-            datasets: datasets
+            datasets: datasets,
+            customData: {
+                sortedDates: sortedDates,
+                dailyTotals: dailyTotals
+            }
         },
         options: {
             responsive: true,
