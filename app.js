@@ -273,10 +273,8 @@ function toggleFilter(type) {
 // Data Fetching
 function hideSplashScreen() {
     const splash = document.getElementById('splashScreen');
-    if (splash && splash.style.display !== 'none') {
-        splash.style.opacity = '0';
-        
-        setTimeout(() => splash.style.display = 'none', 500);
+    if (splash) {
+        splash.style.display = 'none';
     }
 }
 
@@ -1355,6 +1353,7 @@ function openExercisePicker() {
     });
     document.getElementById('exercisePickerModal').style.display = 'flex'; document.getElementById('exercisePickerModal').offsetHeight; document.getElementById('exercisePickerModal').classList.add('show');
 }
+
 
 
 
