@@ -994,13 +994,13 @@ function renderStats() {
                 
                 ctx.beginPath();
                 ctx.fillStyle = 'rgba(255, 255, 255, 0.65)';
-                ctx.roundRect(leftEdge, y - 9, pillWidth, 18, 9);
+                ctx.roundRect(leftEdge + 8, y - 9, pillWidth, 18, 9);
                 ctx.fill();
                 
                 ctx.fillStyle = '#666';
                 ctx.textAlign = 'center';
                 ctx.textBaseline = 'middle';
-                ctx.fillText(label, leftEdge + (pillWidth / 2), y + 1);
+                ctx.fillText(label, leftEdge + 8 + (pillWidth / 2), y + 1);
             });
             ctx.restore();
         }
@@ -1255,3 +1255,4 @@ if (statsViewEl) {
     });
 }
 
+
