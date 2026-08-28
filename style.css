@@ -377,25 +377,18 @@ body {
 .floating-nav {
     position: fixed;
     bottom: 30px;
-    left: 50%;
-    transform: translateX(-50%);
-    background: rgba(255, 255, 255, 0.85);
-    backdrop-filter: blur(12px);
-    -webkit-backdrop-filter: blur(12px);
+    right: 24px;
+    background: transparent;
     display: flex;
-    justify-content: space-between;
+    justify-content: center;
     align-items: center;
-    padding: 8px 16px;
-    border-radius: 40px;
-    box-shadow: 0 10px 30px rgba(0,0,0,0.1);
-    border: 1px solid rgba(255, 255, 255, 0.4);
-    width: 240px;
+    width: auto;
     z-index: 100;
     transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .floating-nav.hidden {
-    transform: translate(-50%, 120px);
+    transform: translateY(120px);
 }
 
 .floating-nav .nav-item {

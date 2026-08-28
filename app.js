@@ -33,6 +33,7 @@ const headerFilterBtn = document.getElementById('headerFilterBtn');
 document.addEventListener('DOMContentLoaded', () => {
     initExerciseListGrid();
     initFilterModal();
+    renderHomeExerciseGrid();
     renderCalendar();
     fetchData();
     initPullToRefresh();
@@ -765,8 +766,10 @@ let statsChartInstance = null;
 function switchView(view) {
     const statsView = document.getElementById('statsView');
     const navItems = document.querySelectorAll('.floating-nav .nav-item:not(.add-btn)');
-    navItems[0].classList.toggle('active', view === 'home');
-    navItems[1].classList.toggle('active', view === 'stats');
+    if (navItems.length >= 2) {
+        navItems[0].classList.toggle('active', view === 'home');
+        navItems[1].classList.toggle('active', view === 'stats');
+    }
     
     // Hide custom tooltip when switching views
     const tooltipEl = document.getElementById('chartjs-tooltip');
@@ -843,12 +846,13 @@ function renderStats() {
         
         const iconWrap = document.createElement('div');
         iconWrap.style.cssText = 'width: 32px; height: 32px; border-radius: 50%; display: flex; align-items: center; justify-content: center; padding: 6px; cursor: pointer; transition: all 0.2s; flex-shrink: 0;';
+        
         if (currentStatsExercise === ex) {
             iconWrap.style.background = '#f39c12';
             iconWrap.style.color = '#fff';
-            iconWrap.style.boxShadow = '0 2px 8px rgba(243,156,18,0.4)';
+            iconWrap.style.boxShadow = '0 4px 10px rgba(243, 156, 18, 0.4)';
         } else {
-            iconWrap.style.background = '#f5f5f5';
+            iconWrap.style.background = 'transparent';
             iconWrap.style.color = '#999';
             iconWrap.style.boxShadow = 'none';
         }
@@ -856,6 +860,59 @@ function renderStats() {
         iconWrap.onclick = () => setStatsExercise(ex);
         filterContainer.appendChild(iconWrap);
     });
+}
+
+function renderHomeExerciseGrid() {
+    const grid = document.getElementById('homeExerciseGrid');
+    if (!grid) return;
+    grid.innerHTML = '';
+    
+    // Add "ALL" icon
+    const allWrap = document.createElement('div');
+    allWrap.style.cssText = 'width: 32px; height: 32px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 10px; font-weight: 700; cursor: pointer; transition: all 0.2s; flex-shrink: 0;';
+    
+    if (activeFilters.length === 0) {
+        allWrap.style.background = '#f39c12';
+        allWrap.style.color = '#fff';
+        allWrap.style.boxShadow = '0 4px 10px rgba(243, 156, 18, 0.4)';
+    } else {
+        allWrap.style.background = 'transparent';
+        allWrap.style.color = '#999';
+        allWrap.style.boxShadow = 'none';
+    }
+    allWrap.innerHTML = 'ALL';
+    allWrap.onclick = () => {
+        activeFilters = [];
+        renderHomeExerciseGrid();
+        renderCalendar();
+        renderDailyLog();
+    };
+    grid.appendChild(allWrap);
+    
+    // Add exercise icons
+    Object.keys(EXERCISES).forEach(ex => {
+        const iconWrap = document.createElement('div');
+        iconWrap.style.cssText = 'width: 32px; height: 32px; border-radius: 50%; display: flex; align-items: center; justify-content: center; padding: 6px; cursor: pointer; transition: all 0.2s; flex-shrink: 0;';
+        
+        if (activeFilters.includes(ex)) {
+            iconWrap.style.background = '#f39c12';
+            iconWrap.style.color = '#fff';
+            iconWrap.style.boxShadow = '0 4px 10px rgba(243, 156, 18, 0.4)';
+        } else {
+            iconWrap.style.background = 'transparent';
+            iconWrap.style.color = '#999';
+            iconWrap.style.boxShadow = 'none';
+        }
+        iconWrap.innerHTML = EXERCISES[ex].replace('width="24"', 'width="18"').replace('height="24"', 'height="18"');
+        iconWrap.onclick = () => {
+            activeFilters = [ex]; // Single select for simplicity, or we could toggle
+            renderHomeExerciseGrid();
+            renderCalendar();
+            renderDailyLog();
+        };
+        grid.appendChild(iconWrap);
+    });
+}
     
     let filteredData = trainingData.filter(d => d.type === currentStatsExercise);
     
