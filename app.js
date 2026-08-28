@@ -1030,12 +1030,12 @@ const externalTooltipHandler = (context) => {
         tooltipEl = document.createElement('div');
         tooltipEl.id = 'chartjs-tooltip';
         tooltipEl.style.background = 'rgba(255, 255, 255, 0.95)';
-        tooltipEl.style.borderRadius = '8px';
-        tooltipEl.style.boxShadow = '0 2px 10px rgba(0,0,0,0.1)';
+        tooltipEl.style.borderRadius = '6px';
+        tooltipEl.style.boxShadow = '0 2px 8px rgba(0,0,0,0.1)';
         tooltipEl.style.border = '1px solid #e0e0e0';
         tooltipEl.style.position = 'absolute';
         tooltipEl.style.pointerEvents = 'none';
-        tooltipEl.style.padding = '6px 12px';
+        tooltipEl.style.padding = '4px 8px';
         tooltipEl.style.transition = 'opacity .1s ease';
         tooltipEl.style.zIndex = '2050';
         document.body.appendChild(tooltipEl);
@@ -1075,12 +1075,12 @@ const externalTooltipHandler = (context) => {
         }
         
         tooltipEl.innerHTML = `
-            <div style="font-family: Outfit; text-align: center; display: flex; flex-direction: column; gap: 2px;">
-                <div style="display: flex; align-items: baseline; justify-content: center; gap: 6px;">
-                    <span style="font-size: 1rem; font-weight: 700; color: #111;">${val.toLocaleString()}</span>
+            <div style="font-family: Outfit; text-align: center; display: flex; flex-direction: column; gap: 0px; white-space: nowrap;">
+                <div style="display: flex; align-items: baseline; justify-content: center; gap: 4px;">
+                    <span style="font-size: 0.9rem; font-weight: 700; color: #111;">${val.toLocaleString()}</span>
                     <span style="font-size: 0.75rem; color: ${diffColor}; font-weight: 600;">${diffStr}${pctStr}</span>
                 </div>
-                <div style="font-size: 0.75rem; color: #888; font-weight: 500;">
+                <div style="font-size: 0.65rem; color: #888; font-weight: 500; margin-top: 1px;">
                     ${dateFormatted}
                 </div>
             </div>
@@ -1090,11 +1090,11 @@ const externalTooltipHandler = (context) => {
     const position = chart.canvas.getBoundingClientRect();
     const caretX = tooltip.caretX;
     
-    // Position near the top of the chart
-    const top = position.top + window.scrollY + chart.chartArea.top + 10; 
-    let left = position.left + window.scrollX + caretX;
-    
     tooltipEl.style.opacity = 1;
+    
+    // Position above the chart area line
+    const top = position.top + window.scrollY + chart.chartArea.top - tooltipEl.offsetHeight - 6; 
+    let left = position.left + window.scrollX + caretX;
     
     const width = tooltipEl.offsetWidth;
     let finalLeft = left - (width / 2);
