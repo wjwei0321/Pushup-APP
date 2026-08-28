@@ -1085,8 +1085,8 @@ const externalTooltipHandler = (context) => {
             const diff = val - prevVal;
             let diffStr = diff.toString();
             let diffColor = '#999';
-            if (diff > 0) { diffStr = '+' + diff; diffColor = '#2bb596'; }
-            else if (diff < 0) { diffColor = '#f23645'; }
+            if (diff > 0) { diffStr = '+' + diff; diffColor = '#f23645'; }
+            else if (diff < 0) { diffColor = '#2bb596'; }
             
             let pctStr = '';
             if (prevVal > 0) {
