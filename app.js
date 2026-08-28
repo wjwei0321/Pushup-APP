@@ -2,7 +2,7 @@
 let trainingData = [];
 let currentDate = new Date(); // Month currently viewed
 let selectedDate = new Date(); // Date currently selected
-let apiUrl = localStorage.getItem('pushup_apiUrl') || 'https://script.google.com/macros/s/AKfycbz1JD2R7BJBRRmRpLXTjrt-JkIgMHLqwqFdZkcTICQPu7UXnfIKURt_GkD51AQYlKhe/exec';
+let apiUrl = localStorage.getItem('pushup_apiUrl') || 'https://script.google.com/macros/s/AKfycbxJjXFEU8cZ_ZMxKlRcm03uGKWzLvjahLQlZpLznUq2diICcQvF4qZM3ryiumwyqxjJ/exec';
 let userEmail = localStorage.getItem('pushup_userEmail') || '';
 let selectedExerciseForLog = null;
 let activeFilters = []; // empty means "Show All"
@@ -1282,6 +1282,7 @@ if (statsViewEl) {
     });
 }
 
+
 
 
 
