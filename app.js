@@ -1322,7 +1322,7 @@ function openExercisePicker() {
             item.style.background = 'var(--bg-color)';
         }
         item.onclick = () => {
-            document.getElementById('exercisePickerModal').classList.remove('show');
+            document.getElementById('exercisePickerModal').classList.remove('show'); setTimeout(() => document.getElementById('exercisePickerModal').style.display = 'none', 300);
             openLogView(ex);
         };
         const iconWrap = document.createElement('div');
@@ -1336,5 +1336,6 @@ function openExercisePicker() {
         item.appendChild(label);
         picker.appendChild(item);
     });
-    document.getElementById('exercisePickerModal').classList.add('show');
+    document.getElementById('exercisePickerModal').style.display = 'flex'; document.getElementById('exercisePickerModal').offsetHeight; document.getElementById('exercisePickerModal').classList.add('show');
 }
+

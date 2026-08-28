@@ -235,7 +235,7 @@
     </div>
     <div class="toast" id="toast">Logged successfully!</div>
 
-    <div class="modal" id="exercisePickerModal" style="z-index: 1000;" onclick="if(event.target===this) this.classList.remove('show')">
+    <div class="modal" id="exercisePickerModal" style="z-index: 1000;" onclick="if(event.target===this) { this.classList.remove('show'); setTimeout(() => this.style.display = 'none', 300); }">
         <div class="modal-content" style="border-radius: 20px 20px 0 0; padding: 20px; max-height: 80vh; overflow-y: auto;">
             <div style="width: 40px; height: 4px; background: #ddd; border-radius: 2px; margin: 0 auto 20px auto;"></div>
             <h3 style="margin-bottom: 20px; font-weight: 700; text-align: center;">Select Exercise</h3>
@@ -243,9 +243,10 @@
         </div>
     </div>
 
-    <script src="app.js?v=3.75"></script>
+    <script src="app.js?v=3.76"></script>
 </body>
 </html>
+
 
 
 
