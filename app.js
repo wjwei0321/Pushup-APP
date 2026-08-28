@@ -1323,7 +1323,7 @@ function openExercisePicker() {
         }
         item.onclick = () => {
             document.getElementById('exercisePickerModal').classList.remove('show'); setTimeout(() => document.getElementById('exercisePickerModal').style.display = 'none', 300);
-            openLogView(ex);
+            selectExercise(ex);
         };
         const iconWrap = document.createElement('div');
         iconWrap.style.cssText = 'width: 48px; height: 48px; border-radius: 50%; display: flex; align-items: center; justify-content: center; background: ' + (selectedExerciseForLog === ex ? 'var(--accent-color)' : 'var(--bg-color)') + '; color: ' + (selectedExerciseForLog === ex ? '#fff' : 'var(--text-secondary)') + ';';
@@ -1338,4 +1338,5 @@ function openExercisePicker() {
     });
     document.getElementById('exercisePickerModal').style.display = 'flex'; document.getElementById('exercisePickerModal').offsetHeight; document.getElementById('exercisePickerModal').classList.add('show');
 }
+
 
