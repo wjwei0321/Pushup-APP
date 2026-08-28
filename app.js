@@ -446,7 +446,7 @@ function renderDailyLog() {
     openSwipeCard = null; // Clear any open swipe state
     
     if (dayData.length === 0) {
-        dailyLogList.innerHTML = '<div style="text-align:center; padding: 20px; color: #aaa;">No workouts logged today.</div>';
+        dailyLogList.innerHTML = '';
         return;
     }
     
@@ -454,6 +454,8 @@ function renderDailyLog() {
         entry.sets.forEach((repCount, setIndex) => {
             const card = document.createElement('div');
             card.className = 'log-card';
+            card.style.margin = '0 20px';
+            card.style.borderBottom = '1px solid var(--border-color)';
             
             const iconSvg = EXERCISES[entry.type] || EXERCISES['Push-up'];
             
@@ -466,7 +468,7 @@ function renderDailyLog() {
                         <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>
                     </button>
                 </div>
-                <div class="log-card-content" style="position: relative; z-index: 2; background: white; padding: 12px 16px; border-radius: 16px; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 4px 15px rgba(0,0,0,0.03); transition: transform 0.2s ease-out; transform: translateX(0);">
+                <div class="log-card-content" style="position: relative; z-index: 2; background: white; padding: 12px 0; border-radius: 0; display: flex; justify-content: space-between; align-items: center; transition: transform 0.2s ease-out; transform: translateX(0);">
                     <div class="log-card-left" style="display: flex; align-items: center; gap: 12px;">
                         <div class="log-icon">${iconSvg}</div>
                         <div class="log-details" style="display: flex; flex-direction: column;">
@@ -548,7 +550,7 @@ function initSwipeActions(card) {
             currentX = Math.max(diff, actionWidth - 20);
         } else {
             // Swiping right (closing)
-            currentX = Math.min(diff, 20); // Rubber band right
+            currentX = Math.min(diff, 0); // Forbidden to move right past 0
         }
         
         content.style.transform = `translateX(${currentX}px)`;
@@ -1349,6 +1351,7 @@ function openExercisePicker() {
     });
     document.getElementById('exercisePickerModal').style.display = 'flex'; document.getElementById('exercisePickerModal').offsetHeight; document.getElementById('exercisePickerModal').classList.add('show');
 }
+
 
 
 
