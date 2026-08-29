@@ -782,21 +782,18 @@ async function submitWorkout() {
 
 // Settings
 function saveSettings() {
-    const apiVal = document.getElementById('apiUrl').value.trim();
     const emailVal = document.getElementById('userEmail').value.trim();
-
-    if (apiVal) {
-        apiUrl = apiVal;
-        localStorage.setItem('pushup_apiUrl', apiUrl);
-    }
 
     if (emailVal) {
         userEmail = emailVal;
         localStorage.setItem('pushup_userEmail', userEmail);
     }
-
+    
     settingsModal.classList.remove('show');
-    setTimeout(() => settingsModal.style.display = 'none', 300);
+    setTimeout(() => { settingsModal.style.display = 'none'; }, 300);
+    
+    // Refresh data
+    showSplashScreen();
     fetchData();
 }
 
