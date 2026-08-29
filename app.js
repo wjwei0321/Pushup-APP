@@ -295,26 +295,15 @@ async function fetchData() {
                 if(userDisplay) userDisplay.textContent = 'Welcome, ' + json.username;
             }
 
-            trainingData = json.data.filter(row => row[0]).map((row, index) => {
-                const dateObj = new Date(row[0]);
-                const dateStr = `${dateObj.getFullYear()}/${String(dateObj.getMonth()+1).padStart(2, '0')}/${String(dateObj.getDate()).padStart(2, '0')}`;
-                
-                // Parse sets
-                let sets = [];
-                for(let i = 2; i <= 7; i++) {
-                    if (row[i] && !isNaN(parseInt(row[i]))) {
-                        sets.push(parseInt(row[i]));
-                    }
-                }
-                
+            trainingData = json.data.map(row => {
                 return {
-                    rowIndex: row[8], // Sheet row
-                    dateStr: dateStr,
+                    dateStr: row[0],
                     type: row[1],
-                    sets: sets
+                    reps: parseInt(row[2]) || 0,
+                    time: row[3] || '',
+                    rowIndex: row[4]
                 };
             });
-
 
             renderCalendar(); // Re-render to show indicators
             renderDailyLog(); // Re-render list
