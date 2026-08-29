@@ -28,7 +28,7 @@ body {
     color: var(--text-primary);
     font-family: var(--font-main);
     line-height: 1.5;
-    padding-bottom: 80px;
+    padding-bottom: calc(120px + env(safe-area-inset-bottom, 0px));
     overscroll-behavior-y: none;
     -webkit-user-select: none;
     user-select: none;
@@ -191,9 +191,9 @@ body {
 .calendar-card {
     background: var(--card-bg);
     border-radius: 0;
-    padding: 10px 10px calc(140px + env(safe-area-inset-bottom, 0px)) 10px;
+    padding: 10px 10px 20px 10px;
     margin-bottom: 0;
-    min-height: calc(100dvh - 50px - env(safe-area-inset-top, 0px));
+    
     display: flex;
     flex-direction: column;
     box-shadow: none;
@@ -316,6 +316,7 @@ body {
 /* Daily Log Section */
 .daily-log-section {
     padding: 0 20px;
+    min-height: calc(100dvh - 90px - env(safe-area-inset-top, 0px));
 }
 
 .daily-log-header { display: none; }
@@ -605,6 +606,9 @@ body {
 
 .calendar-grid { flex: 1; }
 #calendarDays { flex: 1; }
+
+
+
 
 
 
