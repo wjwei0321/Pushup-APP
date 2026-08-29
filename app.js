@@ -305,6 +305,7 @@ async function fetchData() {
                 };
             });
 
+
             renderCalendar(); // Re-render to show indicators
             renderDailyLog(); // Re-render list
             hideSplashScreen();
@@ -454,40 +455,44 @@ function renderDailyLog() {
     }
     logSection.style.display = 'block';
     
-    dayData.forEach(entry => {
-        entry.sets.forEach((repCount, setIndex) => {
-            const card = document.createElement('div');
-            card.className = 'log-card';
-            card.style.margin = '0';
-            card.style.borderBottom = '0.5px solid #E5E5EA';
-            
-            const iconSvg = EXERCISES[entry.type] || EXERCISES['Push-up'];
-            
-            card.innerHTML = `
-                <div class="log-card-actions" style="position: absolute; top: 0; right: 0; height: 100%; display: flex; z-index: 1;">
-                    <button class="edit-swipe-btn" onclick="enableEditMode(this, ${entry.rowIndex}, ${setIndex})" style="background: var(--text-secondary); color: white; border: none; width: 70px; display: flex; align-items: center; justify-content: center; cursor: pointer;">
-                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg>
-                    </button>
-                    <button class="delete-swipe-btn" onclick="confirmDeleteSet(${entry.rowIndex}, ${setIndex})" style="background: #e74c3c; color: white; border: none; width: 70px; display: flex; align-items: center; justify-content: center; cursor: pointer; border-radius: 0 16px 16px 0;">
-                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>
-                    </button>
-                </div>
-                <div class="log-card-content" style="position: relative; z-index: 2; background: white; padding: 12px 0; border-radius: 0; display: flex; justify-content: space-between; align-items: center; transition: transform 0.2s ease-out; transform: translateX(0);">
-                    <div class="log-card-left" style="display: flex; align-items: center; gap: 12px;">
-                        <div class="log-icon">${iconSvg}</div>
-                        <div class="log-details" style="display: flex; flex-direction: column;">
-                            <span class="log-title" style="font-weight: 700; font-size: 1rem;">${entry.type}</span>
-                            <span class="log-time" style="font-size: 0.8rem; color: var(--text-secondary);">Set ${setIndex + 1}</span>
-                        </div>
+    dayData.sort((a, b) => {
+        if (!a.time && !b.time) return a.rowIndex - b.rowIndex;
+        if (!a.time) return -1;
+        if (!b.time) return 1;
+        return a.time.localeCompare(b.time);
+    });
+
+    dayData.forEach((entry) => {
+        const card = document.createElement('div');
+        card.className = 'log-card';
+        card.style.margin = '0';
+        card.style.borderBottom = '0.5px solid #E5E5EA';
+        
+        const iconSvg = EXERCISES[entry.type] || EXERCISES['Push-up'];
+        
+        card.innerHTML = `
+            <div class="log-card-actions" style="position: absolute; top: 0; right: 0; height: 100%; display: flex; z-index: 1;">
+                <button class="edit-swipe-btn" onclick="enableEditMode(this, ${entry.rowIndex})" style="background: var(--text-secondary); color: white; border: none; width: 70px; display: flex; align-items: center; justify-content: center; cursor: pointer;">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg>
+                </button>
+                <button class="delete-swipe-btn" onclick="confirmDeleteSet(${entry.rowIndex})" style="background: #e74c3c; color: white; border: none; width: 70px; display: flex; align-items: center; justify-content: center; cursor: pointer; border-radius: 0 16px 16px 0;">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>
+                </button>
+            </div>
+            <div class="log-card-content" style="position: relative; z-index: 2; background: white; padding: 12px 0; border-radius: 0; display: flex; justify-content: space-between; align-items: center; transition: transform 0.2s ease-out; transform: translateX(0);">
+                <div class="log-card-left" style="display: flex; align-items: center; gap: 12px;">
+                    <div class="log-icon">${iconSvg}</div>
+                    <div class="log-details" style="display: flex; flex-direction: column;">
+                        <span class="log-title" style="font-weight: 700; font-size: 1rem;">${entry.type}</span>
+                        <span class="log-time" style="font-size: 0.8rem; color: var(--text-secondary);">${entry.time || ''}</span>
                     </div>
-                    <input type="number" class="inline-edit-input" data-row="${entry.rowIndex}" data-set="${setIndex}" value="${repCount}" readonly onblur="saveInlineEdit(this)" onkeydown="if(event.key==='Enter') this.blur();" style="font-size: 1.5rem; font-weight: 800; border: none; background: transparent; width: 70px; text-align: right; color: var(--text-primary); font-family: inherit; outline: none; padding: 0;">
                 </div>
-            `;
-            
-            initSwipeActions(card);
-            
-            dailyLogList.appendChild(card);
-        });
+                <input type="number" class="inline-edit-input" data-row="${entry.rowIndex}" value="${entry.reps}" readonly onblur="saveInlineEdit(this)" onkeydown="if(event.key==='Enter') this.blur();" style="font-size: 1.5rem; font-weight: 800; border: none; background: transparent; width: 70px; text-align: right; color: var(--text-primary); font-family: inherit; outline: none; padding: 0;">
+            </div>
+        `;
+        
+        initSwipeActions(card);
+        dailyLogList.appendChild(card);
     });
 }
 
@@ -605,21 +610,198 @@ function saveInlineEdit(input) {
     
     if (isNaN(newVal) || newVal <= 0) {
         showToast('Invalid number. Reverting...');
-        fetchData();
+        fetchData(); // Revert UI to old state
         return;
     }
     
     const entry = trainingData.find(d => d.rowIndex === rowIndex);
     if (!entry) return;
     
+    // Only update if changed
     if (entry.reps !== newVal) {
         entry.reps = newVal;
         updateSetOnBackend(entry);
     }
 }
 
+function confirmDeleteSet(rowIndex) {
+    const entry = trainingData.find(d => d.rowIndex === rowIndex);
+    if (!entry) return;
+    
+    if (confirm(`Delete Set ${setIndex + 1}?`)) {
+        entry.sets.splice(setIndex, 1);
+        updateSetOnBackend(entry);
+    } else {
+        // Snap back
+        renderDailyLog();
+    }
+}
+
+async function updateSetOnBackend(entry) {
+    // Optimistic UI Update
+    renderDailyLog();
+    showToast('Updating...');
+    
+    // If no sets left, delete the entire row
+    const payload = {
+        action: entry.sets.length === 0 ? 'delete' : 'edit',
+        email: userEmail,
+        rowIndex: entry.rowIndex, // Backend expects exact sheet row index
+        reps: entry.sets
+    };
+    
+    try {
+        const res = await fetch(apiUrl, {
+            method: 'POST',
+            body: JSON.stringify(payload)
+        });
+        const result = await res.json();
+        
+        if (result.status === 'success') {
+            showToast('Updated successfully!');
+            fetchData();
+        } else {
+            showToast('Error: ' + result.message);
+        }
+    } catch (e) {
+        console.error(e);
+        hideSplashScreen();
+        showToast('Error updating record');
+    }
+}
+
+// Modal Logic
+function openAddWorkoutModal() {
+    selectedExerciseForLog = null;
+    document.getElementById('stepSelectExercise').style.display = 'none';
+    document.getElementById('stepInputReps').style.display = 'none';
+    document.getElementById('workoutRepsDisplay').textContent = '0';
+    openExercisePicker();
+}
+
+function closeAddWorkoutModal() {
+    addWorkoutModal.classList.remove('show');
+    setTimeout(() => addWorkoutModal.style.display = 'none', 300);
+}
+
+function selectExercise(type) {
+    selectedExerciseForLog = type;
+    document.getElementById('selectedExerciseTitle').textContent = type;
+    
+    const dateOptions = { weekday: 'short', month: 'short', day: 'numeric', year: 'numeric' };
+    document.getElementById('selectedExerciseDate').textContent = selectedDate.toLocaleDateString('en-US', dateOptions);
+    
+    document.getElementById('selectedExerciseIconLarge').innerHTML = `<div style="width: 140px; height: 140px; background: var(--accent-color); color: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; padding: 28px; box-sizing: border-box;"><div style="width: 100%; height: 100%; display: flex; align-items: center; justify-content: center;">${EXERCISES[type]}</div></div>`;
+    
+    updateModalStats();
+
+    document.getElementById('stepSelectExercise').style.display = 'none';
+    document.getElementById('stepInputReps').style.display = 'flex';
+    addWorkoutModal.style.display = 'flex';
+    setTimeout(() => addWorkoutModal.classList.add('show'), 10);
+}
+
+function addReps(amount) {
+    const display = document.getElementById('workoutRepsDisplay');
+    let current = parseInt(display.textContent) || 0;
+    display.textContent = current + amount;
+}
+
+function clearReps() {
+    document.getElementById('workoutRepsDisplay').textContent = '0';
+}
+
+function backToExerciseSelection() {
+    document.getElementById('stepInputReps').style.display = 'none';
+    document.getElementById('stepSelectExercise').style.display = 'flex';
+}
+
+function updateModalStats() {
+    if (!selectedExerciseForLog) return;
+    const dateStr = `${selectedDate.getFullYear()}/${String(selectedDate.getMonth()+1).padStart(2, '0')}/${String(selectedDate.getDate()).padStart(2, '0')}`;
+    const dayRows = trainingData.filter(d => d.dateStr === dateStr && d.type === selectedExerciseForLog);
+    
+    let sets = dayRows.length;
+    let totalReps = dayRows.reduce((sum, val) => sum + val.reps, 0);
+    
+    document.getElementById('modalSetsToday').textContent = sets;
+    document.getElementById('modalTotalRepsToday').textContent = totalReps;
+}
+
+async function submitWorkout() {
+    if (!selectedExerciseForLog) return alert('Please select an exercise.');
+    const reps = document.getElementById('workoutRepsDisplay').textContent;
+    if (!reps || isNaN(reps) || parseInt(reps) <= 0) return alert('Please enter valid reps.');
+    
+    const dateStr = `${selectedDate.getFullYear()}/${String(selectedDate.getMonth()+1).padStart(2, '0')}/${String(selectedDate.getDate()).padStart(2, '0')}`;
+    
+    const payload = {
+        action: 'log',
+        email: userEmail,
+        date: dateStr,
+        type: selectedExerciseForLog,
+        exerciseType: selectedExerciseForLog,
+        count: parseInt(reps)
+    };
+    
+    // Optimistic UI Update
+    let dayRow = trainingData.find(d => d.dateStr === dateStr && d.type === selectedExerciseForLog);
+    if (dayRow) {
+        if(dayRow.sets.length >= 6) {
+            alert('Max 6 sets allowed per day per exercise.');
+            return;
+        }
+        dayRow.sets.push(parseInt(reps));
+    } else {
+        trainingData.push({
+            rowIndex: -1,
+            dateStr: dateStr,
+            type: selectedExerciseForLog,
+            sets: [parseInt(reps)]
+        });
+    }
+    
+    // Update UI and keep modal open for continuous input
+    clearReps();
+    updateModalStats();
+    renderCalendar();
+    renderDailyLog();
+    showToast("Logged!");
+    
+    try {
+        await fetch(apiUrl, {
+            method: 'POST',
+            body: JSON.stringify(payload)
+        });
+        fetchData(); // Sync exact state
+    } catch (e) {
+        console.error(e);
+        hideSplashScreen();
+    }
+}
+
+// Settings
+function saveSettings() {
+    const apiVal = document.getElementById('apiUrl').value.trim();
+    const emailVal = document.getElementById('userEmail').value.trim();
+
+    if (apiVal) {
+        apiUrl = apiVal;
+        localStorage.setItem('pushup_apiUrl', apiUrl);
+    }
+
+    if (emailVal) {
+        userEmail = emailVal;
+        localStorage.setItem('pushup_userEmail', userEmail);
+    }
+
+    settingsModal.classList.remove('show');
+    setTimeout(() => settingsModal.style.display = 'none', 300);
+    fetchData();
+}
+
 function openSettings() {
-        document.getElementById('userEmail').value = userEmail;
+    document.getElementById('userEmail').value = userEmail;
     settingsModal.style.display = 'flex';
     settingsModal.offsetHeight;
     settingsModal.classList.add('show');
@@ -743,9 +925,9 @@ function renderStats() {
     
     filteredData.forEach(d => {
         if (!dailyTotals[d.dateStr]) dailyTotals[d.dateStr] = { sets: [] };
-        dailyTotals[d.dateStr].sets.push(d.reps);
+        dailyTotals[d.dateStr].sets.push(...d.sets);
         
-        const sum = d.reps;
+        const sum = d.reps || 0;
         grandTotal += sum;
         
         const dDate = new Date(d.dateStr);
@@ -758,6 +940,418 @@ function renderStats() {
             todayTotal += sum;
             todaySetsCount += 1;
         }
+    });
+    
+    document.getElementById('statsTotalNumber').textContent = grandTotal.toLocaleString();
+    
+    const todayLabel = document.getElementById('statsTodayLabel');
+    if (todayTotal > 0) {
+        todayLabel.innerHTML = `+${todayTotal.toLocaleString()} today`;
+        todayLabel.style.display = 'none'; // hide it entirely per user request? The user said "?�本no. days + no. this week ?�格式修?��? +no. this week"
+    } else {
+        todayLabel.style.display = 'none';
+    }
+    
+    const weeklyLabel = document.getElementById('statsWeeklyLabel');
+    if (weeklyTotal > 0) {
+        weeklyLabel.innerHTML = `${weeklyDaysSet.size} days, +${weeklyTotal.toLocaleString()} this week`;
+        weeklyLabel.style.display = 'block';
+    } else {
+        weeklyLabel.style.display = 'none';
+    }
+    
+    const sortedDates = Object.keys(dailyTotals).sort((a, b) => new Date(a) - new Date(b));
+    const labels = sortedDates.map(dateStr => {
+        const d = new Date(dateStr);
+        return (d.getMonth() + 1) + '/' + d.getDate();
+    });
+    
+    const datasets = [];
+    
+    if (currentStatsChartType === 'line') {
+        const data = sortedDates.map(dateStr => dailyTotals[dateStr].sets.reduce((a, b) => a + b, 0));
+        datasets.push({
+            label: currentStatsExercise,
+            data: data,
+            borderColor: '#f39c12',
+            backgroundColor: 'USE_GRADIENT',
+            fill: true,
+            tension: 0.2,
+            borderWidth: 2,
+            pointRadius: 0,
+            pointHoverRadius: 4,
+            pointHoverBackgroundColor: '#fff',
+            pointHoverBorderColor: '#f39c12',
+            pointHoverBorderWidth: 2
+        });
+    } else {
+        const maxSets = Math.max(0, ...Object.values(dailyTotals).map(v => v.sets.length));
+        const ORANGE_SHADES = ['#fedba6', '#fcc87d', '#fab355', '#f79d2e', '#f39c12', '#e67e22', '#d35400', '#b84600', '#9c3700', '#822900', '#6a1e00'];
+        for (let i = 0; i < maxSets; i++) {
+            const data = sortedDates.map(dateStr => dailyTotals[dateStr].sets[i] || 0);
+            datasets.push({
+                label: `Set ${i + 1}`,
+                data: data,
+                backgroundColor: ORANGE_SHADES[i % ORANGE_SHADES.length],
+                borderRadius: 2,
+                barPercentage: 0.6,
+            });
+        }
+    }
+    
+    const ctx = document.getElementById('statsChart').getContext('2d');
+    if (statsChartInstance) {
+        statsChartInstance.destroy();
+    }
+    
+    if (currentStatsChartType === 'line' && datasets.length > 0) {
+        datasets[0].borderColor = '#f39c12';
+        datasets[0].backgroundColor = (context) => {
+            const chart = context.chart;
+            const {ctx, chartArea} = chart;
+            if (!chartArea) return 'rgba(243, 156, 18, 0.2)'; // fallback before layout
+            const gradient = ctx.createLinearGradient(0, chartArea.bottom, 0, chartArea.top);
+            gradient.addColorStop(0, 'rgba(243, 156, 18, 0)'); // fully transparent at bottom
+            gradient.addColorStop(0.5, 'rgba(243, 156, 18, 0.15)'); // smooth transition
+            gradient.addColorStop(1, 'rgba(243, 156, 18, 0.5)'); // theme orange at the top
+            return gradient;
+        };
+    }
+    
+    const yAxisPillPlugin = {
+        id: 'yAxisPill',
+        afterDatasetsDraw: (chart) => {
+            const hasData = chart.data.datasets.some(ds => ds.data.some(val => val > 0));
+            if (!hasData) return;
+            const ctx = chart.ctx;
+            const yAxis = chart.scales.y;
+            const leftEdge = chart.chartArea.left;
+            ctx.save();
+            ctx.font = '600 10px Outfit';
+            yAxis.getTicks().forEach((tick, index, ticks) => {
+                if (index === 0 || index === ticks.length - 1) return;
+                const y = yAxis.getPixelForTick(index);
+                const label = tick.value.toString();
+                const textWidth = ctx.measureText(label).width;
+                const pillWidth = Math.max(textWidth + 12, 32);
+                
+                ctx.beginPath();
+                ctx.fillStyle = 'rgba(255, 255, 255, 0.65)';
+                ctx.roundRect(leftEdge + 4, y - 9, pillWidth, 18, 9);
+                ctx.fill();
+                
+                ctx.fillStyle = '#666';
+                ctx.textAlign = 'center';
+                ctx.textBaseline = 'middle';
+                ctx.fillText(label, leftEdge + 4 + (pillWidth / 2), y + 1);
+            });
+            ctx.restore();
+        }
+    };
+
+    const crosshairPlugin = {
+        id: 'crosshair',
+        afterDraw: chart => {
+            if (chart.tooltip?._active?.length) {
+                const activePoint = chart.tooltip._active[0];
+                const ctx = chart.ctx;
+                const x = activePoint.element.x;
+                const bottomY = chart.scales.y.bottom;
+
+                ctx.save();
+                ctx.beginPath();
+                ctx.moveTo(x, chart.scales.y.top);
+                ctx.lineTo(x, bottomY);
+                ctx.lineWidth = 1;
+                ctx.strokeStyle = '#e0e0e0';
+                ctx.stroke();
+                ctx.restore();
+            }
+        }
+    };
+    
+let lastTooltipDataIndex = -1;
+const externalTooltipHandler = (context) => {
+    const {chart, tooltip} = context;
+    let tooltipEl = document.getElementById('chartjs-tooltip');
+
+    if (!tooltipEl) {
+        tooltipEl = document.createElement('div');
+        tooltipEl.id = 'chartjs-tooltip';
+        tooltipEl.style.background = 'rgba(255, 255, 255, 0.95)';
+        tooltipEl.style.borderRadius = '6px';
+        tooltipEl.style.boxShadow = '0 2px 8px rgba(0,0,0,0.1)';
+        tooltipEl.style.border = '1px solid #e0e0e0';
+        tooltipEl.style.position = 'fixed';
+        tooltipEl.style.pointerEvents = 'none';
+        tooltipEl.style.padding = '4px 8px';
+        tooltipEl.style.transition = 'opacity .1s ease';
+        tooltipEl.style.zIndex = '2050';
+        document.body.appendChild(tooltipEl);
+    }
+
+    if (tooltip.opacity === 0) {
+        tooltipEl.style.opacity = 0;
+        lastTooltipDataIndex = -1;
+        return;
+    }
+
+    if (tooltip.body) {
+        const dataPoint = tooltip.dataPoints[0];
+        const dataset = chart.data.datasets[dataPoint.datasetIndex];
+        const dataIndex = dataPoint.dataIndex;
+        const val = dataset.data[dataIndex];
+        
+        if (lastTooltipDataIndex !== dataIndex) {
+            if (navigator.vibrate) {
+                // Short 10ms vibration for a subtle haptic "tick"
+                navigator.vibrate(10);
+            }
+            lastTooltipDataIndex = dataIndex;
+        }
+        
+        const customData = chart.config.data.customData;
+        const dateStrRaw = customData ? customData.sortedDates[dataIndex] : null;
+        let dateFormatted = chart.data.labels[dataIndex];
+        if (dateStrRaw) {
+            const dateObj = new Date(dateStrRaw);
+            dateFormatted = dateObj.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+        }
+        
+        let innerHTMLContent = '';
+
+        if (chart.config.type === 'bar' && customData) {
+            // Stack chart: display all sets separated by space
+            const sets = customData.dailyTotals[dateStrRaw]?.sets || [];
+            const setsStr = sets.join(' + ');
+            
+            innerHTMLContent = `
+                <div style="font-family: Outfit; text-align: center; display: flex; flex-direction: column; gap: 0px; white-space: nowrap;">
+                    <div style="display: flex; align-items: baseline; justify-content: center; gap: 4px;">
+                        <span style="font-size: 0.9rem; font-weight: 700; color: #111;">${setsStr || '0'}</span>
+                    </div>
+                    <div style="font-size: 0.65rem; color: #888; font-weight: 500; margin-top: 1px;">
+                        ${dateFormatted}
+                    </div>
+                </div>
+            `;
+        } else {
+            // Line chart: display value, diff, and percentage
+            let prevVal = val;
+            if (dataIndex > 0) prevVal = dataset.data[dataIndex - 1];
+            
+            const diff = val - prevVal;
+            let diffStr = diff.toString();
+            let diffColor = '#999';
+            if (diff > 0) { diffStr = '+' + diff; diffColor = '#f23645'; }
+            else if (diff < 0) { diffColor = '#2bb596'; }
+            
+            let pctStr = '';
+            if (prevVal > 0) {
+                let pct = (diff / prevVal * 100).toFixed(1);
+                if (diff > 0) pct = '+' + pct;
+                pctStr = ` ${pct}%`;
+            }
+            
+            innerHTMLContent = `
+                <div style="font-family: Outfit; text-align: center; display: flex; flex-direction: column; gap: 0px; white-space: nowrap;">
+                    <div style="display: flex; align-items: baseline; justify-content: center; gap: 4px;">
+                        <span style="font-size: 0.9rem; font-weight: 700; color: #111;">${val.toLocaleString()}</span>
+                        <span style="font-size: 0.75rem; color: ${diffColor}; font-weight: 600;">${diffStr}${pctStr}</span>
+                    </div>
+                    <div style="font-size: 0.65rem; color: #888; font-weight: 500; margin-top: 1px;">
+                        ${dateFormatted}
+                    </div>
+                </div>
+            `;
+        }
+        
+        tooltipEl.innerHTML = innerHTMLContent;
+    }
+
+    const position = chart.canvas.getBoundingClientRect();
+    const caretX = tooltip.caretX;
+    
+    tooltipEl.style.opacity = 1;
+    
+    // Position above the chart area line (fixed positioning = viewport coords)
+    const top = position.top + chart.chartArea.top - tooltipEl.offsetHeight + 12;
+    let left = position.left + caretX;
+    
+    const width = tooltipEl.offsetWidth;
+    let finalLeft = left - (width / 2);
+    if (finalLeft < 10) finalLeft = 10;
+    if (finalLeft + width > window.innerWidth - 10) finalLeft = window.innerWidth - 10 - width;
+    
+    tooltipEl.style.left = finalLeft + 'px';
+    tooltipEl.style.top = top + 'px';
+};
+
+    statsChartInstance = new Chart(ctx, {
+        type: currentStatsChartType,
+        data: {
+            labels: labels,
+            datasets: datasets,
+            customData: {
+                sortedDates: sortedDates,
+                dailyTotals: dailyTotals
+            }
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            layout: {
+                padding: { left: 0, right: 0, top: 20, bottom: 0 }
+            },
+            animations: {
+                y: { duration: 0 } // Disable only the jumpy vertical growth animation
+            },
+            interaction: {
+                mode: 'index',
+                intersect: false,
+            },
+            plugins: {
+                legend: { display: false },
+                tooltip: {
+                    enabled: false,
+                    external: externalTooltipHandler
+                }
+            },
+            scales: {
+                x: {
+                    offset: currentStatsChartType === 'bar',
+                    stacked: currentStatsChartType === 'bar',
+                    grid: { display: false },
+                    border: { display: false },
+                    afterFit: function(axis) {
+                        if (currentStatsChartType === 'line') {
+                            axis.paddingLeft = 0;
+                            axis.paddingRight = 0;
+                        }
+                    },
+                    ticks: {
+                        maxTicksLimit: 6,
+                        font: { family: 'Outfit', size: 10, weight: '500' },
+                        color: '#999',
+                        padding: 10,
+                        align: 'inner'
+                    }
+                },
+                y: {
+                    position: 'left',
+                    stacked: currentStatsChartType === 'bar',
+                    beginAtZero: true,
+                    border: { display: false },
+                    grid: { display: false, drawBorder: false, drawTicks: false },
+                    afterFit: function(axis) {
+                        axis.width = 0;
+                        axis.paddingLeft = 0;
+                        axis.paddingRight = 0;
+                        axis.margins = {left: 0, right: 0, top: 0, bottom: 0};
+                    },
+                    ticks: {
+                        display: false,
+                        mirror: true,
+                        maxTicksLimit: 5,
+                        precision: 0
+                    },
+                    suggestedMax: 5
+                }
+            }
+        },
+        plugins: [crosshairPlugin, yAxisPillPlugin]
+    });
+}
+
+// Drag to close stats modal
+let statsStartY = 0;
+let statsCurrentY = 0;
+const statsViewEl = document.getElementById('statsView');
+
+if (statsViewEl) {
+    statsViewEl.addEventListener('touchstart', (e) => {
+        if (statsViewEl.scrollTop > 0) return; // Don't drag if scrolled down
+        if (e.target.closest('#statsChart') || e.target.closest('.chart-container')) return; // Don't drag if touching chart
+        statsStartY = e.touches[0].clientY;
+        statsCurrentY = 0;
+        statsViewEl.style.transition = 'none';
+    }, {passive: true});
+
+    statsViewEl.addEventListener('touchmove', (e) => {
+        if (statsStartY === 0) return;
+        const diff = e.touches[0].clientY - statsStartY;
+        if (diff > 0) {
+            if (e.cancelable) e.preventDefault();
+            statsCurrentY = diff;
+            statsViewEl.style.transform = `translateY(${diff}px)`;
+        }
+    }, {passive: false});
+
+    statsViewEl.addEventListener('touchend', (e) => {
+        if (statsStartY === 0) return;
+        statsViewEl.style.transition = 'transform 0.3s cubic-bezier(0.1, 0.8, 0.3, 1)';
+        if (statsCurrentY > 100) {
+            switchView('home'); 
+        } else {
+            statsViewEl.style.transform = 'translateY(0)';
+        }
+        statsStartY = 0;
+        statsCurrentY = 0;
+    });
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+function openExercisePicker() {
+    const picker = document.getElementById('exercisePickerList');
+    picker.innerHTML = '';
+    Object.keys(EXERCISES).forEach(ex => {
+        const item = document.createElement('div');
+        item.style.cssText = 'display: flex; flex-direction: column; align-items: center; gap: 8px; cursor: pointer; padding: 10px; border-radius: 12px; transition: background 0.2s;';
+        if (selectedExerciseForLog === ex) {
+            item.style.background = 'var(--bg-color)';
+        }
+        item.onclick = () => {
+            document.getElementById('exercisePickerModal').classList.remove('show'); setTimeout(() => document.getElementById('exercisePickerModal').style.display = 'none', 300);
+            selectExercise(ex);
+        };
+        const iconWrap = document.createElement('div');
+        const isSelected = selectedExerciseForLog === ex;
+        const borderStyle = isSelected ? 'border: 1.5px solid transparent;' : 'border: 1.5px solid var(--border-color);';
+        iconWrap.style.cssText = 'width: 48px; height: 48px; border-radius: 50%; display: flex; align-items: center; justify-content: center; background: ' + (isSelected ? 'var(--accent-color)' : 'var(--bg-color)') + '; color: ' + (isSelected ? '#fff' : 'var(--text-secondary)') + ';' + borderStyle;
+        iconWrap.innerHTML = EXERCISES[ex].replace('width="100%"', 'width="24"').replace('height="100%"', 'height="24"');
+        const label = document.createElement('div');
+        label.style.cssText = 'font-size: 0.75rem; font-weight: 600; color: ' + (selectedExerciseForLog === ex ? 'var(--text-primary)' : 'var(--text-secondary)') + '; text-align: center; line-height: 1.1;';
+        label.innerHTML = ex === 'Polyquin Step-down' ? 'Polyquin<br>Step-down' : ex;
+        
+        item.appendChild(iconWrap);
+        item.appendChild(label);
+        picker.appendChild(item);
     });
     document.getElementById('exercisePickerModal').style.display = 'flex'; document.getElementById('exercisePickerModal').offsetHeight; document.getElementById('exercisePickerModal').classList.add('show');
 }
