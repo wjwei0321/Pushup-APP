@@ -1,8 +1,8 @@
-// State
+﻿// State
 let trainingData = [];
 let currentDate = new Date(); // Month currently viewed
 let selectedDate = new Date(); // Date currently selected
-let apiUrl = 'https://script.google.com/macros/s/AKfycbzygwNK8lzpzJlcFLntcUjhfOiZPQjyHKxssyrjh_pXgVNKd8dSkNrMQSmBCWiP1uG1/exec';
+let apiUrl = 'https://script.google.com/macros/s/AKfycbyfRhXDcH_Sp-IvRU_V4ENJpzWOsoDF2RURchZUpTQ97fxjlDXIOJCJJOOXkjPXnxLJ/exec';
 let userEmail = localStorage.getItem('pushup_userEmail') || '';
 let selectedExerciseForLog = null;
 let activeFilters = []; // empty means "Show All"
@@ -284,7 +284,7 @@ function hideSplashScreen() {
 async function fetchData() {
     if (!userEmail) { hideSplashScreen(); openSettings(); return; }
     try {
-        // ?�入?��??��??��??�覽?�快??(Cache-busting)
+        // ?嚙賢?嚙踝蕭??嚙踝蕭??嚙踝蕭??嚙質汗?嚙賢翰??(Cache-busting)
         const timestamp = new Date().getTime();
         const res = await fetch(apiUrl + '?action=get&t=' + timestamp + '&email=' + encodeURIComponent(userEmail));
         const json = await res.json();
@@ -984,7 +984,7 @@ function renderStats() {
     const todayLabel = document.getElementById('statsTodayLabel');
     if (todayTotal > 0) {
         todayLabel.innerHTML = `+${todayTotal.toLocaleString()} today`;
-        todayLabel.style.display = 'none'; // hide it entirely per user request? The user said "?�本no. days + no. this week ?�格式修?��? +no. this week"
+        todayLabel.style.display = 'none'; // hide it entirely per user request? The user said "?嚙賣no. days + no. this week ?嚙賣撘耨?嚙踝蕭? +no. this week"
     } else {
         todayLabel.style.display = 'none';
     }
@@ -1441,6 +1441,7 @@ const attachCalendarSwipe = (el) => {
 };
 attachCalendarSwipe(document.getElementById('calendarCard'));
 attachCalendarSwipe(document.getElementById('stickyHeader'));
+
 
 
 
