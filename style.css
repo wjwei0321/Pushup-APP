@@ -193,7 +193,7 @@ body {
     border-radius: 0;
     padding: 10px 10px 20px 10px;
     margin-bottom: 0;
-    
+    min-height: calc(100dvh - 80px - env(safe-area-inset-top, 0px));
     display: flex;
     flex-direction: column;
     box-shadow: none;
@@ -251,6 +251,7 @@ body {
 
 .day-cell {
     min-height: 56px;
+    align-self: start;
     padding: 8px 0 4px 0;
     display: flex;
     flex-direction: column;
@@ -606,6 +607,7 @@ body {
 
 .calendar-grid { flex: 1; }
 #calendarDays { flex: 1; }
+
 
 
 
