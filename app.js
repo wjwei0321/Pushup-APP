@@ -394,7 +394,7 @@ function renderCalendar() {
             const exerciseSets = {};
             dayData.forEach(d => {
                 if (!exerciseSets[d.type]) exerciseSets[d.type] = 0;
-                exerciseSets[d.type] += d.sets.length;
+                exerciseSets[d.type] += 1;
             });
 
             const distinctCount = Object.keys(exerciseSets).length;
