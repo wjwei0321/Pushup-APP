@@ -751,7 +751,7 @@ function updateModalStats() {
     const dayRows = trainingData.filter(d => d.dateStr === dateStr && d.type === selectedExerciseForLog);
     
     let sets = dayRows.length;
-    let totalReps = dayRows.reduce((sum, val) => sum + val.reps, 0);
+    let totalReps = dayRows.reduce((sum, val) => sum + (val.reps || 0), 0);
     
     document.getElementById('modalSetsToday').textContent = sets;
     document.getElementById('modalTotalRepsToday').textContent = totalReps;
@@ -763,34 +763,27 @@ async function submitWorkout() {
     if (!reps || isNaN(reps) || parseInt(reps) <= 0) return alert('Please enter valid reps.');
     
     const dateStr = `${selectedDate.getFullYear()}/${String(selectedDate.getMonth()+1).padStart(2, '0')}/${String(selectedDate.getDate()).padStart(2, '0')}`;
+    const now = new Date();
+    const timeStr = `${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}`;
     
     const payload = {
-        action: 'log',
+        action: 'add',
         email: userEmail,
         date: dateStr,
         type: selectedExerciseForLog,
-        exerciseType: selectedExerciseForLog,
-        count: parseInt(reps)
+        count: parseInt(reps),
+        time: timeStr
     };
     
     // Optimistic UI Update
-    let dayRow = trainingData.find(d => d.dateStr === dateStr && d.type === selectedExerciseForLog);
-    if (dayRow) {
-        if(dayRow.sets.length >= 6) {
-            alert('Max 6 sets allowed per day per exercise.');
-            return;
-        }
-        dayRow.sets.push(parseInt(reps));
-    } else {
-        trainingData.push({
-            rowIndex: -1,
-            dateStr: dateStr,
-            type: selectedExerciseForLog,
-            sets: [parseInt(reps)]
-        });
-    }
+    trainingData.push({
+        rowIndex: 999999 + Math.random(),
+        dateStr: dateStr,
+        type: selectedExerciseForLog,
+        reps: parseInt(reps),
+        time: timeStr
+    });
     
-    // Update UI and keep modal open for continuous input
     clearReps();
     updateModalStats();
     renderCalendar();
@@ -802,7 +795,7 @@ async function submitWorkout() {
             method: 'POST',
             body: JSON.stringify(payload)
         });
-        fetchData(); // Sync exact state
+        fetchData();
     } catch (e) {
         console.error(e);
         hideSplashScreen();
