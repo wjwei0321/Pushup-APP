@@ -469,11 +469,21 @@ function renderDailyLog() {
     }
     logSection.style.display = 'block';
     
-    dayData.sort((a, b) => {
+        dayData.sort((a, b) => {
         if (!a.time && !b.time) return a.rowIndex - b.rowIndex;
         if (!a.time) return -1;
         if (!b.time) return 1;
         return a.time.localeCompare(b.time);
+    });
+
+    const typeSetCounts = {};
+    dayData.forEach((entry) => {
+        if (!typeSetCounts[entry.type]) {
+            typeSetCounts[entry.type] = 1;
+        } else {
+            typeSetCounts[entry.type]++;
+        }
+        entry.setNumber = typeSetCounts[entry.type];
     });
 
     dayData.forEach((entry) => {
@@ -498,7 +508,7 @@ function renderDailyLog() {
                     <div class="log-icon">${iconSvg}</div>
                     <div class="log-details" style="display: flex; flex-direction: column;">
                         <span class="log-title" style="font-weight: 700; font-size: 1rem;">${entry.type}</span>
-                        <span class="log-time" style="font-size: 0.8rem; color: var(--text-secondary);">${entry.time || ''}</span>
+                          <span class="log-time" style="font-size: 0.8rem; color: var(--text-secondary);">${entry.time ? `Set ${entry.setNumber}｜${entry.time}` : `Set ${entry.setNumber}`}</span>
                     </div>
                 </div>
                 <input type="number" class="inline-edit-input" data-row="${entry.rowIndex}" value="${entry.reps}" readonly onblur="saveInlineEdit(this)" onkeydown="if(event.key==='Enter') this.blur();" style="font-size: 1.5rem; font-weight: 800; border: none; background: transparent; width: 70px; text-align: right; color: var(--text-primary); font-family: inherit; outline: none; padding: 0;">
