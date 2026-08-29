@@ -329,14 +329,11 @@ async function fetchData() {
 
             renderCalendar(); // Re-render to show indicators
             renderDailyLog(); // Re-render list
-            hideSplashScreen();
         } else if (json.authError) {
             showToast(json.message);
-            hideSplashScreen();
             openSettings();
         } else if (json.status === 'error') {
             showToast('Error: ' + json.message);
-            hideSplashScreen();
         }
     } catch (e) {
         console.error(e);
@@ -666,7 +663,6 @@ async function confirmDeleteSet(rowIndex) {
         }
         
         if (confirm(`Delete this record?`)) {
-            showSplashScreen();
             // Optimistic UI update
             trainingData.splice(entryIndex, 1);
             renderDailyLog();
@@ -690,7 +686,6 @@ async function confirmDeleteSet(rowIndex) {
             } else {
                 showToast('Error: ' + result.message);
             }
-            hideSplashScreen();
             fetchData();
         } else {
             renderDailyLog();
