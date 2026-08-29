@@ -1023,12 +1023,14 @@ function renderStats() {
             pointHoverBorderWidth: 2
         });
     } else {
-                  const maxSets = Math.max(0, ...Object.values(dailyTotals).map(v => v.sets.length));
+                            const maxSets = Math.max(0, ...Object.values(dailyTotals).map(v => v.sets.length));
+          const ORANGE_SHADES = [
+              '#ffe5b4', '#ffc87c', '#ffb050', '#ff9500', 
+              '#e67e22', '#c75b00', '#a64100', '#852d00', 
+              '#631d00', '#421000', '#2b0a00', '#140400'
+          ];
           for (let i = 0; i < maxSets; i++) {
-              // Generate progressively darker orange for each set
-              const l = Math.max(15, 80 - (i * 5)); 
-              const h = Math.max(15, 38 - (i * 1.5)); 
-              const color = `hsl(${h}, 100%, ${l}%)`;
+              const color = ORANGE_SHADES[i % ORANGE_SHADES.length];
               
               const data = sortedDates.map(dateStr => dailyTotals[dateStr].sets[i] || 0);
               datasets.push({
