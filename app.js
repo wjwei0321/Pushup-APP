@@ -646,7 +646,7 @@ async function confirmDeleteSet(rowIndex) {
         showSplashScreen();
         const payload = {
             action: 'delete',
-            rowIndex: rowIndex
+            rowIndex: parseInt(rowIndex)
         };
         try {
             const res = await fetch(apiUrl, { 
