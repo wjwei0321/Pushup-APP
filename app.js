@@ -397,8 +397,7 @@ function renderCalendar() {
                 const sets = exerciseSets[exType];
                 
                 // Scale proportion according to quantity
-                let size = 16 + (sets * 3); 
-                if (size > 28) size = 28; // Max size to prevent overflow
+                let size = 24;
                 
                 if (distinctCount > 2) size = Math.min(size, 16);
                 else if (distinctCount > 1) size = Math.min(size, 20);
@@ -1413,6 +1412,7 @@ const attachCalendarSwipe = (el) => {
 };
 attachCalendarSwipe(document.getElementById('calendarCard'));
 attachCalendarSwipe(document.getElementById('stickyHeader'));
+
 
 
 
