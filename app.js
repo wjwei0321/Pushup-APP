@@ -39,18 +39,7 @@ document.addEventListener('DOMContentLoaded', () => {
     initPullToRefresh();
     initScrollNav();
 
-    // Sync theme-color with modal state for iOS notch
-    const syncThemeColor = () => {
-        const meta = document.querySelector('meta[name="theme-color"]');
-        if (meta) {
-            const isModalOpen = document.querySelector('.modal.show') !== null;
-            meta.setAttribute('content', isModalOpen ? '#999999' : '#FFFFFF');
-        }
-    };
-    document.querySelectorAll('.modal').forEach(modal => {
-        new MutationObserver(syncThemeColor).observe(modal, { attributes: true, attributeFilter: ['class'] });
-    });
-    syncThemeColor();
+    
 
     // Close modals when clicking outside (using direct listeners for mobile compatibility)
     document.querySelectorAll('.modal').forEach(modal => {
