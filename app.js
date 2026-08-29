@@ -639,14 +639,20 @@ function saveInlineEdit(input) {
 }
 
 async function confirmDeleteSet(rowIndex) {
-    const entry = trainingData.find(d => d.rowIndex === rowIndex);
-    if (!entry) return;
+    rowIndex = parseInt(rowIndex);
+    const entryIndex = trainingData.findIndex(d => d.rowIndex === rowIndex || parseInt(d.rowIndex) === rowIndex);
+    if (entryIndex === -1) return;
     
     if (confirm(`Delete this record?`)) {
         showSplashScreen();
+        // Optimistic UI update
+        trainingData.splice(entryIndex, 1);
+        renderDailyLog();
+        renderCalendar();
+        
         const payload = {
             action: 'delete',
-            rowIndex: parseInt(rowIndex)
+            rowIndex: rowIndex
         };
         try {
             const res = await fetch(apiUrl, { 
@@ -660,14 +666,15 @@ async function confirmDeleteSet(rowIndex) {
             const result = await res.json();
             if (result.status === 'success') {
                 showToast('Deleted');
-                fetchData();
             } else {
-                showToast('Error');
-                hideSplashScreen();
+                showToast('Error: ' + result.message);
             }
         } catch (e) {
-            hideSplashScreen();
+            console.error(e);
             showToast('Error');
+        } finally {
+            hideSplashScreen();
+            fetchData();
         }
     } else {
         renderDailyLog();
