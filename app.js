@@ -1171,8 +1171,12 @@ const externalTooltipHandler = (context) => {
 
         if (chart.config.type === 'bar' && customData) {
             // Stack chart: display all sets separated by space
-            const sets = customData.dailyTotals[dateStrRaw]?.sets || [];
-            const setsStr = sets.join(' + ');
+                        const sets = customData.dailyTotals[dateStrRaw]?.sets || [];
+            let setsStr = sets.join(' + ');
+            if (sets.length > 1) {
+                const total = sets.reduce((a, b) => a + b, 0);
+                setsStr += ` = ${total}`;
+            }
             
             innerHTMLContent = `
                 <div style="font-family: Outfit; text-align: center; display: flex; flex-direction: column; gap: 0px; white-space: nowrap;">
