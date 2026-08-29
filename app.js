@@ -292,8 +292,8 @@ async function fetchData() {
             // Data is [Date, Type, Set1, Set2, Set3, Set4, Set5, Set6]
             const userDisplay = document.getElementById('currentUserDisplay');
             if(userDisplay) {
-                userDisplay.textContent = 'Logged in as: ' + (json.username || userEmail);
-                userDisplay.style.color = '#34c759';
+                userDisplay.textContent = (json.username || userEmail);
+                userDisplay.style.color = '#ff9500';
             }
 
             trainingData = json.data.map(row => {
