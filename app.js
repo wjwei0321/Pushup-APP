@@ -290,12 +290,10 @@ async function fetchData() {
         const json = await res.json();
         if (json.status === 'success') {
             // Data is [Date, Type, Set1, Set2, Set3, Set4, Set5, Set6]
-            if (json.username) {
-                const userDisplay = document.getElementById('currentUserDisplay');
-                if(userDisplay) {
+            const userDisplay = document.getElementById('currentUserDisplay');
+            if(userDisplay) {
                 userDisplay.textContent = 'Logged in as: ' + (json.username || userEmail);
                 userDisplay.style.color = '#34c759';
-            }
             }
 
             trainingData = json.data.map(row => {
