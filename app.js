@@ -51,8 +51,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 }
             }
         };
-        modal.addEventListener('mousedown', dismissHandler);
-        modal.addEventListener('touchstart', dismissHandler, {passive: true});
+        modal.addEventListener(\'click\', dismissHandler);
         
         // Swipe down to dismiss
         const content = modal.querySelector('.modal-content');
