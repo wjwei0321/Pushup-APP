@@ -329,6 +329,7 @@ async function fetchData() {
 
             renderCalendar(); // Re-render to show indicators
             renderDailyLog(); // Re-render list
+            hideSplashScreen();
         } else if (json.authError) {
             showToast(json.message);
             openSettings();
