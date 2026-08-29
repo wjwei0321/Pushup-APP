@@ -1,6 +1,6 @@
 ﻿import re
 
-with open('app.js', 'r', encoding='utf-8') as f:
+with open('app.js', 'r', encoding='utf-8', errors='replace') as f:
     js = f.read()
 
 # 1. Update API URL and remove from settings
