@@ -680,12 +680,12 @@ async function updateSetOnBackend(entry) {
     showToast('Updating...');
     
     // If no sets left, delete the entire row
-    const payload = {
-        action: entry.sets.length === 0 ? 'delete' : 'edit',
-        email: userEmail,
-        rowIndex: entry.rowIndex, // Backend expects exact sheet row index
-        reps: entry.sets
-    };
+          const payload = {
+          action: 'edit',
+          email: userEmail,
+          rowIndex: entry.rowIndex,
+          count: entry.reps
+      };
     
     try {
         const res = await fetch(apiUrl, {
