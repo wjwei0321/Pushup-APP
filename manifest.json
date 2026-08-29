@@ -1,4 +1,4 @@
-{
+﻿{
   "name": "Strive to Evolve",
   "short_name": "Strive",
   "icons": [
@@ -10,6 +10,7 @@
   ],
   "start_url": "./index.html",
   "display": "standalone",
-  "theme_color": "#F7F7F7",
-  "background_color": "#F7F7F7"
+  "theme_color": "#f5f5f5",
+  "background_color": "#f5f5f5"
 }
+
