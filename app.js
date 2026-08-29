@@ -275,6 +275,13 @@ function toggleFilter(type) {
 }
 
 // Data Fetching
+function showSplashScreen() {
+    const splash = document.getElementById('splashScreen');
+    if (splash) {
+        splash.style.display = 'flex';
+    }
+}
+
 function hideSplashScreen() {
     const splash = document.getElementById('splashScreen');
     if (splash) {
@@ -654,7 +661,7 @@ async function confirmDeleteSet(rowIndex) {
         rowIndex = parseInt(rowIndex);
         const entryIndex = trainingData.findIndex(d => d.rowIndex === rowIndex || parseInt(d.rowIndex) === rowIndex);
         if (entryIndex === -1) {
-            alert('Cannot find record to delete. RowIndex: ' + rawRowIndex);
+            console.error('Cannot find record to delete. RowIndex: ' + rawRowIndex);
             return;
         }
         
@@ -689,7 +696,8 @@ async function confirmDeleteSet(rowIndex) {
             renderDailyLog();
         }
     } catch (e) {
-        alert('Delete error: ' + e.toString());
+        console.error('Delete error: ' + e.toString());
+        showToast('Error deleting record');
         hideSplashScreen();
     }
 }
