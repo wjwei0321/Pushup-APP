@@ -946,7 +946,7 @@ function renderStats() {
     
     // Calculate boundaries
     const now = new Date();
-    const todayStr = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')}`;
+    const todayStr = `${now.getFullYear()}/${String(now.getMonth() + 1).padStart(2, '0')}/${String(now.getDate()).padStart(2, '0')}`;
     
     const dayOfWeek = now.getDay(); // 0=Sunday
     const weekStart = new Date(now.getFullYear(), now.getMonth(), now.getDate() - dayOfWeek);
@@ -961,7 +961,7 @@ function renderStats() {
     
     filteredData.forEach(d => {
         if (!dailyTotals[d.dateStr]) dailyTotals[d.dateStr] = { sets: [] };
-        dailyTotals[d.dateStr].sets.push(...d.sets);
+        dailyTotals[d.dateStr].sets.push(d.reps || 0);
         
         const sum = d.reps || 0;
         grandTotal += sum;
