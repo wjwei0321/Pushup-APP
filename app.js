@@ -332,9 +332,11 @@ async function fetchData() {
             hideSplashScreen();
         } else if (json.authError) {
             showToast(json.message);
+              hideSplashScreen();
             openSettings();
         } else if (json.status === 'error') {
             showToast('Error: ' + json.message);
+              hideSplashScreen();
         }
     } catch (e) {
         console.error(e);
