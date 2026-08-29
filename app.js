@@ -649,22 +649,26 @@ function saveInlineEdit(input) {
 }
 
 async function confirmDeleteSet(rowIndex) {
-    rowIndex = parseInt(rowIndex);
-    const entryIndex = trainingData.findIndex(d => d.rowIndex === rowIndex || parseInt(d.rowIndex) === rowIndex);
-    if (entryIndex === -1) return;
-    
-    if (confirm(`Delete this record?`)) {
-        showSplashScreen();
-        // Optimistic UI update
-        trainingData.splice(entryIndex, 1);
-        renderDailyLog();
-        renderCalendar();
+    try {
+        const rawRowIndex = rowIndex;
+        rowIndex = parseInt(rowIndex);
+        const entryIndex = trainingData.findIndex(d => d.rowIndex === rowIndex || parseInt(d.rowIndex) === rowIndex);
+        if (entryIndex === -1) {
+            alert('Cannot find record to delete. RowIndex: ' + rawRowIndex);
+            return;
+        }
         
-        const payload = {
-            action: 'delete',
-            rowIndex: rowIndex
-        };
-        try {
+        if (confirm(`Delete this record?`)) {
+            showSplashScreen();
+            // Optimistic UI update
+            trainingData.splice(entryIndex, 1);
+            renderDailyLog();
+            renderCalendar();
+            
+            const payload = {
+                action: 'delete',
+                rowIndex: rowIndex
+            };
             const res = await fetch(apiUrl, { 
                 method: 'POST', 
                 redirect: 'follow',
@@ -679,15 +683,14 @@ async function confirmDeleteSet(rowIndex) {
             } else {
                 showToast('Error: ' + result.message);
             }
-        } catch (e) {
-            console.error(e);
-            showToast('Error');
-        } finally {
             hideSplashScreen();
             fetchData();
+        } else {
+            renderDailyLog();
         }
-    } else {
-        renderDailyLog();
+    } catch (e) {
+        alert('Delete error: ' + e.toString());
+        hideSplashScreen();
     }
 }
 
