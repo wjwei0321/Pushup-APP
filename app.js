@@ -1023,14 +1023,18 @@ function renderStats() {
             pointHoverBorderWidth: 2
         });
     } else {
-        const maxSets = Math.max(0, ...Object.values(dailyTotals).map(v => v.sets.length));
-        const ORANGE_SHADES = ['#fedba6', '#fcc87d', '#fab355', '#f79d2e', '#f39c12', '#e67e22', '#d35400', '#b84600', '#9c3700', '#822900', '#6a1e00'];
-        for (let i = 0; i < maxSets; i++) {
-            const data = sortedDates.map(dateStr => dailyTotals[dateStr].sets[i] || 0);
-            datasets.push({
-                label: `Set ${i + 1}`,
-                data: data,
-                backgroundColor: ORANGE_SHADES[i % ORANGE_SHADES.length],
+                  const maxSets = Math.max(0, ...Object.values(dailyTotals).map(v => v.sets.length));
+          for (let i = 0; i < maxSets; i++) {
+              // Generate progressively darker orange for each set
+              const l = Math.max(15, 80 - (i * 5)); 
+              const h = Math.max(15, 38 - (i * 1.5)); 
+              const color = `hsl(${h}, 100%, ${l}%)`;
+              
+              const data = sortedDates.map(dateStr => dailyTotals[dateStr].sets[i] || 0);
+              datasets.push({
+                  label: `Set ${i + 1}`,
+                  data: data,
+                  backgroundColor: color,
                 borderRadius: 2,
                 barPercentage: 0.6,
             });
