@@ -648,7 +648,14 @@ async function confirmDeleteSet(rowIndex) {
             rowIndex: rowIndex
         };
         try {
-            const res = await fetch(apiUrl, { method: 'POST', body: JSON.stringify(payload) });
+            const res = await fetch(apiUrl, { 
+                method: 'POST', 
+                redirect: 'follow',
+                headers: {
+                    'Content-Type': 'text/plain;charset=utf-8',
+                },
+                body: JSON.stringify(payload) 
+            });
             const result = await res.json();
             if (result.status === 'success') {
                 showToast('Deleted');
@@ -682,6 +689,10 @@ async function updateSetOnBackend(entry) {
     try {
         const res = await fetch(apiUrl, {
             method: 'POST',
+            redirect: 'follow',
+            headers: {
+                'Content-Type': 'text/plain;charset=utf-8',
+            },
             body: JSON.stringify(payload)
         });
         const result = await res.json();
@@ -793,6 +804,10 @@ async function submitWorkout() {
     try {
         await fetch(apiUrl, {
             method: 'POST',
+            redirect: 'follow',
+            headers: {
+                'Content-Type': 'text/plain;charset=utf-8',
+            },
             body: JSON.stringify(payload)
         });
         fetchData();
