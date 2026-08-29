@@ -467,7 +467,7 @@ function renderDailyLog() {
         entry.sets.forEach((repCount, setIndex) => {
             const card = document.createElement('div');
             card.className = 'log-card';
-            card.style.margin = '0 10px';
+            card.style.margin = '0 20px';
             card.style.borderBottom = '0.5px solid #E5E5EA';
             
             const iconSvg = EXERCISES[entry.type] || EXERCISES['Push-up'];
@@ -1413,6 +1413,7 @@ const attachCalendarSwipe = (el) => {
 };
 attachCalendarSwipe(document.getElementById('calendarCard'));
 attachCalendarSwipe(document.getElementById('stickyHeader'));
+
 
 
 
