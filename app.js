@@ -2,7 +2,7 @@
 let trainingData = [];
 let currentDate = new Date(); // Month currently viewed
 let selectedDate = new Date(); // Date currently selected
-let apiUrl = 'https://script.google.com/macros/s/AKfycbzygwNK8lzpzJlcFLntcUjhfOiZPQjyHKxssyrjh_pXgVNKd8dSkNrMQSmBCWiP1uG1/exec';
+let apiUrl = localStorage.getItem('pushup_apiUrl') || 'https://script.google.com/macros/s/AKfycbxJjXFEU8cZ_ZMxKlRcm03uGKWzLvjahLQlZpLznUq2diICcQvF4qZM3ryiumwyqxjJ/exec';
 let userEmail = localStorage.getItem('pushup_userEmail') || '';
 let selectedExerciseForLog = null;
 let activeFilters = []; // empty means "Show All"
@@ -284,39 +284,34 @@ function hideSplashScreen() {
 async function fetchData() {
     if (!userEmail) { hideSplashScreen(); openSettings(); return; }
     try {
-        // ?ÔøΩÂÖ•?ÔøΩÔøΩ??ÔøΩÔøΩ??ÔøΩÔøΩ??ÔøΩË¶Ω?ÔøΩÂø´??(Cache-busting)
+        // ?†ÂÖ•?ÇÈ??≥Ë??øÂ??èË¶Ω?®Âø´??(Cache-busting)
         const timestamp = new Date().getTime();
         const res = await fetch(apiUrl + '?action=get&t=' + timestamp + '&email=' + encodeURIComponent(userEmail));
         const json = await res.json();
         if (json.status === 'success') {
             // Data is [Date, Type, Set1, Set2, Set3, Set4, Set5, Set6]
-            const userDisplay = document.getElementById('currentUserDisplay');
-            if(userDisplay) {
-                userDisplay.textContent = 'Logged in as: ' + (json.username || userEmail);
-                userDisplay.style.color = '#34c759';
+            if (json.username) {
+                const userDisplay = document.getElementById('currentUserDisplay');
+                if(userDisplay) userDisplay.textContent = 'Welcome, ' + json.username;
             }
 
-            trainingData = json.data.map(row => {
-                let dStr = row[0];
-                if (dStr && dStr.includes('T')) {
-                    const d = new Date(dStr);
-                    dStr = `${d.getFullYear()}/${String(d.getMonth()+1).padStart(2, '0')}/${String(d.getDate()).padStart(2, '0')}`;
-                } else if (dStr && dStr.includes('-')) {
-                    dStr = dStr.replace(/-/g, '/');
-                }
+            trainingData = json.data.filter(row => row[0]).map((row, index) => {
+                const dateObj = new Date(row[0]);
+                const dateStr = `${dateObj.getFullYear()}/${String(dateObj.getMonth()+1).padStart(2, '0')}/${String(dateObj.getDate()).padStart(2, '0')}`;
                 
-                let tStr = row[3] || '';
-                if (tStr && tStr.includes('T')) {
-                    const d = new Date(tStr);
-                    tStr = `${String(d.getHours()).padStart(2, '0')}:${String(d.getMinutes()).padStart(2, '0')}`;
+                // Parse sets
+                let sets = [];
+                for(let i = 2; i <= 7; i++) {
+                    if (row[i] && !isNaN(parseInt(row[i]))) {
+                        sets.push(parseInt(row[i]));
+                    }
                 }
                 
                 return {
-                    dateStr: dStr,
+                    rowIndex: row[8], // Sheet row
+                    dateStr: dateStr,
                     type: row[1],
-                    reps: parseInt(row[2]) || 0,
-                    time: tStr,
-                    rowIndex: row[4]
+                    sets: sets
                 };
             });
 
@@ -394,7 +389,7 @@ function renderCalendar() {
             const exerciseSets = {};
             dayData.forEach(d => {
                 if (!exerciseSets[d.type]) exerciseSets[d.type] = 0;
-                exerciseSets[d.type] += 1;
+                exerciseSets[d.type] += d.sets.length;
             });
 
             const distinctCount = Object.keys(exerciseSets).length;
@@ -470,44 +465,40 @@ function renderDailyLog() {
     }
     logSection.style.display = 'block';
     
-    dayData.sort((a, b) => {
-        if (!a.time && !b.time) return a.rowIndex - b.rowIndex;
-        if (!a.time) return -1;
-        if (!b.time) return 1;
-        return a.time.localeCompare(b.time);
-    });
-
-    dayData.forEach((entry) => {
-        const card = document.createElement('div');
-        card.className = 'log-card';
-        card.style.margin = '0';
-        card.style.borderBottom = '0.5px solid #E5E5EA';
-        
-        const iconSvg = EXERCISES[entry.type] || EXERCISES['Push-up'];
-        
-        card.innerHTML = `
-            <div class="log-card-actions" style="position: absolute; top: 0; right: 0; height: 100%; display: flex; z-index: 1;">
-                <button class="edit-swipe-btn" onclick="enableEditMode(this, ${entry.rowIndex})" style="background: var(--text-secondary); color: white; border: none; width: 70px; display: flex; align-items: center; justify-content: center; cursor: pointer;">
-                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg>
-                </button>
-                <button class="delete-swipe-btn" onclick="confirmDeleteSet(${entry.rowIndex})" style="background: #e74c3c; color: white; border: none; width: 70px; display: flex; align-items: center; justify-content: center; cursor: pointer; border-radius: 0 16px 16px 0;">
-                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>
-                </button>
-            </div>
-            <div class="log-card-content" style="position: relative; z-index: 2; background: white; padding: 12px 0; border-radius: 0; display: flex; justify-content: space-between; align-items: center; transition: transform 0.2s ease-out; transform: translateX(0);">
-                <div class="log-card-left" style="display: flex; align-items: center; gap: 12px;">
-                    <div class="log-icon">${iconSvg}</div>
-                    <div class="log-details" style="display: flex; flex-direction: column;">
-                        <span class="log-title" style="font-weight: 700; font-size: 1rem;">${entry.type}</span>
-                        <span class="log-time" style="font-size: 0.8rem; color: var(--text-secondary);">${entry.time || ''}</span>
-                    </div>
+    dayData.forEach(entry => {
+        entry.sets.forEach((repCount, setIndex) => {
+            const card = document.createElement('div');
+            card.className = 'log-card';
+            card.style.margin = '0';
+            card.style.borderBottom = '0.5px solid #E5E5EA';
+            
+            const iconSvg = EXERCISES[entry.type] || EXERCISES['Push-up'];
+            
+            card.innerHTML = `
+                <div class="log-card-actions" style="position: absolute; top: 0; right: 0; height: 100%; display: flex; z-index: 1;">
+                    <button class="edit-swipe-btn" onclick="enableEditMode(this, ${entry.rowIndex}, ${setIndex})" style="background: var(--text-secondary); color: white; border: none; width: 70px; display: flex; align-items: center; justify-content: center; cursor: pointer;">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg>
+                    </button>
+                    <button class="delete-swipe-btn" onclick="confirmDeleteSet(${entry.rowIndex}, ${setIndex})" style="background: #e74c3c; color: white; border: none; width: 70px; display: flex; align-items: center; justify-content: center; cursor: pointer; border-radius: 0 16px 16px 0;">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>
+                    </button>
                 </div>
-                <input type="number" class="inline-edit-input" data-row="${entry.rowIndex}" value="${entry.reps}" readonly onblur="saveInlineEdit(this)" onkeydown="if(event.key==='Enter') this.blur();" style="font-size: 1.5rem; font-weight: 800; border: none; background: transparent; width: 70px; text-align: right; color: var(--text-primary); font-family: inherit; outline: none; padding: 0;">
-            </div>
-        `;
-        
-        initSwipeActions(card);
-        dailyLogList.appendChild(card);
+                <div class="log-card-content" style="position: relative; z-index: 2; background: white; padding: 12px 0; border-radius: 0; display: flex; justify-content: space-between; align-items: center; transition: transform 0.2s ease-out; transform: translateX(0);">
+                    <div class="log-card-left" style="display: flex; align-items: center; gap: 12px;">
+                        <div class="log-icon">${iconSvg}</div>
+                        <div class="log-details" style="display: flex; flex-direction: column;">
+                            <span class="log-title" style="font-weight: 700; font-size: 1rem;">${entry.type}</span>
+                            <span class="log-time" style="font-size: 0.8rem; color: var(--text-secondary);">Set ${setIndex + 1}</span>
+                        </div>
+                    </div>
+                    <input type="number" class="inline-edit-input" data-row="${entry.rowIndex}" data-set="${setIndex}" value="${repCount}" readonly onblur="saveInlineEdit(this)" onkeydown="if(event.key==='Enter') this.blur();" style="font-size: 1.5rem; font-weight: 800; border: none; background: transparent; width: 70px; text-align: right; color: var(--text-primary); font-family: inherit; outline: none; padding: 0;">
+                </div>
+            `;
+            
+            initSwipeActions(card);
+            
+            dailyLogList.appendChild(card);
+        });
     });
 }
 
@@ -597,7 +588,7 @@ function initSwipeActions(card) {
     });
 }
 
-function enableEditMode(btn, rowIndex) {
+function enableEditMode(btn, rowIndex, setIndex) {
     // Snap card back
     closeOpenSwipeCard();
     const card = btn.closest('.log-card');
@@ -621,11 +612,12 @@ function saveInlineEdit(input) {
     input.style.borderBottom = 'none';
     
     const rowIndex = parseInt(input.getAttribute('data-row'));
+    const setIndex = parseInt(input.getAttribute('data-set'));
     const newVal = parseInt(input.value);
     
     if (isNaN(newVal) || newVal <= 0) {
         showToast('Invalid number. Reverting...');
-        fetchData(); // Revert UI to old state
+        renderDailyLog(); // Revert UI to old state
         return;
     }
     
@@ -633,13 +625,13 @@ function saveInlineEdit(input) {
     if (!entry) return;
     
     // Only update if changed
-    if (entry.reps !== newVal) {
-        entry.reps = newVal;
+    if (entry.sets[setIndex] !== newVal) {
+        entry.sets[setIndex] = newVal;
         updateSetOnBackend(entry);
     }
 }
 
-function confirmDeleteSet(rowIndex) {
+function confirmDeleteSet(rowIndex, setIndex) {
     const entry = trainingData.find(d => d.rowIndex === rowIndex);
     if (!entry) return;
     
@@ -734,10 +726,14 @@ function backToExerciseSelection() {
 function updateModalStats() {
     if (!selectedExerciseForLog) return;
     const dateStr = `${selectedDate.getFullYear()}/${String(selectedDate.getMonth()+1).padStart(2, '0')}/${String(selectedDate.getDate()).padStart(2, '0')}`;
-    const dayRows = trainingData.filter(d => d.dateStr === dateStr && d.type === selectedExerciseForLog);
+    const dayRow = trainingData.find(d => d.dateStr === dateStr && d.type === selectedExerciseForLog);
     
-    let sets = dayRows.length;
-    let totalReps = dayRows.reduce((sum, val) => sum + val.reps, 0);
+    let sets = 0;
+    let totalReps = 0;
+    if (dayRow) {
+        sets = dayRow.sets.length;
+        totalReps = dayRow.sets.reduce((sum, val) => sum + val, 0);
+    }
     
     document.getElementById('modalSetsToday').textContent = sets;
     document.getElementById('modalTotalRepsToday').textContent = totalReps;
@@ -797,22 +793,26 @@ async function submitWorkout() {
 
 // Settings
 function saveSettings() {
+    const apiVal = document.getElementById('apiUrl').value.trim();
     const emailVal = document.getElementById('userEmail').value.trim();
+
+    if (apiVal) {
+        apiUrl = apiVal;
+        localStorage.setItem('pushup_apiUrl', apiUrl);
+    }
 
     if (emailVal) {
         userEmail = emailVal;
         localStorage.setItem('pushup_userEmail', userEmail);
     }
-    
+
     settingsModal.classList.remove('show');
-    setTimeout(() => { settingsModal.style.display = 'none'; }, 300);
-    
-    // Refresh data
-    showSplashScreen();
+    setTimeout(() => settingsModal.style.display = 'none', 300);
     fetchData();
 }
 
 function openSettings() {
+    document.getElementById('apiUrl').value = apiUrl;
     document.getElementById('userEmail').value = userEmail;
     settingsModal.style.display = 'flex';
     settingsModal.offsetHeight;
@@ -939,7 +939,7 @@ function renderStats() {
         if (!dailyTotals[d.dateStr]) dailyTotals[d.dateStr] = { sets: [] };
         dailyTotals[d.dateStr].sets.push(...d.sets);
         
-        const sum = d.reps || 0;
+        const sum = d.sets.reduce((a, b) => a + b, 0);
         grandTotal += sum;
         
         const dDate = new Date(d.dateStr);
@@ -950,7 +950,7 @@ function renderStats() {
         
         if (d.dateStr === todayStr) {
             todayTotal += sum;
-            todaySetsCount += 1;
+            todaySetsCount += d.sets.length;
         }
     });
     
@@ -959,7 +959,7 @@ function renderStats() {
     const todayLabel = document.getElementById('statsTodayLabel');
     if (todayTotal > 0) {
         todayLabel.innerHTML = `+${todayTotal.toLocaleString()} today`;
-        todayLabel.style.display = 'none'; // hide it entirely per user request? The user said "?ÔøΩÊú¨no. days + no. this week ?ÔøΩÊ†ºÂºè‰øÆ?ÔøΩÔøΩ? +no. this week"
+        todayLabel.style.display = 'none'; // hide it entirely per user request? The user said "?üÊú¨no. days + no. this week ?ÑÊ†ºÂºè‰øÆ?πÊ? +no. this week"
     } else {
         todayLabel.style.display = 'none';
     }
@@ -1311,8 +1311,7 @@ if (statsViewEl) {
         statsCurrentY = 0;
     });
 }
-
-
+
 
 
 
