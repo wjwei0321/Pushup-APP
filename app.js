@@ -774,6 +774,9 @@ function saveSettings() {
     if (apiVal) {
         apiUrl = apiVal;
         localStorage.setItem('pushup_apiUrl', apiUrl);
+    } else {
+        localStorage.removeItem('pushup_apiUrl');
+        apiUrl = 'https://script.google.com/macros/s/AKfycbzygwNK8lzpzJlcFLntcUjhfOiZPQjyHKxssyrjh_pXgVNKd8dSkNrMQSmBCWiP1uG1/exec';
     }
 
     if (emailVal) {
@@ -1391,6 +1394,7 @@ const attachCalendarSwipe = (el) => {
 };
 attachCalendarSwipe(document.getElementById('calendarCard'));
 attachCalendarSwipe(document.getElementById('stickyHeader'));
+
 
 
 
