@@ -105,7 +105,7 @@ document.addEventListener('DOMContentLoaded', () => {
 // Scroll to hide/show navigation
 function initScrollNav() {
     let lastScrollY = window.scrollY;
-    const nav = document.querySelector('.floating-nav');
+    const nav = document.querySelector('.fab-container');
     
     window.addEventListener('scroll', () => {
         const currentScrollY = window.scrollY;
@@ -1415,6 +1415,7 @@ const attachCalendarSwipe = (el) => {
 };
 attachCalendarSwipe(document.getElementById('calendarCard'));
 attachCalendarSwipe(document.getElementById('stickyHeader'));
+
 
 
 

@@ -191,7 +191,7 @@ body {
 .calendar-card {
     background: var(--card-bg);
     border-radius: 0;
-    padding: 10px 10px calc(90px + env(safe-area-inset-bottom, 0px)) 10px;
+    padding: 10px 10px calc(110px + env(safe-area-inset-bottom, 0px)) 10px;
     margin-bottom: 0;
     min-height: calc(100dvh - 100px - env(safe-area-inset-top, 0px));
     display: flex;
@@ -618,4 +618,17 @@ body {
 
 
 
+
+
+.fab-container {
+    position: fixed;
+    bottom: calc(35px + env(safe-area-inset-bottom, 0px));
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 100;
+    transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+.fab-container.hidden {
+    transform: translate(-50%, 150px);
+}
 

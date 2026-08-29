@@ -9,7 +9,7 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="style.css?v=4.23">
+    <link rel="stylesheet" href="style.css?v=4.24">
     <link rel="apple-touch-icon" href="icon.svg">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <meta name="apple-mobile-web-app-capable" content="yes">
@@ -129,7 +129,7 @@
 
     <!-- Floating Bottom Navigation -->
                 <!-- Floating Bottom Navigation (Add Button) -->
-    <div style="position: fixed; bottom: calc(20px + env(safe-area-inset-bottom, 0px)); left: 50%; transform: translateX(-50%); z-index: 100;">
+    <div class="fab-container">
         <button onclick="openAddWorkoutModal()" style="width: 60px; height: 60px; border-radius: 50%; border: 1px solid var(--accent-color); background: white; color: var(--accent-color); cursor: pointer; display: flex; align-items: center; justify-content: center; box-shadow: 0 6px 20px rgba(243, 156, 18, 0.35); transition: transform 0.2s;">
             <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
         </button>
@@ -243,9 +243,11 @@
         </div>
     </div>
 
-    <script src="app.js?v=4.23"></script>
+    <script src="app.js?v=4.24"></script>
 </body>
 </html>
+
+
 
 
 
