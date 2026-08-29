@@ -457,10 +457,13 @@ function renderDailyLog() {
     dailyLogList.innerHTML = '';
     openSwipeCard = null; // Clear any open swipe state
     
+    const logSection = document.querySelector('.daily-log-section');
     if (dayData.length === 0) {
         dailyLogList.innerHTML = '';
+        logSection.style.display = 'none';
         return;
     }
+    logSection.style.display = 'block';
     
     dayData.forEach(entry => {
         entry.sets.forEach((repCount, setIndex) => {
@@ -1412,6 +1415,7 @@ const attachCalendarSwipe = (el) => {
 };
 attachCalendarSwipe(document.getElementById('calendarCard'));
 attachCalendarSwipe(document.getElementById('stickyHeader'));
+
 
 
 

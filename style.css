@@ -28,7 +28,7 @@ body {
     color: var(--text-primary);
     font-family: var(--font-main);
     line-height: 1.5;
-    padding-bottom: calc(120px + env(safe-area-inset-bottom, 0px));
+    padding-bottom: env(safe-area-inset-bottom, 0px);
     overscroll-behavior-y: none;
     -webkit-user-select: none;
     user-select: none;
@@ -315,7 +315,7 @@ body {
 
 /* Daily Log Section */
 .daily-log-section {
-    padding: 0 20px;
+    padding: 0 20px calc(120px + env(safe-area-inset-bottom, 0px)) 20px;
     min-height: calc(100dvh - 100px - env(safe-area-inset-top, 0px));
 }
 
@@ -606,6 +606,7 @@ body {
 
 .calendar-grid { flex: 1; }
 #calendarDays { flex: 1; }
+
 
 
 
