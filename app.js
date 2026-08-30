@@ -1041,10 +1041,10 @@ function renderStats() {
             let color = '#999';
             let signPct = '';
             if (diff > 0) {
-                color = '#e74c3c'; // Growth = Red
+                color = '#f23645'; // Growth = Red
                 signPct = '+';
             } else if (diff < 0) {
-                color = '#2ecc71'; // Decrease = Green
+                color = '#2bb596'; // Decrease = Green
                 signPct = '-';
             }
             
