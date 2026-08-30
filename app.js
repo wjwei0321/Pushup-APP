@@ -1051,7 +1051,7 @@ function renderStats() {
                     signPct = '-';
                 }
                 
-                compContainer.innerHTML = `<span style="color: ${color}; font-weight: 500; font-size: 1.25rem; letter-spacing: 0.5px; font-family: Outfit;">${sign}${diff.toLocaleString()} &nbsp;${signPct}${pctStr}%</span>`;
+                compContainer.innerHTML = `<span style="color: ${color}; font-weight: 500; font-size: 22px; letter-spacing: 0.5px; font-family: Outfit;">${sign}${diff.toLocaleString()} &nbsp;${signPct}${pctStr}%</span>`;
             } else {
                 compContainer.innerHTML = '';
             }
