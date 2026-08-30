@@ -875,6 +875,7 @@ function openSettings() {
 // Stats State
 let currentStatsTimeFilter = '3M';
 let currentStatsChartType = 'line';
+let currentStatsRange = 'L';
 let currentStatsExercise = 'Push-up';
 let statsChartInstance = null;
 
@@ -969,6 +970,17 @@ function renderStats() {
     });
 
     let filteredData = trainingData.filter(d => d.type === currentStatsExercise);
+
+    if (currentStatsRange !== 'L') {
+        const now = new Date();
+        const cutoffDate = new Date();
+        if (currentStatsRange === 'S') {
+            cutoffDate.setMonth(now.getMonth() - 3);
+        } else if (currentStatsRange === 'M') {
+            cutoffDate.setMonth(now.getMonth() - 6);
+        }
+        filteredData = filteredData.filter(d => new Date(d.dateStr) >= cutoffDate);
+    }
     
     const dailyTotals = {};
     
@@ -1493,3 +1505,15 @@ attachCalendarSwipe(document.getElementById('stickyHeader'));
 
 
 
+
+function setStatsRange(range) {
+    currentStatsRange = range;
+    document.querySelectorAll('.range-toggle-btn').forEach(btn => {
+        if (btn.getAttribute('data-range') === range) {
+            btn.classList.add('active');
+        } else {
+            btn.classList.remove('active');
+        }
+    });
+    renderStats();
+}
