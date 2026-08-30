@@ -1066,7 +1066,7 @@ function renderStats() {
     const weeklyLabel = document.getElementById('statsWeeklyLabel');
     // Always show weekly total
     const dayWord = weeklyDaysSet.size <= 1 ? 'day' : 'days';
-    weeklyLabel.innerHTML = `${weeklyDaysSet.size} ${dayWord} &nbsp;&nbsp;+${weeklyTotal.toLocaleString()} this week`;
+    weeklyLabel.innerHTML = `${weeklyDaysSet.size} ${dayWord} +${weeklyTotal.toLocaleString()} this week`;
     weeklyLabel.style.display = 'block';
     
     const sortedDates = Object.keys(dailyTotals).sort((a, b) => new Date(a) - new Date(b));
