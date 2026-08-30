@@ -1065,7 +1065,7 @@ function renderStats() {
     
     const weeklyLabel = document.getElementById('statsWeeklyLabel');
     // Always show weekly total
-    const dayWord = weeklyDaysSet.size === 1 ? 'day' : 'days';
+    const dayWord = weeklyDaysSet.size <= 1 ? 'day' : 'days';
     weeklyLabel.innerHTML = `${weeklyDaysSet.size} ${dayWord} &nbsp;&nbsp;+${weeklyTotal.toLocaleString()} this week`;
     weeklyLabel.style.display = 'block';
     
