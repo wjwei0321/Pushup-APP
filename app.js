@@ -1020,55 +1020,40 @@ function renderStats() {
     
     document.getElementById('statsTotalNumber').textContent = grandTotal.toLocaleString();
     
-    // Interval Comparison Logic
+    // Interval Comparison Logic (First Day vs Last Day)
     const compContainer = document.getElementById('statsIntervalComparison');
     if (compContainer) {
         if (currentStatsRange === 'L') {
             compContainer.innerHTML = '';
         } else {
-            const fullDataForEx = trainingData.filter(d => d.type === currentStatsExercise);
-            const now = new Date();
-            const cutoffDate = new Date();
-            const prevCutoffDate = new Date();
+            const sortedDatesForComp = Object.keys(dailyTotals).sort((a, b) => new Date(a) - new Date(b));
+            let firstDayReps = 0;
+            let lastDayReps = 0;
             
-            if (currentStatsRange === 'S') {
-                cutoffDate.setMonth(now.getMonth() - 3);
-                prevCutoffDate.setMonth(now.getMonth() - 6);
-            } else if (currentStatsRange === 'M') {
-                cutoffDate.setMonth(now.getMonth() - 6);
-                prevCutoffDate.setMonth(now.getMonth() - 12);
-            }
-            
-            let previousPeriodSum = 0;
-            fullDataForEx.forEach(d => {
-                const dDate = new Date(d.dateStr);
-                if (dDate >= prevCutoffDate && dDate < cutoffDate) {
-                    previousPeriodSum += (d.reps || 0);
-                }
-            });
-            
-            const currentPeriodSum = grandTotal;
-            
-            if (previousPeriodSum === 0 && currentPeriodSum === 0) {
-                compContainer.innerHTML = '';
-            } else {
-                const diff = currentPeriodSum - previousPeriodSum;
-                const sign = diff > 0 ? '+' : '';
-                const pct = previousPeriodSum === 0 ? 100 : (diff / previousPeriodSum * 100);
-                const pctStr = previousPeriodSum === 0 ? '∞' : Math.abs(pct).toFixed(1);
+            if (sortedDatesForComp.length > 1) {
+                const firstDay = sortedDatesForComp[0];
+                const lastDay = sortedDatesForComp[sortedDatesForComp.length - 1];
+                firstDayReps = dailyTotals[firstDay].sets.reduce((sum, val) => sum + val, 0);
+                lastDayReps = dailyTotals[lastDay].sets.reduce((sum, val) => sum + val, 0);
                 
-                // Growth = Red (#e74c3c), Decrease = Green (#2ecc71)
+                const diff = lastDayReps - firstDayReps;
+                const sign = diff > 0 ? '+' : '';
+                const pct = firstDayReps === 0 ? 100 : (diff / firstDayReps * 100);
+                const pctStr = firstDayReps === 0 ? '100' : Math.abs(pct).toFixed(1);
+                
                 let color = '#999';
                 let signPct = '';
                 if (diff > 0) {
-                    color = '#e74c3c';
+                    color = '#e74c3c'; // Growth = Red
                     signPct = '+';
                 } else if (diff < 0) {
-                    color = '#2ecc71';
+                    color = '#2ecc71'; // Decrease = Green
                     signPct = '-';
                 }
                 
                 compContainer.innerHTML = `<span style="color: ${color}; font-weight: 800; font-size: 1.25rem; letter-spacing: 0.5px; font-family: Outfit;">${sign}${diff.toLocaleString()} &nbsp;${signPct}${pctStr}%</span>`;
+            } else {
+                compContainer.innerHTML = '';
             }
         }
     }
