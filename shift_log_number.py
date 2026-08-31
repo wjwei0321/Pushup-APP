@@ -1,0 +1,13 @@
+﻿import re
+
+with open('app.js', 'r', encoding='utf-8') as f:
+    js = f.read()
+
+# Replace padding: 0; with padding: 0 15px 0 0; in the inline-edit-input style
+old_style = "outline: none; padding: 0;"
+new_style = "outline: none; padding: 0 15px 0 0;"
+
+js = js.replace(old_style, new_style)
+
+with open('app.js', 'w', encoding='utf-8') as f:
+    f.write(js)
