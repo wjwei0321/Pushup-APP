@@ -846,7 +846,8 @@ async function submitWorkout() {
 
 // Settings
 function saveSettings() {
-    const apiVal = document.getElementById('apiUrl').value.trim();
+    const apiEl = document.getElementById('apiUrl');
+    const apiVal = apiEl ? apiEl.value.trim() : '';
     const emailVal = document.getElementById('userEmail').value.trim();
 
     if (apiVal) {
@@ -865,6 +866,7 @@ function saveSettings() {
 }
 
 function openSettings() {
+    if (document.getElementById('apiUrl')) document.getElementById('apiUrl').value = apiUrl;
     document.getElementById('userEmail').value = userEmail;
     settingsModal.style.display = 'flex';
     settingsModal.offsetHeight;
