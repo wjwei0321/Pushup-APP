@@ -2,7 +2,7 @@
 let trainingData = [];
 let currentDate = new Date(); // Month currently viewed
 let selectedDate = new Date(); // Date currently selected
-let apiUrl = 'https://script.google.com/macros/s/AKfycbyfRhXDcH_Sp-IvRU_V4ENJpzWOsoDF2RURchZUpTQ97fxjlDXIOJCJJOOXkjPXnxLJ/exec';
+let apiUrl = localStorage.getItem('pushup_apiUrl') || 'https://script.google.com/macros/s/AKfycbyfRhXDcH_Sp-IvRU_V4ENJpzWOsoDF2RURchZUpTQ97fxjlDXIOJCJJOOXkjPXnxLJ/exec';
 let userEmail = localStorage.getItem('pushup_userEmail') || '';
 let selectedExerciseForLog = null;
 let activeFilters = []; // empty means "Show All"
@@ -306,6 +306,7 @@ async function fetchData() {
 
             trainingData = json.data.map(row => {
                 let dStr = row[0];
+                if (dStr && typeof dStr !== 'string') dStr = String(dStr);
                 if (dStr && dStr.includes('T')) {
                     const d = new Date(dStr);
                     dStr = `${d.getFullYear()}/${String(d.getMonth()+1).padStart(2, '0')}/${String(d.getDate()).padStart(2, '0')}`;
@@ -313,6 +314,7 @@ async function fetchData() {
                     dStr = dStr.replace(/-/g, '/');
                 }
                 let tStr = row[3] || '';
+                if (tStr && typeof tStr !== 'string') tStr = String(tStr);
                 if (tStr && tStr.includes('T')) {
                     const d = new Date(tStr);
                     tStr = `${String(d.getHours()).padStart(2, '0')}:${String(d.getMinutes()).padStart(2, '0')}`;
