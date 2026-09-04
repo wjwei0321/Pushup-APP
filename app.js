@@ -954,13 +954,19 @@ function renderStats() {
     
     // Bottom Exercise Tabs
     const filterContainer = document.getElementById('statsExerciseFilter');
-    filterContainer.innerHTML = '';
-    Object.keys(EXERCISES).forEach(ex => {
-        
-        const iconWrap = document.createElement('div');
-        iconWrap.style.cssText = 'width: 32px; height: 32px; border-radius: 50%; display: flex; align-items: center; justify-content: center; padding: 6px; cursor: pointer; transition: all 0.2s; flex-shrink: 0;';
-        
-        if (currentStatsExercise === ex) {
+    if (filterContainer.children.length === 0) {
+        Object.keys(EXERCISES).forEach(ex => {
+            const iconWrap = document.createElement('div');
+            iconWrap.dataset.exercise = ex;
+            iconWrap.style.cssText = 'width: 32px; height: 32px; border-radius: 50%; display: flex; align-items: center; justify-content: center; padding: 6px; cursor: pointer; transition: all 0.2s; flex-shrink: 0;';
+            iconWrap.innerHTML = EXERCISES[ex].replace('width="24"', 'width="18"').replace('height="24"', 'height="18"');
+            iconWrap.onclick = () => setStatsExercise(ex);
+            filterContainer.appendChild(iconWrap);
+        });
+    }
+    
+    Array.from(filterContainer.children).forEach(iconWrap => {
+        if (currentStatsExercise === iconWrap.dataset.exercise) {
             iconWrap.style.background = '#f39c12';
             iconWrap.style.color = '#fff';
             iconWrap.style.boxShadow = '0 4px 10px rgba(243, 156, 18, 0.4)';
@@ -969,9 +975,6 @@ function renderStats() {
             iconWrap.style.color = '#999';
             iconWrap.style.boxShadow = 'none';
         }
-        iconWrap.innerHTML = EXERCISES[ex].replace('width="24"', 'width="18"').replace('height="24"', 'height="18"');
-        iconWrap.onclick = () => setStatsExercise(ex);
-        filterContainer.appendChild(iconWrap);
     });
 
     let filteredData = trainingData.filter(d => d.type === currentStatsExercise);
