@@ -1,5 +1,6 @@
 ﻿// State
 let trainingData = [];
+let dynamicExercises = [];
 let currentDate = new Date(); // Month currently viewed
 let selectedDate = new Date(); // Date currently selected
 let apiUrl = localStorage.getItem('pushup_apiUrl') || 'https://script.google.com/macros/s/AKfycbyfRhXDcH_Sp-IvRU_V4ENJpzWOsoDF2RURchZUpTQ97fxjlDXIOJCJJOOXkjPXnxLJ/exec';
@@ -340,11 +341,13 @@ function initPullToRefresh() {
 function initExerciseListGrid() {
     const grid = document.getElementById('exerciseListGrid');
     grid.innerHTML = '';
-    Object.keys(EXERCISES).forEach(ex => {
+    const exerciseList = dynamicExercises.length > 0 ? dynamicExercises.map(e => e.en) : Object.keys(EXERCISES);
+    exerciseList.forEach(ex => {
         const btn = document.createElement('div');
+        const iconHtml = EXERCISES[ex] || `<div style="font-size: 14px; display:flex; align-items:center; justify-content:center; width:100%; height:100%; color: white;">?</div>`;
         btn.style.cssText = 'border: 1.5px solid var(--text-primary); border-radius: 16px; padding: 20px; display: flex; align-items: center; gap: 20px; cursor: pointer; background: var(--card-bg); font-weight: 700; font-size: 1.2rem; transition: transform 0.1s;';
         const gridKey = I18N.en[ex + '_grid'] ? ex + '_grid' : ex;
-        btn.innerHTML = `<div style="width:32px; height:32px; display:flex; align-items:center; justify-content:center;">${EXERCISES[ex]}</div> <span data-i18n="${gridKey}" style="line-height: 1.15;">${t(gridKey)}</span>`;
+        btn.innerHTML = `<div style="width:32px; height:32px; display:flex; align-items:center; justify-content:center; ${!EXERCISES[ex] ? 'background: var(--accent-color); border-radius: 50%; overflow: hidden;' : ''}">${iconHtml}</div> <span data-i18n="${gridKey}" style="line-height: 1.15;">${t(gridKey)}</span>`;
         btn.onclick = () => selectExercise(ex);
         btn.onmousedown = () => btn.style.transform = 'scale(0.97)';
         btn.onmouseup = () => btn.style.transform = 'scale(1)';
@@ -457,7 +460,30 @@ async function fetchData() {
         const json = await res.json();
         if (json.status === 'success') {
             // Data is [Date, Type, Set1, Set2, Set3, Set4, Set5, Set6]
+            
+            // Parse dynamic exercises from backend
+            if (json.exercises && json.exercises.length > 0) {
+                dynamicExercises = json.exercises;
+                // Update I18N dictionaries dynamically
+                json.exercises.forEach(ex => {
+                    I18N.en[ex.en] = ex.en;
+                    I18N.zh[ex.en] = ex.zh || ex.en;
+                    
+                    // Keep special formatting for Single Leg Toe Touch if we want
+                    if (ex.en === 'Single Leg Toe Touch') {
+                        I18N.en[ex.en + '_grid'] = 'Single Leg<br>Toe Touch';
+                        I18N.zh[ex.en + '_grid'] = ex.zh || ex.en;
+                    } else {
+                        I18N.en[ex.en + '_grid'] = ex.en;
+                        I18N.zh[ex.en + '_grid'] = ex.zh || ex.en;
+                    }
+                });
+                // Re-render the grid and language UI with new exercises
+                initExerciseListGrid();
+                updateLanguageUI();
+            }
             const userDisplay = document.getElementById('currentUserDisplay');
+
             if(userDisplay) {
                 userDisplay.textContent = (json.username || userEmail);
                 userDisplay.style.color = '#ff9500';
