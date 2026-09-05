@@ -35,6 +35,7 @@ document.addEventListener('DOMContentLoaded', () => {
     initExerciseListGrid();
     initFilterModal();
 
+    updateLanguageUI();
     renderCalendar();
     fetchData();
     initPullToRefresh();
@@ -271,6 +272,7 @@ function toggleFilter(type) {
         }
     }
 
+    updateLanguageUI();
     renderCalendar();
     renderDailyLog();
 }
@@ -330,7 +332,8 @@ async function fetchData() {
             });
 
 
-            renderCalendar(); // Re-render to show indicators
+            updateLanguageUI();
+    renderCalendar(); // Re-render to show indicators
             renderDailyLog(); // Re-render list
             hideSplashScreen();
         } else if (json.authError) {
@@ -428,7 +431,8 @@ function renderCalendar() {
         
         cell.onclick = () => {
             selectedDate = new Date(year, month, i);
-            renderCalendar();
+            updateLanguageUI();
+    renderCalendar();
             renderDailyLog();
         };
         
@@ -439,12 +443,14 @@ function renderCalendar() {
 function prevMonth() {
     currentDate.setMonth(currentDate.getMonth() - 1);
     selectedDate = new Date(currentDate.getFullYear(), currentDate.getMonth(), 1);
+    updateLanguageUI();
     renderCalendar();
     renderDailyLog();
 }
 function nextMonth() {
     currentDate.setMonth(currentDate.getMonth() + 1);
     selectedDate = new Date(currentDate.getFullYear(), currentDate.getMonth(), 1);
+    updateLanguageUI();
     renderCalendar();
     renderDailyLog();
 }
@@ -456,10 +462,9 @@ function renderDailyLog() {
     const headerMonthDayEl = document.getElementById('headerMonthDay');
     if (headerYearEl && headerMonthDayEl) {
         headerYearEl.textContent = selectedDate.getFullYear();
-        headerMonthDayEl.textContent = `${MONTH_NAMES[selectedDate.getMonth()]} ${selectedDate.getDate()}`;
+        headerMonthDayEl.textContent = selectedDate.toLocaleDateString(currentLang === 'zh' ? 'zh-TW' : 'en-US', { month: 'long', day: 'numeric' });
     }
-    const month = MONTH_NAMES[selectedDate.getMonth()].substring(0, 3);
-    selectedDateDisplay.textContent = `${month} ${selectedDate.getDate()}`;
+    selectedDateDisplay.textContent = selectedDate.toLocaleDateString(currentLang === 'zh' ? 'zh-TW' : 'en-US', { month: 'short', day: 'numeric' });
     
     const dateStr = `${selectedDate.getFullYear()}/${String(selectedDate.getMonth()+1).padStart(2, '0')}/${String(selectedDate.getDate()).padStart(2, '0')}`;
     let dayData = trainingData.filter(d => d.dateStr === dateStr);
@@ -672,7 +677,8 @@ async function confirmDeleteSet(rowIndex) {
             // Optimistic UI update
             trainingData.splice(entryIndex, 1);
             renderDailyLog();
-            renderCalendar();
+            updateLanguageUI();
+    renderCalendar();
             
             const payload = {
                 action: 'delete',
@@ -759,7 +765,7 @@ function selectExercise(type) {
     document.getElementById('selectedExerciseTitle').textContent = type;
     
     const dateOptions = { weekday: 'short', month: 'short', day: 'numeric', year: 'numeric' };
-    document.getElementById('selectedExerciseDate').textContent = selectedDate.toLocaleDateString('en-US', dateOptions);
+    document.getElementById('selectedExerciseDate').textContent = selectedDate.toLocaleDateString(currentLang === 'zh' ? 'zh-TW' : 'en-US', dateOptions);
     
     document.getElementById('selectedExerciseIconLarge').innerHTML = `<div style="width: 140px; height: 140px; background: var(--accent-color); color: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; padding: 28px; box-sizing: border-box;"><div style="width: 100%; height: 100%; display: flex; align-items: center; justify-content: center;">${EXERCISES[type]}</div></div>`;
     
@@ -827,6 +833,7 @@ async function submitWorkout() {
     
     clearReps();
     updateModalStats();
+    updateLanguageUI();
     renderCalendar();
     renderDailyLog();
     showToast("Logged!");
@@ -911,7 +918,8 @@ function switchView(view) {
     }
 }
 
-function showToast(msg = "Logged successfully!") {
+function showToast(msg) {
+    if (!msg) msg = t("logged_success");
     const t = document.getElementById('toast');
     t.textContent = msg;
     t.classList.add('show');
@@ -949,7 +957,7 @@ function renderStats() {
     if (!currentStatsExercise) { currentStatsExercise = 'Push-up'; }
     
     // Update Header
-    document.getElementById('statsHeaderTitle').textContent = currentStatsExercise;
+    document.getElementById('statsHeaderTitle').textContent = t(currentStatsExercise);
     document.getElementById('statsHeaderIcon').innerHTML = EXERCISES[currentStatsExercise] || '';
     
     // Bottom Exercise Tabs
@@ -1065,7 +1073,7 @@ function renderStats() {
     
     const todayLabel = document.getElementById('statsTodayLabel');
     if (todayTotal > 0) {
-        todayLabel.innerHTML = `+${todayTotal.toLocaleString()} today`;
+        todayLabel.innerHTML = `+${todayTotal.toLocaleString()} ${t('today')}`;
         todayLabel.style.display = 'none'; // hide it entirely per user request? The user said "?嚙賣no. days + no. this week ?嚙賣撘耨?嚙踝蕭? +no. this week"
     } else {
         todayLabel.style.display = 'none';
@@ -1074,7 +1082,7 @@ function renderStats() {
     const weeklyLabel = document.getElementById('statsWeeklyLabel');
     // Always show weekly total
     const dayWord = weeklyDaysSet.size <= 1 ? 'day' : 'days';
-    weeklyLabel.innerHTML = `${weeklyDaysSet.size} ${dayWord} +${weeklyTotal.toLocaleString()} this week`;
+    weeklyLabel.innerHTML = `${weeklyDaysSet.size} ${currentLang === 'zh' ? '天' : dayWord} +${weeklyTotal.toLocaleString()} ${t('this_week')}`;
     weeklyLabel.style.display = 'block';
     
     const sortedDates = Object.keys(dailyTotals).sort((a, b) => new Date(a) - new Date(b));
@@ -1272,7 +1280,7 @@ const externalTooltipHandler = (context) => {
         let dateFormatted = chart.data.labels[dataIndex];
         if (dateStrRaw) {
             const dateObj = new Date(dateStrRaw);
-            dateFormatted = dateObj.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+            dateFormatted = dateObj.toLocaleDateString(currentLang === 'zh' ? 'zh-TW' : 'en-US', { month: 'short', day: 'numeric', year: 'numeric' });
         }
         
         let innerHTMLContent = '';
@@ -1517,7 +1525,7 @@ function openExercisePicker() {
         iconWrap.innerHTML = EXERCISES[ex].replace('width="100%"', 'width="24"').replace('height="100%"', 'height="24"');
         const label = document.createElement('div');
         label.style.cssText = 'font-size: 0.75rem; font-weight: 600; color: ' + (selectedExerciseForLog === ex ? 'var(--text-primary)' : 'var(--text-secondary)') + '; text-align: center; line-height: 1.1;';
-        label.innerHTML = ex === 'Polyquin Step-down' ? 'Polyquin<br>Step-down' : ex;
+        label.innerHTML = (currentLang === 'en' && ex === 'Polyquin Step-down') ? 'Polyquin<br>Step-down' : t(ex);
         
         item.appendChild(iconWrap);
         item.appendChild(label);
