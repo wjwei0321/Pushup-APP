@@ -711,7 +711,7 @@ function renderDailyLog() {
                 <div class="log-card-left" style="display: flex; align-items: center; gap: 12px;">
                     <div class="log-icon">${iconSvg}</div>
                     <div class="log-details" style="display: flex; flex-direction: column;">
-                        <span class="log-title" style="font-weight: 700; font-size: 1rem;">${entry.type}</span>
+                        <span class="log-title" style="font-weight: 700; font-size: 1rem;">${t(entry.type)}</span>
                           <span class="log-time" style="font-size: 0.8rem; color: var(--text-secondary);">${entry.time ? `Set ${entry.setNumber} ｜ ${entry.time}` : `Set ${entry.setNumber}`}</span>
                     </div>
                 </div>
