@@ -3,13 +3,8 @@ let trainingData = [];
 let dynamicExercises = [];
 let currentDate = new Date(); // Month currently viewed
 let selectedDate = new Date(); // Date currently selected
-let apiUrl = localStorage.getItem('pushup_apiUrl');
-if (apiUrl === 'https://script.google.com/macros/s/AKfycbyfRhXDcH_Sp-IvRU_V4ENJpzWOsoDF2RURchZUpTQ97fxjlDXIOJCJJOOXkjPXnxLJ/exec') {
-    apiUrl = 'https://script.google.com/macros/s/AKfycbzvYfDue7RR4F6FGo7Irjzrpg74V6IRIOWu81Dn6zckrNmgDmL5da31RMBAvMgTT6K4/exec';
-    localStorage.setItem('pushup_apiUrl', apiUrl);
-} else if (!apiUrl) {
-    apiUrl = 'https://script.google.com/macros/s/AKfycbzvYfDue7RR4F6FGo7Irjzrpg74V6IRIOWu81Dn6zckrNmgDmL5da31RMBAvMgTT6K4/exec';
-}
+let apiUrl = 'https://script.google.com/macros/s/AKfycbzvYfDue7RR4F6FGo7Irjzrpg74V6IRIOWu81Dn6zckrNmgDmL5da31RMBAvMgTT6K4/exec';
+localStorage.setItem('pushup_apiUrl', apiUrl);
 
 let userEmail = localStorage.getItem('pushup_userEmail') || '';
 let selectedExerciseForLog = null;
