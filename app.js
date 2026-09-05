@@ -805,9 +805,9 @@ function updateModalStats() {
 }
 
 async function submitWorkout() {
-    if (!selectedExerciseForLog) return alert('Please select an exercise.');
+    if (!selectedExerciseForLog) return alert(t('alert_select_exercise'));
     const reps = document.getElementById('workoutRepsDisplay').textContent;
-    if (!reps || isNaN(reps) || parseInt(reps) <= 0) return alert('Please enter valid reps.');
+    if (!reps || isNaN(reps) || parseInt(reps) <= 0) return alert(t('alert_valid_reps'));
     
     const dateStr = `${selectedDate.getFullYear()}/${String(selectedDate.getMonth()+1).padStart(2, '0')}/${String(selectedDate.getDate()).padStart(2, '0')}`;
     const now = new Date();
@@ -836,7 +836,7 @@ async function submitWorkout() {
     updateLanguageUI();
     renderCalendar();
     renderDailyLog();
-    showToast("Logged!");
+    showToast(t("logged_success"));
     
     try {
         await fetch(apiUrl, {
@@ -918,8 +918,8 @@ function switchView(view) {
     }
 }
 
-function showToast(msg) {
-    if (!msg) msg = t("logged_success");
+function showToast(msg = t('logged_success')) {
+    
     const t = document.getElementById('toast');
     t.textContent = msg;
     t.classList.add('show');
