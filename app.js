@@ -480,7 +480,7 @@ async function fetchData() {
                 }
                 return {
                     dateStr: dStr,
-                    type: row[1],
+                    type: (row[1] === 'Lunge' ? 'Single Leg Toe Touch' : (row[1] === 'Glute Band' ? 'Glutes Medius Band' : row[1])),
                     reps: parseInt(row[2]) || 0,
                     time: tStr,
                     rowIndex: row[4]
@@ -579,7 +579,7 @@ function renderCalendar() {
                 ind.className = 'day-indicator';
                 ind.style.width = `${size}px`;
                 ind.style.height = `${size}px`;
-                ind.innerHTML = EXERCISES[exType];
+                ind.innerHTML = EXERCISES[exType] || `<div style="font-size: 10px; display:flex; align-items:center; justify-content:center; width:100%; height:100%; color: white;">?</div>`;
                 container.appendChild(ind);
             });
             cell.appendChild(container);
