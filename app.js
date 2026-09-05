@@ -1414,7 +1414,7 @@ function renderStats() {
 
                 ctx.save();
                 ctx.beginPath();
-                ctx.moveTo(x, chart.scales.y.top);
+                ctx.moveTo(x, 0);
                 ctx.lineTo(x, bottomY);
                 ctx.lineWidth = 1;
                 ctx.strokeStyle = '#e0e0e0';
