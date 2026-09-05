@@ -1526,7 +1526,7 @@ const externalTooltipHandler = (context) => {
     tooltipEl.style.opacity = 1;
     
     // Position above the chart area line (fixed positioning = viewport coords)
-    const top = position.top + chart.chartArea.top - tooltipEl.offsetHeight + 12;
+    const top = position.top + chart.chartArea.top - tooltipEl.offsetHeight - 8;
     let left = position.left + caretX;
     
     const width = tooltipEl.offsetWidth;
