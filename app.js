@@ -1217,7 +1217,7 @@ function renderStats() {
             
             compContainer.innerHTML = `<span style="color: ${color}; font-weight: 500; font-size: 12px; letter-spacing: 0.5px; font-family: Outfit;">${sign}${diff.toLocaleString()} ${signPct}${pctStr}%</span>`;
         } else {
-            compContainer.innerHTML = '';
+            compContainer.innerHTML = '<span style="font-size: 12px;">&nbsp;</span>';
         }
     }
 
