@@ -143,15 +143,23 @@ function updateLanguageUI() {
     const btnZH = document.getElementById('btnLangZH');
     if (btnEN && btnZH) {
         if (currentLang === 'en') {
-            btnEN.style.background = 'var(--accent-color)';
-            btnEN.style.color = 'white';
+            btnEN.style.background = 'white';
+            btnEN.style.color = 'var(--accent-color)';
+            btnEN.style.boxShadow = '0 2px 5px rgba(0,0,0,0.1)';
+            btnEN.style.fontWeight = '700';
             btnZH.style.background = 'transparent';
-            btnZH.style.color = 'var(--text-secondary)';
+            btnZH.style.color = '#888';
+            btnZH.style.boxShadow = 'none';
+            btnZH.style.fontWeight = '600';
         } else {
-            btnZH.style.background = 'var(--accent-color)';
-            btnZH.style.color = 'white';
+            btnZH.style.background = 'white';
+            btnZH.style.color = 'var(--accent-color)';
+            btnZH.style.boxShadow = '0 2px 5px rgba(0,0,0,0.1)';
+            btnZH.style.fontWeight = '700';
             btnEN.style.background = 'transparent';
-            btnEN.style.color = 'var(--text-secondary)';
+            btnEN.style.color = '#888';
+            btnEN.style.boxShadow = 'none';
+            btnEN.style.fontWeight = '600';
         }
     }
     
