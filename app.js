@@ -704,7 +704,7 @@ function renderDailyLog() {
             </div>
             <div class="log-card-content" style="position: relative; z-index: 2; background: white; padding: 12px 0; border-radius: 0; display: flex; justify-content: space-between; align-items: center; transition: transform 0.2s ease-out; transform: translateX(0);">
                 <div class="log-card-left" style="display: flex; align-items: center; gap: 12px;">
-                    <div class="log-icon" onclick="if(!this.closest('.log-card').querySelector('.inline-edit-input').readOnly) { openEditTypePicker(${entry.rowIndex}); }" style="transition: all 0.2s;">${iconSvg}</div>
+                    <div class="log-icon" onmousedown="handleIconClick(event, this, ${entry.rowIndex})" ontouchstart="handleIconClick(event, this, ${entry.rowIndex})" style="transition: all 0.2s;">${iconSvg}</div>
                     <div class="log-details" style="display: flex; flex-direction: column;">
                         <span class="log-title" style="font-weight: 700; font-size: 1rem;">${t(entry.type)}</span>
                           <span class="log-time" style="font-size: 0.8rem; color: var(--text-secondary);">${entry.time ? `Set ${entry.setNumber} ｜ ${entry.time}` : `Set ${entry.setNumber}`}</span>
@@ -1690,6 +1690,14 @@ if (statsViewEl) {
 
 
 
+
+function handleIconClick(event, el, rowIndex) {
+    if (!el.closest('.log-card').querySelector('.inline-edit-input').readOnly) {
+        event.preventDefault(); // Prevents input blur
+        openEditTypePicker(rowIndex);
+    }
+}
+
 function openEditTypePicker(rowIndex) {
     const entry = trainingData.find(d => d.rowIndex === rowIndex || parseInt(d.rowIndex) === rowIndex);
     if (!entry) return;
@@ -1706,20 +1714,41 @@ function openEditTypePicker(rowIndex) {
         if (entry.type === ex) {
             item.style.background = 'var(--bg-color)';
         }
+        const preventBlur = (e) => { e.preventDefault(); };
+        item.onmousedown = preventBlur;
+        item.ontouchstart = preventBlur;
         item.onclick = () => {
             pickerModal.classList.remove('show'); 
             setTimeout(() => pickerModal.style.display = 'none', 300);
             
-            if (entry.type !== ex) {
+            let typeChanged = (entry.type !== ex);
+            if (typeChanged) {
                 entry.type = ex; // Optimistic update
-                
-                // Immediately save the edit to backend
-                const cardInput = document.querySelector(`.inline-edit-input[data-row="${rowIndex}"]`);
-                if (cardInput) {
-                    saveInlineEdit(cardInput);
-                } else {
-                    updateSetOnBackend(entry);
+            }
+            
+            const cardInput = document.querySelector(`.inline-edit-input[data-row="${rowIndex}"]`);
+            let repsChanged = false;
+            if (cardInput) {
+                const newVal = parseInt(cardInput.value);
+                if (!isNaN(newVal) && newVal > 0 && newVal !== entry.reps) {
+                    entry.reps = newVal;
+                    repsChanged = true;
                 }
+                // Close edit mode
+                cardInput.setAttribute('readonly', 'true');
+                cardInput.style.borderBottom = 'none';
+                cardInput.blur(); // Force dismiss keyboard
+                const icon = cardInput.closest('.log-card').querySelector('.log-icon');
+                if (icon) {
+                    icon.style.transform = '';
+                    icon.style.boxShadow = '';
+                    icon.style.borderRadius = '';
+                    icon.style.cursor = '';
+                }
+            }
+            
+            if (typeChanged || repsChanged) {
+                updateSetOnBackend(entry);
             }
         };
         const iconHtml = EXERCISES[ex] || `<div style="font-size: 14px; display:flex; align-items:center; justify-content:center; width:100%; height:100%; color: white;">?</div>`;
