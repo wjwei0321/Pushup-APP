@@ -704,7 +704,7 @@ function renderDailyLog() {
             </div>
             <div class="log-card-content" style="position: relative; z-index: 2; background: white; padding: 12px 0; border-radius: 0; display: flex; justify-content: space-between; align-items: center; transition: transform 0.2s ease-out; transform: translateX(0);">
                 <div class="log-card-left" style="display: flex; align-items: center; gap: 12px;">
-                    <div class="log-icon">${iconSvg}</div>
+                    <div class="log-icon" onclick="if(!this.closest('.log-card').querySelector('.inline-edit-input').readOnly) { openEditTypePicker(${entry.rowIndex}); }" style="transition: all 0.2s;">${iconSvg}</div>
                     <div class="log-details" style="display: flex; flex-direction: column;">
                         <span class="log-title" style="font-weight: 700; font-size: 1rem;">${t(entry.type)}</span>
                           <span class="log-time" style="font-size: 0.8rem; color: var(--text-secondary);">${entry.time ? `Set ${entry.setNumber} ｜ ${entry.time}` : `Set ${entry.setNumber}`}</span>
@@ -900,11 +900,12 @@ async function updateSetOnBackend(entry) {
     
     // If no sets left, delete the entire row
           const payload = {
-          action: 'edit',
-          email: userEmail,
-          rowIndex: entry.rowIndex,
-          count: entry.reps
-      };
+            action: 'edit',
+            email: userEmail,
+            rowIndex: entry.rowIndex,
+            count: entry.reps,
+            type: entry.type
+        };
     
     try {
         const res = await fetch(apiUrl, {
@@ -1689,10 +1690,70 @@ if (statsViewEl) {
 
 
 
+function openEditTypePicker(rowIndex) {
+    const entry = trainingData.find(d => d.rowIndex === rowIndex || parseInt(d.rowIndex) === rowIndex);
+    if (!entry) return;
+    
+    const pickerModal = document.getElementById('exercisePickerModal');
+    const picker = document.getElementById('exercisePickerList');
+    picker.innerHTML = '';
+    
+    const exerciseList = dynamicExercises.length > 0 ? dynamicExercises.map(e => e.en) : Object.keys(EXERCISES);
+    
+    exerciseList.forEach(ex => {
+        const item = document.createElement('div');
+        item.style.cssText = 'display: flex; flex-direction: column; align-items: center; gap: 8px; cursor: pointer; padding: 10px; border-radius: 12px; transition: background 0.2s;';
+        if (entry.type === ex) {
+            item.style.background = 'var(--bg-color)';
+        }
+        item.onclick = () => {
+            pickerModal.classList.remove('show'); 
+            setTimeout(() => pickerModal.style.display = 'none', 300);
+            
+            if (entry.type !== ex) {
+                entry.type = ex; // Optimistic update
+                
+                // Immediately save the edit to backend
+                const cardInput = document.querySelector(`.inline-edit-input[data-row="${rowIndex}"]`);
+                if (cardInput) {
+                    saveInlineEdit(cardInput);
+                } else {
+                    updateSetOnBackend(entry);
+                }
+            }
+        };
+        const iconHtml = EXERCISES[ex] || `<div style="font-size: 14px; display:flex; align-items:center; justify-content:center; width:100%; height:100%; color: white;">?</div>`;
+        const iconWrap = document.createElement('div');
+        const isSelected = entry.type === ex;
+        const borderStyle = isSelected ? 'border: 1.5px solid transparent;' : 'border: 1.5px solid var(--border-color);';
+        const bgStyle = isSelected ? 'background: var(--accent-color); color: white;' : (!EXERCISES[ex] ? 'background: var(--accent-color);' : 'background: transparent; color: var(--text-primary);');
+        iconWrap.style.cssText = `width: 48px; height: 48px; border-radius: 50%; display: flex; align-items: center; justify-content: center; ${borderStyle} ${bgStyle} transition: all 0.2s; overflow: hidden;`;
+        
+        // Scale down SVG if it exists
+        iconWrap.innerHTML = iconHtml.includes('svg') ? iconHtml.replace(/width="[^"]+"/, 'width="24"').replace(/height="[^"]+"/, 'height="24"') : `<div style="width: 100%; height: 100%; display: flex; align-items: center; justify-content: center;">${iconHtml}</div>`;
+        
+        const label = document.createElement('div');
+        label.style.cssText = 'font-size: 0.75rem; font-weight: 600; color: ' + (isSelected ? 'var(--text-primary)' : 'var(--text-secondary)') + '; text-align: center; line-height: 1.1;';
+        const displayKey = ex + '_grid';
+        label.setAttribute('data-i18n', I18N.en[displayKey] ? displayKey : ex);
+        label.innerHTML = t(I18N.en[displayKey] ? displayKey : ex);
+        
+        item.appendChild(iconWrap);
+        item.appendChild(label);
+        picker.appendChild(item);
+    });
+    
+    pickerModal.style.display = 'flex';
+    // Force reflow
+    void pickerModal.offsetWidth;
+    pickerModal.classList.add('show');
+}
+
 function openExercisePicker() {
     const picker = document.getElementById('exercisePickerList');
     picker.innerHTML = '';
-    Object.keys(EXERCISES).forEach(ex => {
+    const exerciseList = dynamicExercises.length > 0 ? dynamicExercises.map(e => e.en) : Object.keys(EXERCISES);
+    exerciseList.forEach(ex => {
         const item = document.createElement('div');
         item.style.cssText = 'display: flex; flex-direction: column; align-items: center; gap: 8px; cursor: pointer; padding: 10px; border-radius: 12px; transition: background 0.2s;';
         if (selectedExerciseForLog === ex) {
@@ -1706,7 +1767,9 @@ function openExercisePicker() {
         const isSelected = selectedExerciseForLog === ex;
         const borderStyle = isSelected ? 'border: 1.5px solid transparent;' : 'border: 1.5px solid var(--border-color);';
         iconWrap.style.cssText = 'width: 48px; height: 48px; border-radius: 50%; display: flex; align-items: center; justify-content: center; background: ' + (isSelected ? 'var(--accent-color)' : 'var(--bg-color)') + '; color: ' + (isSelected ? '#fff' : 'var(--text-secondary)') + ';' + borderStyle;
-        iconWrap.innerHTML = EXERCISES[ex].replace('width="100%"', 'width="24"').replace('height="100%"', 'height="24"');
+        const iconHtml = EXERCISES[ex] || `<div style="font-size: 14px; display:flex; align-items:center; justify-content:center; width:100%; height:100%; color: white;">?</div>`;
+        iconWrap.style.background = isSelected ? 'var(--accent-color)' : (!EXERCISES[ex] ? 'var(--accent-color)' : 'var(--bg-color)');
+        iconWrap.innerHTML = iconHtml.includes('svg') ? iconHtml.replace(/width="[^"]+"/, 'width="24"').replace(/height="[^"]+"/, 'height="24"') : iconHtml;
         const label = document.createElement('div');
         label.style.cssText = 'font-size: 0.75rem; font-weight: 600; color: ' + (selectedExerciseForLog === ex ? 'var(--text-primary)' : 'var(--text-secondary)') + '; text-align: center; line-height: 1.1;';
         label.innerHTML = (currentLang === 'en' && ex === 'Polyquin Step-down') ? 'Polyquin<br>Step-down' : t(ex);
