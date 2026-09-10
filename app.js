@@ -1692,8 +1692,9 @@ if (statsViewEl) {
 
 
 function handleIconClick(event, el, rowIndex) {
-    if (!el.closest('.log-card').querySelector('.inline-edit-input').readOnly) {
-        event.preventDefault(); // Prevents input blur
+    const input = el.closest('.log-card').querySelector('.inline-edit-input');
+    if (!input.readOnly) {
+        // Do NOT prevent default so the browser naturally blurs the input and closes the keyboard!
         openEditTypePicker(rowIndex);
     }
 }
