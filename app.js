@@ -3,7 +3,7 @@ let trainingData = [];
 let dynamicExercises = [];
 let currentDate = new Date(); // Month currently viewed
 let selectedDate = new Date(); // Date currently selected
-let apiUrl = 'https://script.google.com/macros/s/AKfycbzvYfDue7RR4F6FGo7Irjzrpg74V6IRIOWu81Dn6zckrNmgDmL5da31RMBAvMgTT6K4/exec';
+let apiUrl = 'https://script.google.com/macros/s/AKfycbzl1_1cgPPvau-RgLuKV2x6Nm63d9uKRlpSpZyo0jBVPBjVunX-dDdgHlvzelo1v5VO/exec';
 localStorage.setItem('pushup_apiUrl', apiUrl);
 
 let userEmail = localStorage.getItem('pushup_userEmail') || '';
