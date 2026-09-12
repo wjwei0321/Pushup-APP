@@ -1708,7 +1708,8 @@ if (statsViewEl) {
 function handleIconClick(event, el, rowIndex) {
     const input = el.closest('.log-card').querySelector('.inline-edit-input');
     if (!input.readOnly) {
-        // Do NOT prevent default so the browser naturally blurs the input and closes the keyboard!
+        event.preventDefault(); // Take control of the event to prevent weird iOS behavior
+        input.blur(); // FORCE the keyboard to close and trigger saveInlineEdit
         openEditTypePicker(rowIndex);
     }
 }
@@ -1729,9 +1730,6 @@ function openEditTypePicker(rowIndex) {
         if (entry.type === ex) {
             item.style.background = 'var(--bg-color)';
         }
-        const preventBlur = (e) => { e.preventDefault(); };
-        item.onmousedown = preventBlur;
-        item.ontouchstart = preventBlur;
         item.onclick = () => {
             pickerModal.classList.remove('show'); 
             setTimeout(() => pickerModal.style.display = 'none', 300);
