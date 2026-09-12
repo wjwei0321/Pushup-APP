@@ -546,60 +546,51 @@ function renderCalendar() {
     
     const firstDay = new Date(year, month, 1).getDay();
     const daysInMonth = new Date(year, month + 1, 0).getDate();
-    
-    // Empty cells before month
-    for (let i = 0; i < firstDay; i++) {
-        const cell = document.createElement('div');
-        cell.className = 'day-cell empty';
-        calendarDaysEl.appendChild(cell);
-    }
-    
-    // Days
+    const prevMonthDays = new Date(year, month, 0).getDate();
     const today = new Date();
-    for (let i = 1; i <= daysInMonth; i++) {
+    
+    function createCell(y, m, d, isCurrentMonth) {
         const cell = document.createElement('div');
-        cell.className = 'day-cell';
+        cell.className = 'day-cell' + (isCurrentMonth ? '' : ' faded');
+        if (!isCurrentMonth) {
+            cell.style.opacity = '0.35';
+        }
         
         const numSpan = document.createElement('span');
         numSpan.className = 'day-number';
-        numSpan.textContent = i;
+        numSpan.textContent = d;
         
-        if (year === today.getFullYear() && month === today.getMonth() && i === today.getDate()) {
+        if (y === today.getFullYear() && m === today.getMonth() && d === today.getDate()) {
             numSpan.classList.add('today');
         }
         cell.appendChild(numSpan);
         
         // Check if selected
-        if (year === selectedDate.getFullYear() && month === selectedDate.getMonth() && i === selectedDate.getDate()) {
+        if (y === selectedDate.getFullYear() && m === selectedDate.getMonth() && d === selectedDate.getDate()) {
             cell.classList.add('selected');
         }
         
         // Check for data
-        const dateStr = `${year}/${String(month+1).padStart(2, '0')}/${String(i).padStart(2, '0')}`;
-        let dayData = trainingData.filter(d => d.dateStr === dateStr);
+        const dateStr = `${y}/${String(m+1).padStart(2, '0')}/${String(d).padStart(2, '0')}`;
+        let dayData = trainingData.filter(data => data.dateStr === dateStr);
         
         if (activeFilters.length > 0) {
-            dayData = dayData.filter(d => activeFilters.includes(d.type));
+            dayData = dayData.filter(data => activeFilters.includes(data.type));
         }
         
         if (dayData.length > 0) {
             const container = document.createElement('div');
             container.className = 'day-icons-container';
             
-            // Group by exercise type
             const exerciseSets = {};
-            dayData.forEach(d => {
-                if (!exerciseSets[d.type]) exerciseSets[d.type] = 0;
-                exerciseSets[d.type] += 1;
+            dayData.forEach(data => {
+                if (!exerciseSets[data.type]) exerciseSets[data.type] = 0;
+                exerciseSets[data.type] += 1;
             });
 
             const distinctCount = Object.keys(exerciseSets).length;
             Object.keys(exerciseSets).forEach(exType => {
-                const sets = exerciseSets[exType];
-                
-                // Scale proportion according to quantity
                 let size = 24;
-                
                 if (distinctCount > 2) size = Math.min(size, 16);
                 else if (distinctCount > 1) size = Math.min(size, 20);
                 
@@ -614,13 +605,36 @@ function renderCalendar() {
         }
         
         cell.onclick = () => {
-            selectedDate = new Date(year, month, i);
+            selectedDate = new Date(y, m, d);
+            if (!isCurrentMonth) {
+                // If they click a previous/next month date, change the calendar month
+                currentDate = new Date(y, m, 1);
+            }
             updateLanguageUI();
-    renderCalendar();
+            renderCalendar();
             renderDailyLog();
         };
         
         calendarDaysEl.appendChild(cell);
+    }
+    
+    // Previous month's trailing days
+    const prevMonthDate = new Date(year, month - 1, 1);
+    for (let i = firstDay - 1; i >= 0; i--) {
+        createCell(prevMonthDate.getFullYear(), prevMonthDate.getMonth(), prevMonthDays - i, false);
+    }
+    
+    // Current month's days
+    for (let i = 1; i <= daysInMonth; i++) {
+        createCell(year, month, i, true);
+    }
+    
+    // Next month's leading days (Fill up to 42 cells = 6 rows)
+    const totalCells = firstDay + daysInMonth;
+    const remainingCells = 42 - totalCells;
+    const nextMonthDate = new Date(year, month + 1, 1);
+    for (let i = 1; i <= remainingCells; i++) {
+        createCell(nextMonthDate.getFullYear(), nextMonthDate.getMonth(), i, false);
     }
 }
 
