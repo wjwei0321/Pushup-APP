@@ -57,57 +57,59 @@ body {
     width: 0 !important;
 }
 
-/* Pull To Refresh (Budget APP style) */
-.ptr {
+/* iOS Native Pull to Refresh (菊花 Activity Indicator) */
+.ios-ptr {
     position: fixed;
     left: 50%;
     top: calc(env(safe-area-inset-top, 0px) + 8px);
     z-index: 9999;
-    display: flex;
-    align-items: center;
-    gap: 6px;
-    padding: 7px 14px;
-    border-radius: 99px;
-    background: var(--card-bg, #ffffff);
-    border: 1px solid var(--border-color, #e5e5ea);
-    box-shadow: 0 6px 18px -8px rgba(0, 0, 0, 0.35);
-    font-size: 13px;
-    font-weight: 600;
-    color: var(--text-secondary, #86868b);
-    opacity: 0;
-    transform: translate(-50%, -60px);
-    pointer-events: none;
-    white-space: nowrap;
-}
-
-.ptr.back {
-    transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.25s ease;
-}
-
-.ptr-ic {
+    width: 32px;
+    height: 32px;
     display: flex;
     align-items: center;
     justify-content: center;
-    color: var(--accent-color, #f39c12);
+    color: #8e8e93;
+    pointer-events: none;
+    opacity: 0;
+    transform: translate(-50%, -40px);
 }
 
-.ptr-ic .ti {
-    width: 16px;
-    height: 16px;
-    stroke: currentColor;
-    stroke-width: 1.8;
-    fill: none;
-    stroke-linecap: round;
-    stroke-linejoin: round;
+.ios-ptr.back {
+    transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.25s ease;
+}
+
+.ios-spinner {
+    width: 26px;
+    height: 26px;
     display: block;
 }
 
-.ptr.spin .ptr-ic .ti {
-    animation: ptr-spin 1s linear infinite;
+.ios-spinner .blade {
+    opacity: 0.15;
+    transition: opacity 0.1s ease;
 }
 
-@keyframes ptr-spin { 
-    to { transform: rotate(360deg); } 
+/* Authentic iOS 12-blade stepped animation when spinning */
+.ios-ptr.spinning .ios-spinner {
+    animation: ios-spinner 1s steps(12, end) infinite;
+}
+
+.ios-ptr.spinning .blade-0  { opacity: 1.00; }
+.ios-ptr.spinning .blade-1  { opacity: 0.91; }
+.ios-ptr.spinning .blade-2  { opacity: 0.83; }
+.ios-ptr.spinning .blade-3  { opacity: 0.75; }
+.ios-ptr.spinning .blade-4  { opacity: 0.66; }
+.ios-ptr.spinning .blade-5  { opacity: 0.58; }
+.ios-ptr.spinning .blade-6  { opacity: 0.50; }
+.ios-ptr.spinning .blade-7  { opacity: 0.41; }
+.ios-ptr.spinning .blade-8  { opacity: 0.33; }
+.ios-ptr.spinning .blade-9  { opacity: 0.25; }
+.ios-ptr.spinning .blade-10 { opacity: 0.16; }
+.ios-ptr.spinning .blade-11 { opacity: 0.08; }
+
+@keyframes ios-spinner {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
 }
 
 .container {

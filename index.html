@@ -24,15 +24,22 @@
         </div>
         <div style="color: white; font-family: Outfit; font-weight: 600; font-size: 1.2rem; letter-spacing: 0.5px;" data-i18n="strive_to_evolve">STRIVE TO EVOLVE</div>
     </div>
-        <!-- Pull to Refresh Indicator (Budget APP style) -->
-    <div id="ptrIndicator" class="ptr">
-        <span class="ptr-ic">
-            <svg class="ti" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
-                <path d="M20 11a8.1 8.1 0 0 0 -15.5 -2m-.5 -4v4h4"></path>
-                <path d="M4 13a8.1 8.1 0 0 0 15.5 2m.5 4v-4h-4"></path>
-            </svg>
-        </span>
-        <span class="ptr-t" data-i18n="ptr_pull">下拉更新</span>
+            <!-- iOS Native Pull to Refresh (菊花 Spinner) -->
+    <div id="ptrIndicator" class="ios-ptr">
+        <svg class="ios-spinner" viewBox="0 0 36 36">
+            <line x1="18" y1="4" x2="18" y2="10" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" class="blade blade-0"/>
+            <line x1="18" y1="4" x2="18" y2="10" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" class="blade blade-1" transform="rotate(30 18 18)"/>
+            <line x1="18" y1="4" x2="18" y2="10" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" class="blade blade-2" transform="rotate(60 18 18)"/>
+            <line x1="18" y1="4" x2="18" y2="10" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" class="blade blade-3" transform="rotate(90 18 18)"/>
+            <line x1="18" y1="4" x2="18" y2="10" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" class="blade blade-4" transform="rotate(120 18 18)"/>
+            <line x1="18" y1="4" x2="18" y2="10" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" class="blade blade-5" transform="rotate(150 18 18)"/>
+            <line x1="18" y1="4" x2="18" y2="10" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" class="blade blade-6" transform="rotate(180 18 18)"/>
+            <line x1="18" y1="4" x2="18" y2="10" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" class="blade blade-7" transform="rotate(210 18 18)"/>
+            <line x1="18" y1="4" x2="18" y2="10" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" class="blade blade-8" transform="rotate(240 18 18)"/>
+            <line x1="18" y1="4" x2="18" y2="10" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" class="blade blade-9" transform="rotate(270 18 18)"/>
+            <line x1="18" y1="4" x2="18" y2="10" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" class="blade blade-10" transform="rotate(300 18 18)"/>
+            <line x1="18" y1="4" x2="18" y2="10" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" class="blade blade-11" transform="rotate(330 18 18)"/>
+        </svg>
     </div>
     <div class="container">
         <!-- View 1: Calendar Home -->
@@ -251,7 +258,7 @@
                 
                 
                 <button onclick="saveSettings()" style="width: 100%; height: 56px; display: flex; align-items: center; justify-content: center; border-radius: 14px; border: none; background: #111; color: white; font-family: Outfit; font-weight: 700; font-size: 1.1rem; cursor: pointer; box-shadow: 0 4px 15px rgba(0,0,0,0.1);" data-i18n="save_sync">Save & Sync</button>
-                <div style="margin-top: 20px; text-align: center; font-size: 0.8rem; color: var(--text-secondary);" onclick="document.getElementById('apiContainer').style.display='block'">API V8 &nbsp;|&nbsp; APP 5.26</div>
+                <div style="margin-top: 20px; text-align: center; font-size: 0.8rem; color: var(--text-secondary);" onclick="document.getElementById('apiContainer').style.display='block'">API V8 &nbsp;|&nbsp; APP 5.27</div>
                 <div id="apiContainer" style="display: none; margin-top: 20px;">
                     <label style="display: block; font-weight: 600; margin-bottom: 8px; font-size: 0.9rem;" data-i18n="api_url">API URL</label>
                     <input type="url" id="apiUrl" style="width: 100%; padding: 15px; border-radius: 12px; border: 1.5px solid var(--border-color); background: var(--card-bg); font-family: Outfit; font-size: 0.8rem; box-sizing: border-box;">
@@ -269,7 +276,7 @@
         </div>
     </div>
 
-    <script src="app.js?v=5.26"></script>
+    <script src="app.js?v=5.27"></script>
 </body>
 </html>
 

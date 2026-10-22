@@ -290,19 +290,23 @@ function initScrollNav() {
     }, { passive: true });
 }
 
-// Pull to refresh logic (Budget APP style)
+// Pull to refresh logic (iOS Native 菊花 Spinner)
 function initPullToRefresh() {
     let y0 = null, dy = 0, busy = false;
     const ind = document.getElementById('ptrIndicator');
     if (!ind) return;
+    const blades = ind.querySelectorAll('.blade');
 
-    const set = (h, txt) => {
-        ind.style.transform = `translate(-50%, ${Math.min(h, 90) - 60}px)`;
-        ind.style.opacity = Math.min(1, h / 70);
-        if (txt) {
-            const tEl = ind.querySelector('.ptr-t');
-            if (tEl) tEl.textContent = txt;
-        }
+    const setPull = (h) => {
+        const progress = Math.min(1, Math.max(0, h / 65));
+        ind.style.transform = `translate(-50%, ${Math.min(h, 75) - 35}px)`;
+        ind.style.opacity = Math.min(1, h / 20);
+        
+        // Progressively illuminate the 12 blades as user pulls down
+        const activeCount = Math.floor(progress * 12);
+        blades.forEach((b, idx) => {
+            b.style.opacity = idx < activeCount ? '0.75' : '0.15';
+        });
     };
 
     const isOverlayOpen = () => {
@@ -324,29 +328,38 @@ function initPullToRefresh() {
         if (y0 == null) return;
         dy = e.touches[0].clientY - y0;
         if (dy <= 0 || window.scrollY > 0) {
-            set(0);
+            setPull(0);
             return;
         }
         if (e.cancelable) {
             e.preventDefault();
         }
         ind.classList.remove('back');
-        const h = dy * 0.6;
-        set(h, h > 70 ? t('ptr_release') : t('ptr_pull'));
+        setPull(dy * 0.55);
     }, { passive: false });
 
     document.addEventListener('touchend', async () => {
         if (y0 == null) return;
-        const go = dy * 0.6 > 70;
+        const go = dy * 0.55 > 65;
         y0 = null;
         ind.classList.add('back');
+        
         if (!go) {
-            set(0);
+            ind.style.transform = 'translate(-50%, -40px)';
+            ind.style.opacity = '0';
+            setTimeout(() => {
+                blades.forEach(b => b.style.opacity = '0.15');
+            }, 250);
             return;
         }
+
         busy = true;
-        set(80, t('ptr_refreshing'));
-        ind.classList.add('spin');
+        // Snap to resting active position and start spinning
+        ind.style.transform = 'translate(-50%, 25px)';
+        ind.style.opacity = '1';
+        blades.forEach(b => b.style.opacity = ''); // Let CSS classes control blade gradient
+        ind.classList.add('spinning');
+
         try {
             await fetchData();
             showToast(t('ptr_updated'));
@@ -355,8 +368,12 @@ function initPullToRefresh() {
             showToast(t('sync_failed'));
         } finally {
             busy = false;
-            ind.classList.remove('spin');
-            set(0);
+            ind.classList.remove('spinning');
+            ind.style.transform = 'translate(-50%, -40px)';
+            ind.style.opacity = '0';
+            setTimeout(() => {
+                blades.forEach(b => b.style.opacity = '0.15');
+            }, 250);
         }
     });
 }
