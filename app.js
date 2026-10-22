@@ -78,7 +78,11 @@ const I18N = {
         sync_failed: 'Sync Failed',
         syncing: 'Syncing...',
         alert_select_exercise: 'Please select an exercise.',
-        alert_valid_reps: 'Please enter valid reps.'
+        alert_valid_reps: 'Please enter valid reps.',
+        ptr_pull: 'Pull down to refresh',
+        ptr_release: 'Release to refresh',
+        ptr_refreshing: 'Updating...',
+        ptr_updated: 'Updated'
     },
     zh: {
         strive_to_evolve: 'STRIVE TO EVOLVE',
@@ -121,7 +125,11 @@ const I18N = {
         sync_failed: '同步失敗',
         syncing: '同步中...',
         alert_select_exercise: '請選擇一個運動。',
-        alert_valid_reps: '請輸入有效的次數。'
+        alert_valid_reps: '請輸入有效的次數。',
+        ptr_pull: '下拉更新',
+        ptr_release: '放開更新',
+        ptr_refreshing: '更新中…',
+        ptr_updated: '已更新'
     }
 };
 
@@ -282,61 +290,74 @@ function initScrollNav() {
     }, { passive: true });
 }
 
-// Pull to refresh logic
+// Pull to refresh logic (Budget APP style)
 function initPullToRefresh() {
-    let touchStartY = 0;
-    let isRefreshing = false;
-    const ptr = document.getElementById('ptrIndicator');
-    const homeView = document.getElementById('homeView');
+    let y0 = null, dy = 0, busy = false;
+    const ind = document.getElementById('ptrIndicator');
+    if (!ind) return;
+
+    const set = (h, txt) => {
+        ind.style.transform = `translate(-50%, ${Math.min(h, 90) - 60}px)`;
+        ind.style.opacity = Math.min(1, h / 70);
+        if (txt) {
+            const tEl = ind.querySelector('.ptr-t');
+            if (tEl) tEl.textContent = txt;
+        }
+    };
+
+    const isOverlayOpen = () => {
+        const statsEl = document.getElementById('statsView');
+        const pickerModal = document.getElementById('exercisePickerModal');
+        const settingsModal = document.getElementById('settingsModal');
+        return document.querySelector('.modal.show') ||
+               (statsEl && statsEl.style.display === 'block') ||
+               (pickerModal && pickerModal.style.display === 'flex') ||
+               (settingsModal && settingsModal.classList.contains('show'));
+    };
 
     document.addEventListener('touchstart', e => {
-        if (document.querySelector('.modal.show') || document.getElementById('statsView').style.display === 'block') return;
-        if (window.scrollY <= 0) {
-            touchStartY = e.touches[0].clientY;
-        }
-    }, {passive: true});
+        y0 = !isOverlayOpen() && !busy && window.scrollY <= 0 && e.touches.length === 1 ? e.touches[0].clientY : null;
+        dy = 0;
+    }, { passive: true });
 
     document.addEventListener('touchmove', e => {
-        if (touchStartY === 0 || isRefreshing || document.querySelector('.modal.show') || document.getElementById('statsView').style.display === 'block') return;
-        const touchY = e.touches[0].clientY;
-        const delta = touchY - touchStartY;
-        
-        // If we are at the top and pulling down
-        if (delta > 0 && window.scrollY <= 0) {
-            if (e.cancelable) {
-                e.preventDefault(); // Stop native iOS rubber banding!
-            }
-            ptr.style.opacity = Math.min(delta / 100, 1);
-            homeView.style.transform = `translateY(${Math.min(delta / 2, 80)}px)`;
-            ptr.style.transform = `rotate(${delta}deg)`;
+        if (y0 == null) return;
+        dy = e.touches[0].clientY - y0;
+        if (dy <= 0 || window.scrollY > 0) {
+            set(0);
+            return;
         }
-    }, {passive: false});
+        if (e.cancelable) {
+            e.preventDefault();
+        }
+        ind.classList.remove('back');
+        const h = dy * 0.6;
+        set(h, h > 70 ? t('ptr_release') : t('ptr_pull'));
+    }, { passive: false });
 
-    document.addEventListener('touchend', e => {
-        if (touchStartY === 0 || isRefreshing) return;
-        const touchY = e.changedTouches[0].clientY;
-        const delta = touchY - touchStartY;
-        
-        if (delta > 100 && window.scrollY <= 0) {
-            isRefreshing = true;
-            ptr.classList.add('spinning');
-            homeView.style.transform = `translateY(60px)`;
-            
-                        fetchData().then(() => {
-                isRefreshing = false;
-                ptr.classList.remove('spinning');
-                homeView.style.transition = 'transform 0.3s';
-                homeView.style.transform = '';
-                ptr.style.opacity = 0;
-                setTimeout(() => homeView.style.transition = '', 300);
-            });
-                } else {
-            homeView.style.transition = 'transform 0.3s';
-            homeView.style.transform = '';
-            ptr.style.opacity = 0;
-            setTimeout(() => homeView.style.transition = '', 300);
+    document.addEventListener('touchend', async () => {
+        if (y0 == null) return;
+        const go = dy * 0.6 > 70;
+        y0 = null;
+        ind.classList.add('back');
+        if (!go) {
+            set(0);
+            return;
         }
-        touchStartY = 0;
+        busy = true;
+        set(80, t('ptr_refreshing'));
+        ind.classList.add('spin');
+        try {
+            await fetchData();
+            showToast(t('ptr_updated'));
+        } catch (err) {
+            console.error(err);
+            showToast(t('sync_failed'));
+        } finally {
+            busy = false;
+            ind.classList.remove('spin');
+            set(0);
+        }
     });
 }
 

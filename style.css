@@ -57,27 +57,57 @@ body {
     width: 0 !important;
 }
 
-/* Pull To Refresh */
-.ptr-indicator {
-    position: absolute;
-    top: -50px;
+/* Pull To Refresh (Budget APP style) */
+.ptr {
+    position: fixed;
     left: 50%;
-    margin-left: -15px;
-    width: 30px;
-    height: 30px;
-    color: var(--text-primary);
-    display: flex;
-    justify-content: center;
-    align-items: center;
+    top: calc(env(safe-area-inset-top, 0px) + 8px);
     z-index: 9999;
-    transition: opacity 0.2s;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 7px 14px;
+    border-radius: 99px;
+    background: var(--card-bg, #ffffff);
+    border: 1px solid var(--border-color, #e5e5ea);
+    box-shadow: 0 6px 18px -8px rgba(0, 0, 0, 0.35);
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--text-secondary, #86868b);
     opacity: 0;
+    transform: translate(-50%, -60px);
+    pointer-events: none;
+    white-space: nowrap;
 }
-.ptr-indicator.spinning svg {
+
+.ptr.back {
+    transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.25s ease;
+}
+
+.ptr-ic {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--accent-color, #f39c12);
+}
+
+.ptr-ic .ti {
+    width: 16px;
+    height: 16px;
+    stroke: currentColor;
+    stroke-width: 1.8;
+    fill: none;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+    display: block;
+}
+
+.ptr.spin .ptr-ic .ti {
     animation: ptr-spin 1s linear infinite;
 }
+
 @keyframes ptr-spin { 
-    100% { transform: rotate(360deg); } 
+    to { transform: rotate(360deg); } 
 }
 
 .container {
